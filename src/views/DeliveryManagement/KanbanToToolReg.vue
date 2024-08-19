@@ -20,6 +20,7 @@
                 <th>Tool Name</th>
                 <th>Quantity</th>
                 <th>Notes</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -34,6 +35,15 @@
                     v-model="item.notes"
                     type="text"
                   />
+                </td>
+                <td>
+                  <button
+                    type="button"
+                    class="btn btn-danger"
+                    @click="removeFromCart(item)"
+                  >
+                    <i class="fas fa-trash"></i>
+                  </button>
                 </td>
               </tr>
             </tbody>
@@ -51,6 +61,7 @@
             type="button"
             @click="saveRequestTool"
             class="btn btn-primary"
+            data-bs-dismiss="modal"
           >
             Save changes
           </button>
@@ -83,10 +94,10 @@
 
   <!-- Konten lainnya -->
   <div class="container-fluid">
-    <div v-for="line in groupedTools" :key="line.line_nm" class="mb-3">
+    <div v-for="(tool, line) in getKanbanTool" :key="line" class="mb-3">
       <div class="card">
         <div class="card-header">
-          <h5>{{ line.line_nm }}</h5>
+          <h5>{{ line }}</h5>
         </div>
         <div class="card-body">
           <div class="d-flex justify-content-end mb-2">
@@ -94,20 +105,22 @@
               style="width: fit-content; border: 1px solid red"
               type="search"
               class="form-control"
-              v-model="search"
+              v-model="searchTerms[line]"
               placeholder="Search Tool..."
-              @input="searchTool"
+              @input="searchTool(line)"
             />
           </div>
 
-          <Carousel
-            :itemsToShow="4"
-            :pagination="true"
-            :navigation="true"
-            :wrapAround="true"
-          >
-            <Slide v-for="tool in line.tools" :key="tool.tool_no" class="p-2">
-              <div class="card cardTool custom-card-style">
+          <Carousel :itemsToShow="5" :pagination="true" :navigation="true">
+            <Slide
+              v-for="tool in filteredTools(line)"
+              :key="tool.tool_id"
+              class="p-2"
+            >
+              <div
+                class="card cardTool custom-card-style"
+                :style="getCardStyle(line)"
+              >
                 <div class="card-body">
                   <img
                     v-if="tool.previewUrl"
@@ -149,7 +162,7 @@ import 'vue3-carousel/dist/carousel.css'
 import { Carousel, Slide, Navigation } from 'vue3-carousel'
 
 export default {
-  name: 'KanbanFromGel',
+  name: 'KanbanToToolReg',
   components: {
     Carousel,
     Slide,
@@ -158,55 +171,47 @@ export default {
 
   data() {
     return {
-      toolNotes: '',
-      search: '',
-      searchResult: [],
+      searchTerms: {},
     }
   },
 
   computed: {
-    ...mapGetters(['getDataTool', 'getCart', 'getMasterLine']),
-
-    groupedTools() {
-      if (!this.getDataTool || !this.getDataTool.length) return []
-
-      const grouped = this.getDataTool.reduce((acc, tool) => {
-        const line = acc.find((line) => line.line_nm === tool.line_nm)
-        if (line) {
-          line.tools.push(tool)
-        } else {
-          acc.push({ line_nm: tool.line_nm, tools: [tool] })
-        }
-        return acc
-      }, [])
-
-      grouped.forEach((line) => {
-        line.tools.sort((a, b) => {
-          if (a.tool_nm < b.tool_nm) return -1
-          if (a.tool_nm > b.tool_nm) return 1
-          return 0
-        })
-      })
-
-      return grouped
-    },
+    ...mapGetters(['getKanbanTool', 'getCart']),
 
     cartItemCount() {
       return this.getCart.reduce((total, item) => total + item.quantity, 0)
+    },
+
+    filteredTools() {
+      return (line) => {
+        const searchTerm = this.searchTerms[line]?.toLowerCase() || ''
+        if (!searchTerm) return this.getKanbanTool[line]
+
+        return this.getKanbanTool[line].filter(
+          (tool) => tool.tool_nm.toLowerCase().match(searchTerm.toLowerCase()),
+          // tool.tool_nm.toLowerCase().startsWith(searchTerm),
+        )
+      }
     },
   },
 
   mounted() {
     this.$store.dispatch('fetchMasterLine')
     this.$store.dispatch('ActionFetchDataTool')
+    this.$store.dispatch('fectDataKanbanTool')
   },
 
   methods: {
-    ...mapActions(['addToCart', 'removeFromCart']),
+    ...mapActions([
+      'addToCart',
+      'removeFromCart',
+      'clearCart',
+      'resetToolQuantities',
+    ]),
 
     getQuantity(tool) {
       const cartItem = this.getCart.find(
-        (item) => item.tool_no === tool.tool_no,
+        (item) => item.tool_id === tool.tool_id,
       )
       return cartItem ? cartItem.quantity : 0
     },
@@ -227,29 +232,48 @@ export default {
           return lineName // Jika tidak ada perubahan, kembalikan nama asli
       }
     },
-    saveRequestTool() {
-      const data = this.getCart.map((item) => ({
-        line_nm: item.line_nm,
-        tool_no: item.tool_no,
-        tool_nm: item.tool_nm,
-        op_no: item.op_no,
-        quantity: item.quantity,
-        notes: item.notes, // Make sure notes are added to your Vuex store
-      }))
 
-      console.log('data', data)
-    },
-    searchTool() {
-      // Jika pencarian kosong
-      if (this.search === '') {
-        // Hasil pencarian diatur menjadi array kosong
-        this.searchResult = []
-      } else {
-        // Memfilter data dari getDataTool berdasarkan input pencarian
-        this.searchResult = this.getDataTool.filter((data) =>
-          data.tool_nm.toLowerCase().includes(this.search.toLowerCase()),
-        )
+    saveRequestTool() {
+      try {
+        const data = this.getCart.map((item) => ({
+          tool_id: item.tool_id,
+          line_id: item.line_id,
+          line_nm: item.line_nm,
+          tool_no: item.tool_no,
+          tool_nm: item.tool_nm,
+          op_no: item.op_no,
+          quantity: item.quantity,
+          notes: item.notes || '', // Pastikan catatan ditambahkan ke Vuex store Anda
+        }))
+
+        console.log('data', data)
+        this.$store.dispatch('ActionSaveRequestTool', data)
+        // Clear the cart and reset tool quantities
+        this.clearCart()
+        this.resetToolQuantities()
+      } catch (error) {
+        console.log(error)
       }
+    },
+
+    searchTool(line) {
+      // This will trigger the computed property to filter tools
+      this.$forceUpdate()
+    },
+    getBackgroundColor(line) {
+      // Define colors for each line
+      const colors = {
+        'Cylinder Block': '#FFFF00',
+        'Cylinder Head': '##008000',
+        'Crank Shaft': '#FF0000',
+        'Cam Shaft': '#0000FF',
+        // Add more colors for other lines as needed
+      }
+      return colors[line] || '#ffffff' // Default color if line is not defined
+    },
+
+    getCardStyle(line) {
+      return `background-color: ${this.getBackgroundColor(line)} !important`
     },
   },
 }
@@ -287,6 +311,8 @@ export default {
   display: inline-block;
   width: 30px;
   text-align: center;
+  font-size: large;
+  font-weight: bold;
 }
 
 .img-fluid {
@@ -322,5 +348,8 @@ export default {
 .btn-secondary:focus {
   background-color: #545b62;
   border-color: #545b62;
+}
+.cardToolStyle {
+  background-color: #0056b3 !important;
 }
 </style>

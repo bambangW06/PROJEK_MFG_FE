@@ -100,9 +100,9 @@ const actions = {
       )
       if (response.status === 200) {
         alert('Berhasil Mengedit Jadwal')
+        await dispatch('fetchSchedules')
       }
-      commit('setSchedules', response.data.data)
-      await dispatch('fetchSchedules')
+      // commit('setSchedules', response.data.data)
     } catch (error) {
       console.error('Error editing schedule:', error)
       alert('Gagal Mengedit Jadwal')

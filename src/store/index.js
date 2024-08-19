@@ -7,7 +7,8 @@ import PlanKurasModule from './PlanKurasModule'
 import DashBoardToolModule from './DashBoardToolModule'
 import DeliveryModule from './Delivery.Module'
 import MasterLineModule from './MasterLine.module'
-import KanbanFromGel from './KanbanFromGel.module'
+import KanbanToToolReg from './KanbanToToolReg.module'
+import METAModule from './META.module'
 
 export default createStore({
   state: {
@@ -35,6 +36,7 @@ export default createStore({
     DashBoardToolModule,
     DeliveryModule,
     MasterLineModule,
-    KanbanFromGel,
+    KanbanToToolReg,
+    METAModule,
   },
 })

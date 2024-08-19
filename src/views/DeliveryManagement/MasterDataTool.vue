@@ -394,7 +394,7 @@ export default {
   data() {
     return {
       currentPage: 1,
-      pageSize: 10,
+      pageSize: 40,
       search: '',
       selectedMasterLine: '',
       op: '',
@@ -492,14 +492,18 @@ export default {
       }
 
       console.log('Payload sent to backend:', payload)
-      this.$store.dispatch('ActionSaveDataTool', payload)
+      this.$store.dispatch('ActionSaveDataTool', payload).then(() => {
+        this.$store.dispatch('ActionFetchDataTool')
+      })
     },
     editDataTool(dataTool) {
       this.editedTool = dataTool
     },
     saveEditDataTool() {
       console.log('Payload sent to backend:', this.editedTool)
-      this.$store.dispatch('ActionEditDataTool', this.editedTool)
+      this.$store.dispatch('ActionEditDataTool', this.editedTool).then(() => {
+        this.$store.dispatch('ActionFetchDataTool')
+      })
     },
     searchTool() {
       // Jika pencarian kosong
@@ -520,7 +524,9 @@ export default {
     deleteDataTool() {
       const id = this.deletedTool
       console.log('id', id)
-      this.$store.dispatch('ActionDeleteDataTool', id)
+      this.$store.dispatch('ActionDeleteDataTool', id).then(() => {
+        this.$store.dispatch('ActionFetchDataTool')
+      })
     },
   },
 }

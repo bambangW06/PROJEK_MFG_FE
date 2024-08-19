@@ -542,8 +542,15 @@ export default {
         const machineId = this.editedSchedule.machine_id
         const machines = this.editedSchedule.machine_nm
         const planingDate = this.editedSchedule.last_krs
+        // console.log('planingDate', planingDate)
+
         const shift = this.editedSchedule.shift
-        const editLastKrs = moment(planingDate).format('YYYY-MM-DD')
+        const editLastKrs = moment(planingDate, 'DD-MM-YYYY').format(
+          'YYYY-MM-DD',
+        )
+
+        // console.log('editLastKrs', editLastKrs)
+
         const editDataKuras = {
           schedule_id: scheduleId,
           line_nm: lineNm,
@@ -555,7 +562,7 @@ export default {
           periodVal: this.editedSchedule.period_val,
           periodNm: this.editedSchedule.period_nm,
         }
-        console.log('editedDataKuras', editDataKuras)
+        // console.log('editedDataKuras', editDataKuras)
         this.$store.dispatch('actionEditSchedule', editDataKuras)
 
         this.editedSchedule = {
@@ -566,7 +573,7 @@ export default {
           period_nm: null,
           shift: null,
         }
-        this.$store.dispatch('fetchGeneratePlanKuras')
+        // this.$store.dispatch('fetchGeneratePlanKuras')
       } catch (error) {
         console.error('Error:', error.message)
       }
@@ -594,6 +601,7 @@ export default {
         period_nm: schedules.period_nm,
         shift: schedules.shift,
       }
+      console.log('editedSchedule', this.editedSchedule)
 
       this.$nextTick(() => {
         if (this.$refs.editDatePicker && this.$refs.editDatePicker._flatpickr) {

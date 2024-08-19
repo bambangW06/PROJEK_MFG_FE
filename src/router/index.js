@@ -47,6 +47,11 @@ const routes = [
         name: 'Mapping Job',
         component: () => import('@/views/MappingJob.vue'),
       },
+      {
+        path: '/tool/kanbanFromGel',
+        name: 'KanbanFromGel',
+        component: () => import('@/views/ToolManagement/KanbanFromGel.vue'),
+      },
 
       {
         path: '/tool',
@@ -73,8 +78,9 @@ const routes = [
       },
       {
         path: '/delivery/kanban',
-        name: 'KanbanFromGel',
-        component: () => import('@/views/DeliveryManagement/KanbanFromGel.vue'),
+        name: 'KanbanToToolReg',
+        component: () =>
+          import('@/views/DeliveryManagement/KanbanToToolReg.vue'),
       },
 
       {

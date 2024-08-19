@@ -1,8 +1,5 @@
 import axios from 'axios'
-import {
-  saveToLocalStorage,
-  loadFromLocalStorage,
-} from '@/utils/localStorageUtils'
+import moment from 'moment'
 
 const API_URL = process.env.VUE_APP_API_URL
 
@@ -12,6 +9,7 @@ const state = {
   generatePlanKuras: [],
   dataSchedules: [],
   dataHistoryKuras: [],
+  hasOverdueSchedules: false, // Tambahkan state ini
 }
 
 const getters = {
@@ -48,9 +46,15 @@ const getters = {
       }
     })
 
-    return mergedData
+    // Mengurutkan data berdasarkan last_krs atau planingDate
+    return mergedData.sort((a, b) => {
+      const dateA = moment(a.plan_dt, 'DD-MM-YYYY')
+      const dateB = moment(b.plan_dt, 'DD-MM-YYYY')
+      return dateA - dateB // Mengurutkan secara ascending
+    })
   },
   getDataHistoryKuras: (state) => state.dataHistoryKuras,
+  hasOverdueSchedules: (state) => state.hasOverdueSchedules, // Getter ini
 }
 
 const mutations = {
@@ -78,6 +82,9 @@ const mutations = {
   },
   setDataHistoryKuras(state, payload) {
     state.dataHistoryKuras = payload
+  },
+  setOverdueSchedules(state, value) {
+    state.hasOverdueSchedules = value // Mutation ini
   },
 }
 
@@ -189,6 +196,15 @@ const actions = {
       commit('setDataHistoryKuras', response.data.data)
     } catch (error) {
       console.error('Error fetching plan kuras:', error)
+    }
+  },
+  async checkScheduleStatus({ commit }) {
+    try {
+      const response = await axios.get(`${API_URL}/schedule/status`)
+      const hasOverdueSchedules = response.data.hasOverdue || false // Sesuaikan dengan struktur respons API
+      commit('setOverdueSchedules', hasOverdueSchedules)
+    } catch (error) {
+      console.error('Error checking schedule status:', error)
     }
   },
 }
