@@ -132,6 +132,12 @@
                 >
                   <button class="page-link" @click="goToPage(month.value)">
                     {{ month.text }}
+                    <span
+                      v-if="monthWarnings[`${month.value}-${selectedYear}`]"
+                      class="badge bg-warning text-dark"
+                    >
+                      !
+                    </span>
                   </button>
                 </li>
                 <li
@@ -316,7 +322,7 @@ export default {
     },
     paginatedData() {
       const data = this.mergedPlanKuras
-      console.log('data', data)
+      // console.log('data', data)
 
       // Get the current year
       const currentYear = new Date().getFullYear()
@@ -329,6 +335,36 @@ export default {
         // Check if the month and year match the selected month and current year
         return month === this.selectedMonth && year === currentYear
       })
+    },
+    monthWarnings() {
+      const warnings = {}
+      const currentDate = new Date()
+      const currentMonth = currentDate.getMonth() + 1 // Bulan saat ini (1-12)
+      const currentYear = currentDate.getFullYear() // Tahun saat ini
+
+      // Loop melalui semua data jadwal yang sudah di-merge
+      this.mergedPlanKuras.forEach((kuras) => {
+        const [day, month, year] = kuras.plan_dt.split('-').map(Number)
+        const planDate = new Date(year, month - 1, day)
+        const key = `${month}-${year}`
+
+        // Cek apakah bulan tersebut sudah memiliki warning
+        if (!warnings[key]) {
+          warnings[key] = false
+        }
+
+        // Update warning jika statusnya kosong dan planDate sudah lewat
+        // serta bulan dan tahun bukan bulan dan tahun saat ini
+        if (
+          !kuras.status &&
+          planDate < currentDate &&
+          (month < currentMonth || year < currentYear)
+        ) {
+          warnings[key] = true
+        }
+      })
+
+      return warnings
     },
 
     currentMonthWithYear() {
@@ -359,9 +395,9 @@ export default {
   mounted() {
     // Fetch all required data
     Promise.all([
+      this.$store.dispatch('ActionGetHistorySchedules'),
       this.$store.dispatch('fetchPlanKuras'),
       this.$store.dispatch('fetchLines'),
-      this.$store.dispatch('ActionGetHistorySchedules'),
       this.$store.dispatch('fetchGeneratePlanKuras'),
     ]).then(() => {
       this.initializeData() // Initialize data after all fetches complete
@@ -418,12 +454,17 @@ export default {
       this.actualDates = data.map((kuras) => kuras.actual_dt || '')
       this.statusKuras = data.map((kuras) => kuras.status || '')
       this.isSaved = data.map((kuras) => kuras.is_saved || false)
-
       // console.log('actualDates:', this.actualDates)
       // console.log('statusKuras:', this.statusKuras)
       // console.log('isSaved:', this.isSaved)
     },
-    saveSchedule(index) {
+    async savePlanShift(index) {
+      const payload = {
+        planShift: this.paginatedData[index].shift,
+      }
+      // console.log(payload)
+    },
+    async saveSchedule(index) {
       if (
         !this.actualDates[index] &&
         !this.statusKuras[index] &&
@@ -445,7 +486,7 @@ export default {
         status: this.statusKuras[index],
       }
       // console.log('payload:', payload)
-      this.$store.dispatch('ActionSaveSchedules', payload).then(() => {
+      await this.$store.dispatch('ActionSaveSchedules', payload).then(() => {
         this.$store
           .dispatch('ActionGetHistorySchedules')
           .then(() => {
@@ -519,7 +560,7 @@ export default {
     changeStatus(index, plan_dt) {
       // Parsing actualDate dengan format yang sama dengan yang digunakan dalam plan_dt
       const actualDate = moment(this.actualDates[index], 'DD-MM-YYYY')
-      // console.log('Parsed Actual Date:', actualDate.format('YYYY-MM-DD'))
+      console.log('Parsed Actual Date:', actualDate.format('YYYY-MM-DD'))
 
       // Parsing planningDate dengan format yang benar
       const planningDate = moment(plan_dt, 'DD-MM-YYYY')
@@ -572,7 +613,7 @@ export default {
         }
       }
     },
-    addPlanSchedule() {
+    async addPlanSchedule() {
       const scheduleId = this.getSearchPlanKuras[0].schedule_id
       // console.log('scheduleId:', scheduleId)
       const payload = {
@@ -586,9 +627,11 @@ export default {
         reason: this.modalFormData.reason,
       }
       // console.log('payload:', payload)
-      this.$store.dispatch('ActionEditSearchSchedule', payload).then(() => {
-        this.$store.dispatch('fetchPlanKuras')
-      })
+      await this.$store
+        .dispatch('ActionEditSearchSchedule', payload)
+        .then(() => {
+          this.$store.dispatch('fetchPlanKuras')
+        })
 
       // Reset modalFormData
       this.modalFormData = {
@@ -603,7 +646,7 @@ export default {
       }
     },
 
-    searchPlanSchedule() {
+    async searchPlanSchedule() {
       // console.log('kepanggil')
 
       // Ensure the selected machine is defined before dispatching the action
@@ -615,7 +658,7 @@ export default {
         .join(',')
       // console.log('machineNm:', machineNm)
       // Dispatch Vuex action to fetch schedules based on the selected machine's name
-      this.$store.dispatch('ActionSearchSchedules', machineNm)
+      await this.$store.dispatch('ActionSearchSchedules', machineNm)
     },
 
     showSearchDatePicker(refName) {

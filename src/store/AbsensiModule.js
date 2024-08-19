@@ -146,14 +146,12 @@ const actions = {
     try {
       const response = await axios.get(API_URL + '/shift/get')
       const data = response.data
-      // console.log('data', data)
-      // Ekstrak nilai current_shift dari data respons
+
       const currentShift = data.data[0].current_shift
-      // console.log('currentShift ambil', currentShift);
-      // Panggil komit untuk memperbarui currentShift di Vuex store
       commit('setCurrentShift', currentShift)
-      // console.log('setcurenshift ambil', currentShift);
-    } catch (error) {}
+    } catch (error) {
+      console.log('eror bro :', error)
+    }
   },
   async updateEmployeeStatus({ state }, payload) {
     // console.log('kepanggil gag.....');

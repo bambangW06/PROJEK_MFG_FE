@@ -29,7 +29,7 @@ const getters = {
 
       return {
         ...plan,
-        shift: correspondingSchedule ? correspondingSchedule.shift : '',
+        shift: correspondingSchedule ? correspondingSchedule.shift : plan.shift,
         reason:
           plan.reason ||
           (correspondingSchedule ? correspondingSchedule.reason_plan : ''),
