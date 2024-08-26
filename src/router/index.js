@@ -47,11 +47,11 @@ const routes = [
         name: 'Mapping Job',
         component: () => import('@/views/MappingJob.vue'),
       },
-      {
-        path: '/tool/kanbanFromGel',
-        name: 'KanbanFromGel',
-        component: () => import('@/views/ToolManagement/KanbanFromGel.vue'),
-      },
+      // {
+      //   path: '/tool/kanbanFromGel',
+      //   name: 'KanbanFromGel',
+      //   component: () => import('@/views/ToolManagement/KanbanFromGel.vue'),
+      // },
 
       {
         path: '/tool',
@@ -76,24 +76,24 @@ const routes = [
         name: 'ScheduleKuras',
         component: () => import('@/views/MasterSchedule.vue'),
       },
-      {
-        path: '/delivery/kanban',
-        name: 'KanbanToToolReg',
-        component: () =>
-          import('@/views/DeliveryManagement/KanbanToToolReg.vue'),
-      },
+      // {
+      //   path: '/delivery/kanban',
+      //   name: 'KanbanToToolReg',
+      //   component: () =>
+      //     import('@/views/DeliveryManagement/KanbanToToolReg.vue'),
+      // },
 
-      {
-        path: '/delivery/dataTool',
-        name: 'MasterDataTool',
-        component: () =>
-          import('@/views/DeliveryManagement/MasterDataTool.vue'),
-      },
-      {
-        path: '/delivery/masterLine',
-        name: 'MasterGelLines',
-        component: () => import('@/views/DeliveryManagement/MasterLine.vue'),
-      },
+      // {
+      //   path: '/delivery/dataTool',
+      //   name: 'MasterDataTool',
+      //   component: () =>
+      //     import('@/views/DeliveryManagement/MasterDataTool.vue'),
+      // },
+      // {
+      //   path: '/delivery/masterLine',
+      //   name: 'MasterGelLines',
+      //   component: () => import('@/views/DeliveryManagement/MasterLine.vue'),
+      // },
 
       /*define other in here*/
     ],

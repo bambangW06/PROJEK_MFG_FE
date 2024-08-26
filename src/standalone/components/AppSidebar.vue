@@ -146,13 +146,13 @@ export default {
           name: 'Tool Management', // Nama menu untuk EAssesment
           icon: 'cilPencil', // Ikonya bisa disesuaikan
           items: [
-            {
-              component: 'CNavItem',
-              name: 'Kanban From Gel', // Nama menu untuk EAssesment
-              to: '/tool/kanbanFromGel', // Path yang dituju saat menu EAssesment diklik
-              icon: 'cilPencil', // Ikonya bisa disesuaikan
-              parentId: 'ROOT',
-            },
+            // {
+            //   component: 'CNavItem',
+            //   name: 'Kanban From Gel', // Nama menu untuk EAssesment
+            //   to: '/tool/kanbanFromGel', // Path yang dituju saat menu EAssesment diklik
+            //   icon: 'cilPencil', // Ikonya bisa disesuaikan
+            //   parentId: 'ROOT',
+            // },
             {
               component: 'CNavItem',
               name: 'Reservasi & Regrinding',
@@ -188,34 +188,34 @@ export default {
             },
           ],
         },
-        {
-          component: 'CNavGroup',
-          name: 'Delivery Management', // Nama menu untuk EAssesment
-          icon: 'cilTruck', // Ikonya bisa disesuaikan
-          items: [
-            {
-              component: 'CNavItem',
-              name: 'Kanban To Tool Regrinding',
-              to: '/delivery/kanban',
-              // icon: 'cilMap',
-              parentId: 'ROOT',
-            },
-            {
-              component: 'CNavItem',
-              name: 'Master Data Tool',
-              to: '/delivery/dataTool',
-              // icon: 'cilMap',
-              parentId: 'ROOT',
-            },
-            {
-              component: 'CNavItem',
-              name: 'Master Line',
-              to: '/delivery/masterLine',
-              // icon: 'cilMap',
-              parentId: 'ROOT',
-            },
-          ],
-        },
+        // {
+        //   component: 'CNavGroup',
+        //   name: 'Delivery Management', // Nama menu untuk EAssesment
+        //   icon: 'cilTruck', // Ikonya bisa disesuaikan
+        //   items: [
+        //     {
+        //       component: 'CNavItem',
+        //       name: 'Kanban To Tool Regrinding',
+        //       to: '/delivery/kanban',
+        //       // icon: 'cilMap',
+        //       parentId: 'ROOT',
+        //     },
+        //     {
+        //       component: 'CNavItem',
+        //       name: 'Master Data Tool',
+        //       to: '/delivery/dataTool',
+        //       // icon: 'cilMap',
+        //       parentId: 'ROOT',
+        //     },
+        //     {
+        //       component: 'CNavItem',
+        //       name: 'Master Line',
+        //       to: '/delivery/masterLine',
+        //       // icon: 'cilMap',
+        //       parentId: 'ROOT',
+        //     },
+        //   ],
+        // },
         // {
         //   component: 'CNavItem',
         //   to: '/contoh',
