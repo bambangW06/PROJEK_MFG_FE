@@ -134,7 +134,7 @@
                     {{ month.text }}
                     <span
                       v-if="monthWarnings[`${month.value}-${selectedYear}`]"
-                      class="badge bg-warning text-dark"
+                      class="badge text-white badge-circle"
                     >
                       !
                     </span>
@@ -723,6 +723,14 @@ export default {
   border: 1px solid black; /* Batas tepi untuk sel-sel dalam tabel */
   text-align: center;
   padding: 8px; /* Atur jarak antara konten dan batas tepi */
+}
+.badge-circle {
+  width: 10px;
+  height: 20px;
+  border-radius: 50%;
+  display: inline-flex;
+  justify-content: center;
+  background-color: red;
 }
 
 /* Pastikan penyesuaian CSS diterapkan dengan benar */

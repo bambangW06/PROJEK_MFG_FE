@@ -1,5 +1,5 @@
 <template>
-  <div class="card mt-3" style="z-index: 1">
+  <div class="card mt-3" style="z-index: 1" ref="cardRef">
     <div class="card-header">
       <h5 class="card-title text-center"><strong>History Coolant</strong></h5>
     </div>
@@ -102,54 +102,63 @@
       </div>
     </div>
   </div>
-
-  <div v-if="mergedResults.length > 0" class="card p-2 mt-3">
-    <table class="table custom-table tb-emp table-bordered mt-1">
-      <thead>
-        <tr>
-          <th>No</th>
-          <th>Line</th>
-          <th>Mesin</th>
-          <th>Tanggal Check</th>
-          <th
-            v-if="
-              paramNames.length > 0 && selectedParam === paramNames[0].param_id
-            "
-          >
-            {{ paramNames[0].param_nm }}
-          </th>
-          <th
-            v-if="
-              paramNames.length > 1 && selectedParam === paramNames[1].param_id
-            "
-          >
-            {{ paramNames[1].param_nm }}
-          </th>
-          <th>Status Coolant</th>
-          <th>Terakhir Kuras</th>
-          <th>Alasan Kuras</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(result, index) in mergedResults" :key="index">
-          <td>{{ index + 1 }}</td>
-          <td>{{ result.line_nm }}</td>
-          <td>{{ result.machine_nm }}</td>
-          <td>{{ result.start_date }}</td>
-          <td v-if="selectedParam === paramNames[0].param_id">
-            {{ result.Konsentrasi }}
-          </td>
-          <td v-if="selectedParam === paramNames[1].param_id">
-            {{ result.PH }}
-          </td>
-          <td v-html="result.status"></td>
-          <td>{{ result.last_krs }}</td>
-          <td>{{ result.reason }}</td>
-        </tr>
-      </tbody>
-    </table>
+  <div>
+    <div v-if="isLoading" class="loading-container">
+      <div class="spinner"></div>
+    </div>
+    <div v-else>
+      <div v-if="results.length > 0" class="card p-2 mt-3">
+        <table class="table custom-table tb-emp table-bordered mt-1">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Line</th>
+              <th>Mesin</th>
+              <th>Tanggal Check</th>
+              <th
+                v-if="
+                  paramNames.length > 0 &&
+                  selectedParam === paramNames[0].param_id
+                "
+              >
+                {{ paramNames[0].param_nm }}
+              </th>
+              <th
+                v-if="
+                  paramNames.length > 1 &&
+                  selectedParam === paramNames[1].param_id
+                "
+              >
+                {{ paramNames[1].param_nm }}
+              </th>
+              <th>Status Coolant</th>
+              <th>Terakhir Kuras</th>
+              <th>Alasan Kuras</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(result, index) in results" :key="index">
+              <td>{{ index + 1 }}</td>
+              <td>{{ result.line_nm }}</td>
+              <td>{{ result.machine_nm }}</td>
+              <td>{{ result.start_date }}</td>
+              <td v-if="selectedParam === paramNames[0].param_id">
+                {{ result.Konsentrasi }}
+              </td>
+              <td v-if="selectedParam === paramNames[1].param_id">
+                {{ result.PH }}
+              </td>
+              <td v-html="result.status"></td>
+              <td v-if="index === 0">{{ result.last_krs }}</td>
+              <td v-else></td>
+              <td v-if="index === 0">{{ result.reason_plan }}</td>
+              <td v-else></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
-
   <div
     v-if="
       chartSeriesConcentration.length > 0 &&
@@ -217,22 +226,20 @@ export default {
       chartOptionsPH: {},
       results: [],
       pollingInterval: null,
-      mergedResults: [],
+      isLoading: false, // Tambahkan state isLoading
     }
   },
   computed: {
     ...mapGetters(['getLineNames', 'getMachinesNames', 'getDataHistoryKuras']),
   },
-  watch: {
-    results: 'mergeData', // Memanggil mergeData ketika results berubah
-    getDataHistoryKuras: 'mergeData', // Memanggil mergeData ketika getDataHistoryKuras berubah
-  },
   mounted() {
     this.fetchLines()
     this.fetchParams()
+    document.addEventListener('mousedown', this.handleClickOutside)
   },
   beforeDestroy() {
     this.stopPolling()
+    document.removeEventListener('mousedown', this.handleClickOutside)
   },
   methods: {
     ...mapActions(['fetchLines']),
@@ -284,29 +291,28 @@ export default {
     },
 
     async fetchData() {
+      this.isLoading = true // Set isLoading menjadi true saat mulai fetching data
       try {
         const machineIds = this.selectedMachines.map(
           (machine) => machine.machine_id,
         )
-        const machineNames = this.selectedMachines.map(
-          (machine) => machine.machine_nm,
-        )
+        console.log('machineIds', machineIds)
+
         if (machineIds.length === 0) {
           alert('No machines selected')
           return
         }
-        this.$store.dispatch('ActionHistoryKuras', machineNames)
+        await this.$store.dispatch('ActionHistoryKuras', machineIds)
         const response = await axios.get(`${API_URL}/grafik/get`, {
           params: {
             startDate: this.selectedStartDate,
             endDate: this.selectedEndDate,
-            machine_id: machineIds.join(','), // Assuming the API can accept a comma-separated list of machine_ids
+            machine_id: machineIds,
             param_id: this.selectedParam,
           },
         })
 
         const responseData = response.data.data
-        // console.log('responseData', responseData)
 
         if (
           responseData &&
@@ -322,6 +328,13 @@ export default {
               (line) => line.line_id === this.selectedLine,
             ).line_nm
 
+            // Cari history yang cocok dengan machine_nm
+            const history = this.getDataHistoryKuras.find(
+              (historyItem) => historyItem.machine_nm === machineName,
+            )
+
+            const lastKrs = history ? history.last_krs : '-' // Set last_krs dari history atau '-' jika tidak ada
+            const reasonPlan = history ? history.reason_plan : '-' // Set reason_plan dari history atau '-' jika tidak ada
             // Group data by date and machine
             const groupedData = {}
             machineData.parameters.forEach((parameter) => {
@@ -331,10 +344,12 @@ export default {
                   groupedData[tanggal] = {
                     line_nm: lineName,
                     machine_nm: machineName,
-                    start_date: moment(tanggal).format('DD-MM-YYYY'), // Format tanggal,
+                    start_date: moment(tanggal).format('DD-MM-YYYY'), // Format tanggal
                     Konsentrasi: '-',
                     PH: '-',
                     status: '',
+                    last_krs: lastKrs, // Tambahkan last_krs di sini
+                    reason_plan: reasonPlan,
                   }
                 }
                 if (parameter.param_nm === 'Konsentrasi') {
@@ -344,7 +359,6 @@ export default {
                 }
                 // Calculate status for each data point
                 const status = this.calculateStatus(valueData)
-                // console.log('Status====:', status) // Tambahkan log untuk status
                 if (status === '<span class="text-red">NG</span>') {
                   groupedData[tanggal].status = status
                 } else if (!groupedData[tanggal].status) {
@@ -358,12 +372,11 @@ export default {
               this.results.push(data)
             })
           })
+
           // Urutkan this.results berdasarkan start_date dari yang terbaru ke yang terlama
           this.results.sort((a, b) => {
-            // Mengonversi tanggal dari string ke Date untuk membandingkan
             const dateA = new Date(a.start_date)
             const dateB = new Date(b.start_date)
-            // Mengurutkan dari yang terbaru ke yang terlama
             return dateB - dateA
           })
 
@@ -378,63 +391,47 @@ export default {
           // Get series for charts
           this.getSeries(machinesData)
 
-          // console.log('Results:', this.results) // Log isi dari results setelah diisi
-          // console.log('Summary Status:', this.summaryStatus) // Log nilai summaryStatus setelah dihitung
+          // console.log('Results:', this.results); // Log isi dari results setelah diisi
+          // console.log('Summary Status:', this.summaryStatus); // Log nilai summaryStatus setelah dihitung
         } else {
           alert('Data tidak tersedia atau tidak ada')
         }
       } catch (error) {
         console.error('Error fetching data:', error)
+      } finally {
+        this.isLoading = false // Set isLoading menjadi false setelah proses selesai
       }
     },
-    mergeData() {
-      if (this.results.length === 0) {
-        // Mengisi mergedResults dengan data dari getDataHistoryKuras jika results kosong
-        this.mergedResults = this.getDataHistoryKuras.map((historyItem) => {
-          return {
-            line_nm: historyItem.line_nm || '-', // Nama line dari historyItem
-            machine_nm: historyItem.machine_nm || '-', // Nama mesin dari historyItem
-            start_date: historyItem.start_date || '-', // Tanggal dari historyItem
-            Konsentrasi: '-', // Konsentrasi default
-            PH: '-', // PH default
-            last_krs: historyItem.last_krs || '-', // Data last_krs dari historyItem
-            reason: historyItem.reason_plan || '-', // Data reason_plan dari historyItem atau '-'
-            status: historyItem.status || '-', // Status default
-          }
-        })
-      } else {
-        // Variabel untuk melacak mesin yang sudah diisi last_krs dan reason
-        const processedMachinesForLastKrs = new Set()
-        const processedMachinesForReason = new Set()
 
-        // Menggabungkan data dari results dengan data dari getDataHistoryKuras jika results tidak kosong
-        this.mergedResults = this.results.map((result, index) => {
-          // Mencari data yang cocok di getDataHistoryKuras berdasarkan machine_nm
-          const history = this.getDataHistoryKuras.find(
-            (historyItem) => historyItem.machine_nm === result.machine_nm,
+    resetInputs() {
+      this.selectedLine = ''
+      this.selectedMachines = []
+      this.selectedParam = ''
+      this.selectedStartDate = ''
+      this.selectedEndDate = ''
+      this.results = [] // Opsional, jika Anda juga ingin mengosongkan hasil
+
+      // Jika ada metode tambahan untuk mereset tampilan, panggil di sini
+    },
+    handleClickOutside(event) {
+      // Periksa apakah klik di luar elemen cardRef
+      if (this.$refs.cardRef && !this.$refs.cardRef.contains(event.target)) {
+        // Memeriksa jika klik di luar elemen datepicker
+        const isClickInsideStartDatePicker =
+          this.datepickerInstances.datePickerStartDate &&
+          this.datepickerInstances.datePickerStartDate.calendarContainer.contains(
+            event.target,
           )
 
-          // Tentukan nilai last_krs: hanya isi di baris pertama untuk setiap mesin
-          let lastKrsValue = '-'
-          if (history && !processedMachinesForLastKrs.has(result.machine_nm)) {
-            lastKrsValue = history.last_krs || '-'
-            processedMachinesForLastKrs.add(result.machine_nm) // Tandai mesin ini sudah diproses untuk last_krs
-          }
+        const isClickInsideEndDatePicker =
+          this.datepickerInstances.datePickerEndDate &&
+          this.datepickerInstances.datePickerEndDate.calendarContainer.contains(
+            event.target,
+          )
 
-          // Tentukan nilai reason: hanya isi di baris pertama untuk setiap mesin
-          let reasonValue = '-'
-          if (history && !processedMachinesForReason.has(result.machine_nm)) {
-            reasonValue = history.reason_plan || '-'
-            processedMachinesForReason.add(result.machine_nm) // Tandai mesin ini sudah diproses untuk reason
-          }
-
-          return {
-            ...result,
-
-            last_krs: lastKrsValue, // Menetapkan nilai last_krs yang telah ditentukan
-            reason: reasonValue, // Menetapkan nilai reason yang telah ditentukan
-          }
-        })
+        if (!isClickInsideStartDatePicker && !isClickInsideEndDatePicker) {
+          this.resetInputs()
+        }
       }
     },
 
@@ -576,6 +573,9 @@ export default {
             size: 5,
             colors: ['#00FF00', '#ff0000', '#ff7f00'],
           },
+          dataLabels: {
+            enabled: true,
+          },
           grid: {
             borderColor: '#e7e7e7',
             strokeDashArray: 2,
@@ -610,6 +610,9 @@ export default {
             toolbar: {
               show: true,
             },
+          },
+          dataLabels: {
+            enabled: true,
           },
           stroke: {
             curve: 'straight',
@@ -703,5 +706,30 @@ export default {
   border: 1px solid black; /* Batas tepi untuk sel-sel dalam tabel */
   text-align: center;
   padding: 8px; /* Atur jarak antara konten dan batas tepi */
+}
+.spinner {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #3498db;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 2s linear infinite;
+  margin: 0 auto; /* Agar spinner ada di tengah */
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px; /* Anda bisa sesuaikan */
 }
 </style>

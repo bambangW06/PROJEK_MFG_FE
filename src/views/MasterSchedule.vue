@@ -137,25 +137,6 @@
             v-model="editedSchedule.machine_nm"
             disabled
           />
-          <label class="form-label" for="selectedDate">Tanggal</label>
-          <div class="input-group">
-            <input
-              class="form-control"
-              type="text"
-              ref="editDatePicker"
-              v-model="editedSchedule.last_krs"
-              placeholder="Pilih tanggal..."
-            />
-            <div class="input-group-append">
-              <button
-                class="btn btn-outline-secondary sz-up"
-                type="button"
-                @click="showDatePicker('editDatePicker')"
-              >
-                <span class="fa fa-calendar"></span>
-              </button>
-            </div>
-          </div>
           <label for="">Periodik</label>
           <input
             v-model="editedSchedule.period_val"
@@ -413,7 +394,6 @@ export default {
         line_nm: null,
         machine_id: null,
         machine_nm: null,
-        last_krs: '',
         period_val: '',
         period_nm: null,
         shift: null,
@@ -529,7 +509,7 @@ export default {
         console.error('Error:', error.message)
       }
     },
-    updateSchedule() {
+    async updateSchedule() {
       try {
         if (this.selectedDataIndex === -1) {
           console.log('Please select an item to edit.')
@@ -541,15 +521,8 @@ export default {
         const linId = this.editedSchedule.line_id
         const machineId = this.editedSchedule.machine_id
         const machines = this.editedSchedule.machine_nm
-        const planingDate = this.editedSchedule.last_krs
-        // console.log('planingDate', planingDate)
 
         const shift = this.editedSchedule.shift
-        const editLastKrs = moment(planingDate, 'DD-MM-YYYY').format(
-          'YYYY-MM-DD',
-        )
-
-        // console.log('editLastKrs', editLastKrs)
 
         const editDataKuras = {
           schedule_id: scheduleId,
@@ -557,18 +530,20 @@ export default {
           line_id: linId,
           machines: machines,
           machine_id: machineId,
-          last_krs: editLastKrs,
           shift: shift,
           periodVal: this.editedSchedule.period_val,
           periodNm: this.editedSchedule.period_nm,
         }
         // console.log('editedDataKuras', editDataKuras)
-        this.$store.dispatch('actionEditSchedule', editDataKuras)
+        await this.$store
+          .dispatch('actionEditSchedule', editDataKuras)
+          .then(() => {
+            this.$store.dispatch('fetchGeneratePlanKuras')
+          })
 
         this.editedSchedule = {
           line_nm: null,
           machine_nm: null,
-          last_krs: '',
           period_val: '',
           period_nm: null,
           shift: null,
@@ -578,14 +553,14 @@ export default {
         console.error('Error:', error.message)
       }
     },
-    onMachineChange() {
+    async onMachineChange() {
       if (!this.selectedMachineHistory) {
         return alert('Pilih line terlebih dahulu')
       }
       const machineNm = this.selectedMachineHistory
         .map((machine) => machine.machine_nm)
         .join(',')
-      this.$store.dispatch('fetchSchedules', machineNm)
+      await this.$store.dispatch('fetchSchedules', machineNm)
     },
 
     editSchedule(schedules, index) {

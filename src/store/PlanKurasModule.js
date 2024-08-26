@@ -181,18 +181,14 @@ const actions = {
   async ActionHistoryKuras({ commit }, payload) {
     try {
       // console.log('payload module', payload)
-      const response = await axios.get(`${API_URL}/historyKuras/get`, {
-        params: {
-          machineNm: payload,
-        },
-      })
+      const response = await axios.get(`${API_URL}/historyKuras/get/${payload}`)
       if (response.data && response.data.data) {
         if (response.data.data.length === 0) {
           // Jika array kosong, tampilkan pesan alert
           // alert('Data Tidak Ada')
         }
       }
-      // console.log(response.data.data)
+      console.log(response.data.data)
       commit('setDataHistoryKuras', response.data.data)
     } catch (error) {
       console.error('Error fetching plan kuras:', error)
