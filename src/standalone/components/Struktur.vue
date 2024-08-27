@@ -28,74 +28,112 @@
                     <tbody>
                       <tr>
                         <td>
-                          <img
-                            v-if="
-                              getEmployeeByPosition('Group Leader', 0, 'Red')
-                            "
-                            :src="
-                              getEmployeeByPosition('Group Leader', 0, 'Red')
-                                .photourl
-                            "
-                            alt=""
-                            class="img-rnd"
-                          />
+                          <div>
+                            <img
+                              v-if="
+                                getEmployeeByPosition('Group Leader', 0, 'Red')
+                              "
+                              :src="
+                                getEmployeeByPosition('Group Leader', 0, 'Red')
+                                  .photourl
+                              "
+                              alt=""
+                              class="img-rnd"
+                            />
+                            <div class="employee-name">
+                              {{
+                                getEmployeeByPosition('Group Leader', 0, 'Red')
+                                  .nama
+                              }}
+                            </div>
+                          </div>
                         </td>
                         <td>
-                          <img
-                            v-if="
-                              getEmployeeByPosition('Team Leader', 1, 'Red')
-                            "
-                            :src="
-                              getEmployeeByPosition('Team Leader', 1, 'Red')
-                                .photourl
-                            "
-                            alt=""
-                            class="img-rnd"
-                          />
+                          <div>
+                            <img
+                              v-if="
+                                getEmployeeByPosition('Team Leader', 1, 'Red')
+                              "
+                              :src="
+                                getEmployeeByPosition('Team Leader', 1, 'Red')
+                                  .photourl
+                              "
+                              alt=""
+                              class="img-rnd"
+                            />
+                            <div class="employee-name">
+                              {{
+                                getEmployeeByPosition('Team Leader', 1, 'Red')
+                                  .nama
+                              }}
+                            </div>
+                          </div>
                         </td>
                         <td>
-                          <img
-                            v-if="
-                              getEmployeeByPosition(
-                                'Team Member',
-                                2,
-                                'White',
-                                'Red',
-                              )
-                            "
-                            :src="
-                              getEmployeeByPosition('Team Member', 2, 'Red')
-                                .photourl
-                            "
-                            alt=""
-                            class="img-rnd"
-                          />
+                          <div>
+                            <img
+                              v-if="
+                                getEmployeeByPosition('Team Member', 2, 'Red')
+                              "
+                              :src="
+                                getEmployeeByPosition('Team Member', 2, 'Red')
+                                  .photourl
+                              "
+                              alt=""
+                              class="img-rnd"
+                            />
+                            <div class="employee-name">
+                              {{
+                                getEmployeeByPosition('Team Member', 2, 'Red')
+                                  .nama
+                              }}
+                            </div>
+                          </div>
                         </td>
                         <td>
-                          <img
-                            v-if="
-                              getEmployeeByPosition('Team Member', 3, 'Red')
-                            "
-                            :src="
-                              getEmployeeByPosition('Team Member', 3, 'Red')
-                                .photourl
-                            "
-                            alt=""
-                            class="img-rnd"
-                          />
+                          <div>
+                            <img
+                              v-if="
+                                getEmployeeByPosition('Team Member', 3, 'Red')
+                              "
+                              :src="
+                                getEmployeeByPosition('Team Member', 3, 'Red')
+                                  .photourl
+                              "
+                              alt=""
+                              class="img-rnd"
+                            />
+                            <div class="employee-name">
+                              {{
+                                getEmployeeByPosition('Team Member', 3, 'Red')
+                                  .nama
+                              }}
+                            </div>
+                          </div>
                         </td>
                         <td>
-                          <img
-                            v-if="
-                              getEmployeeByPosition('Team Member', 4, 'Red')
-                            "
-                            :src="
-                              getEmployeeByPosition('Team Member', 4, 'Red')
-                                .photourl
-                            "
-                            alt=""
-                            class="img-rnd"
-                          />
+                          <div>
+                            <img
+                              v-if="
+                                getEmployeeByPosition('Team Member', 4, 'Red')
+                              "
+                              :src="
+                                getEmployeeByPosition('Team Member', 4, 'Red')
+                                  .photourl
+                              "
+                              alt=""
+                              class="img-rnd"
+                            />
+                            <div class="employee-name">
+                              {{
+                                getEmployeeByPosition(
+                                  'Team Member',
+                                  4,
+                                  'Red',
+                                ).nama.split(' ')[0]
+                              }}
+                            </div>
+                          </div>
                         </td>
                       </tr>
                     </tbody>
@@ -120,69 +158,131 @@
                     <tbody>
                       <tr>
                         <td>
-                          <img
-                            v-if="
-                              getEmployeeByPosition('Group Leader', 0, 'White')
-                            "
-                            :src="
-                              getEmployeeByPosition('Group Leader', 0, 'White')
-                                .photourl
-                            "
-                            alt=""
-                            class="img-rnd"
-                          />
+                          <div>
+                            <img
+                              v-if="
+                                getEmployeeByPosition(
+                                  'Group Leader',
+                                  0,
+                                  'White',
+                                )
+                              "
+                              :src="
+                                getEmployeeByPosition(
+                                  'Group Leader',
+                                  0,
+                                  'White',
+                                ).photourl
+                              "
+                              alt=""
+                              class="img-rnd"
+                            />
+                            <div class="employee-name">
+                              {{
+                                getEmployeeByPosition(
+                                  'Group Leader',
+                                  0,
+                                  'White',
+                                ).nama
+                              }}
+                            </div>
+                          </div>
                         </td>
                         <td>
-                          <img
-                            v-if="
-                              getEmployeeByPosition('Team Leader', 1, 'White')
-                            "
-                            :src="
-                              getEmployeeByPosition('Team Leader', 1, 'White')
-                                .photourl
-                            "
-                            alt=""
-                            class="img-rnd"
-                          />
+                          <div>
+                            <img
+                              v-if="
+                                getEmployeeByPosition('Team Leader', 1, 'White')
+                              "
+                              :src="
+                                getEmployeeByPosition('Team Leader', 1, 'White')
+                                  .photourl
+                              "
+                              alt=""
+                              class="img-rnd"
+                            />
+                            <div class="employee-name">
+                              {{
+                                getEmployeeByPosition(
+                                  'Team Leader',
+                                  1,
+                                  'White',
+                                ).nama.split(' ')[0]
+                              }}
+                            </div>
+                          </div>
                         </td>
                         <td>
-                          <img
-                            v-if="
-                              getEmployeeByPosition('Team Member', 2, 'White')
-                            "
-                            :src="
-                              getEmployeeByPosition('Team Member', 2, 'White')
-                                .photourl
-                            "
-                            alt=""
-                            class="img-rnd"
-                          />
+                          <div>
+                            <img
+                              v-if="
+                                getEmployeeByPosition('Team Member', 2, 'White')
+                              "
+                              :src="
+                                getEmployeeByPosition('Team Member', 2, 'White')
+                                  .photourl
+                              "
+                              alt=""
+                              class="img-rnd"
+                            />
+                            <div class="employee-name">
+                              {{
+                                getEmployeeByPosition(
+                                  'Team Member',
+                                  2,
+                                  'White',
+                                ).nama.split(' ')[1]
+                              }}
+                            </div>
+                          </div>
                         </td>
                         <td>
-                          <img
-                            v-if="
-                              getEmployeeByPosition('Team Member', 3, 'White')
-                            "
-                            :src="
-                              getEmployeeByPosition('Team Member', 3, 'White')
-                                .photourl
-                            "
-                            alt=""
-                            class="img-rnd"
-                          />
+                          <div>
+                            <img
+                              v-if="
+                                getEmployeeByPosition('Team Member', 3, 'White')
+                              "
+                              :src="
+                                getEmployeeByPosition('Team Member', 3, 'White')
+                                  .photourl
+                              "
+                              alt=""
+                              class="img-rnd"
+                            />
+                            <div class="employee-name">
+                              {{
+                                getEmployeeByPosition(
+                                  'Team Member',
+                                  3,
+                                  'White',
+                                ).nama.split(' ')[1]
+                              }}
+                            </div>
+                          </div>
                         </td>
                         <td>
-                          <img
-                            v-if="
-                              getEmployeeByPosition('Team Member', 4, 'White')
-                            "
-                            :src="
-                              getEmployeeByPosition('Team Member', 4, 'White')
-                                .photourl
-                            "
-                            alt=""
-                            class="img-rnd"
-                          />
+                          <div>
+                            <img
+                              v-if="
+                                getEmployeeByPosition('Team Member', 4, 'White')
+                              "
+                              :src="
+                                getEmployeeByPosition('Team Member', 4, 'White')
+                                  .photourl
+                              "
+                              alt=""
+                              class="img-rnd"
+                            />
+                            <div class="employee-name">
+                              {{
+                                getEmployeeByPosition(
+                                  'Team Member',
+                                  4,
+                                  'White',
+                                ).nama.split(' ')[0]
+                              }}
+                            </div>
+                          </div>
                         </td>
                       </tr>
                     </tbody>
@@ -340,5 +440,11 @@ export default {
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+}
+.employee-name {
+  margin-top: 8px; /* Jarak antara foto dan nama */
+  font-size: 10px; /* Ukuran font nama */
+  font-weight: bold; /* Membuat nama lebih tebal */
+  color: #333;
 }
 </style>
