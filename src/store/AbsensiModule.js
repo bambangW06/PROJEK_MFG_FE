@@ -17,6 +17,7 @@ const state = {
     WnD: null,
     SnO: null,
   },
+  History_Absence: [],
 }
 
 const getters = {
@@ -40,6 +41,9 @@ const getters = {
   },
   getHistoryAbsence(state) {
     return state.historyAbsence
+  },
+  Get_History_Absence(state) {
+    return state.History_Absence
   },
 }
 
@@ -78,6 +82,9 @@ const mutations = {
 
     setEmployeeStatus(state.redShiftEmployees)
     setEmployeeStatus(state.whiteShiftEmployees)
+  },
+  Set_History_Absence(state, payload) {
+    state.History_Absence = payload
   },
 }
 
@@ -190,7 +197,7 @@ const actions = {
 
       if (data.message === 'Success to Get Absence') {
         const historyAbsence = data.data
-        // console.log('historyAbsence', historyAbsence)
+        console.log('historyAbsence', historyAbsence)
         commit('setHistoryAbsence', historyAbsence)
         // console.log('historyAbsence', historyAbsence)
 
@@ -243,6 +250,16 @@ const actions = {
     } catch (error) {
       console.error('Error fetching percentageHadir:', error)
       commit('setPercentageHadir', '') // Atau tangani error sesuai kebutuhan Anda
+    }
+  },
+
+  async Action_Get_History_Absence({ commit }) {
+    try {
+      const response = await axios.get(`${API_URL}/histories/get`)
+      commit('Set_History_Absence', response.data.data)
+      console.log('response', response.data.data)
+    } catch (error) {
+      console.log(error)
     }
   },
 }

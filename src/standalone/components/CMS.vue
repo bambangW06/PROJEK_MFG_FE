@@ -345,7 +345,7 @@ export default {
                   groupedData[tanggal] = {
                     line_nm: lineName,
                     machine_nm: machineName,
-                    start_date: moment(tanggal).format('DD-MM-YYYY'), // Format tanggal
+                    start_date: tanggal, // Format tanggal
                     Konsentrasi: '-',
                     PH: '-',
                     status: '',
@@ -482,10 +482,6 @@ export default {
                 if (status === '<span class="text-red">NG</span>') {
                   overallGraphStatus = '<span class="text-red">NG</span>'
                 }
-                // console.log(
-                //   `Status for ${paramName} at ${dataPoint.x}: ${status}`,
-                // )
-                // Di sini Anda dapat menyimpan status dalam variabel atau array untuk digunakan dalam aplikasi Anda
               })
 
               // Seri data untuk nilai parameter
