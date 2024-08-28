@@ -42,8 +42,13 @@
                             />
                             <div class="employee-name">
                               {{
-                                getEmployeeByPosition('Group Leader', 0, 'Red')
-                                  ?.nama || ''
+                                getEmployeeByPosition(
+                                  'Group Leader',
+                                  0,
+                                  'Red',
+                                )?.nama.split(' ')[0] ||
+                                '' ||
+                                ''
                               }}
                             </div>
                           </div>
@@ -63,8 +68,13 @@
                             />
                             <div class="employee-name">
                               {{
-                                getEmployeeByPosition('Team Leader', 1, 'Red')
-                                  ?.nama || ''
+                                getEmployeeByPosition(
+                                  'Team Leader',
+                                  1,
+                                  'Red',
+                                )?.nama.split(' ')[0] ||
+                                '' ||
+                                ''
                               }}
                             </div>
                           </div>
@@ -84,8 +94,13 @@
                             />
                             <div class="employee-name">
                               {{
-                                getEmployeeByPosition('Team Member', 2, 'Red')
-                                  ?.nama || ''
+                                getEmployeeByPosition(
+                                  'Team Member',
+                                  2,
+                                  'Red',
+                                )?.nama.split(' ')[0] ||
+                                '' ||
+                                ''
                               }}
                             </div>
                           </div>
@@ -105,8 +120,13 @@
                             />
                             <div class="employee-name">
                               {{
-                                getEmployeeByPosition('Team Member', 3, 'Red')
-                                  ?.nama || ''
+                                getEmployeeByPosition(
+                                  'Team Member',
+                                  3,
+                                  'Red',
+                                )?.nama.split(' ')[0] ||
+                                '' ||
+                                ''
                               }}
                             </div>
                           </div>
@@ -183,7 +203,7 @@
                                   'Group Leader',
                                   0,
                                   'White',
-                                )?.nama
+                                )?.nama.split(' ')[0] || ''
                               }}
                             </div>
                           </div>
