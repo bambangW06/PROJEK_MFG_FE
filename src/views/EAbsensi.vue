@@ -5,7 +5,7 @@
         <h4 class="text-center m-0">Absensi Member Tool & Coolant</h4>
       </div>
     </div>
-    <div class="row">
+    <div ref="detailsCard" class="row">
       <!-- Grafik Red Shift Hadir -->
       <div class="col-md-6 mb-4" v-if="redShiftHadirSeries.length > 0">
         <div class="card">
@@ -238,9 +238,23 @@ export default {
 
       this.clickedEmployee = `${employeeName} (${noreg})`
     },
+    handleClickOutside(event) {
+      // Check if the click was outside the card
+      if (
+        this.clickedDetails.length > 0 && // Only check if details are shown
+        this.$refs.detailsCard && // Make sure the ref exists
+        !this.$refs.detailsCard.contains(event.target)
+      ) {
+        this.clickedDetails = [] // Hide the details
+      }
+    },
   },
   mounted() {
     this.$store.dispatch('Action_Get_History_Absence')
+    document.addEventListener('click', this.handleClickOutside)
+  },
+  beforeDestroy() {
+    document.removeEventListener('click', this.handleClickOutside)
   },
 }
 </script>

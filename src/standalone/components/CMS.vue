@@ -203,7 +203,6 @@ import Multiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.css' // Impor CSS file
 import UnderDevelopment from '@/standalone/components/underDevelopment.vue'
 import moment from 'moment'
-import { Annotation } from 'highcharts'
 const API_URL = process.env.VUE_APP_API_URL
 export default {
   name: 'CMS',
