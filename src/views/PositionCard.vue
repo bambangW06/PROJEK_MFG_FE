@@ -47,12 +47,15 @@ export default {
     employees: Array,
   },
   computed: {
-    // Periksa apakah karyawan yang dipilih adalah default atau tidak
+    // Check if the selected employee's position matches the actual or default position
     isDefaultEmployee() {
-      return (
-        this.selectedEmployee &&
-        this.selectedEmployee.default_position === this.position.key
-      )
+      if (!this.selectedEmployee) return false
+
+      const preferredPosition = this.selectedEmployee.actual_position
+        ? this.selectedEmployee.actual_position
+        : this.selectedEmployee.default_position
+
+      return preferredPosition === this.position.key
     },
     // Tentukan apakah badge harus ditampilkan atau tidak berdasarkan actual position
     isBadgeVisible() {
@@ -68,6 +71,12 @@ export default {
     isVacantPosition() {
       return !this.selectedEmployee
     },
+  },
+  mounted() {
+    console.log('PositionCard mounted with:', {
+      position: this.position,
+      selectedEmployee: this.selectedEmployee,
+    })
   },
   methods: {
     handleChange(event) {
