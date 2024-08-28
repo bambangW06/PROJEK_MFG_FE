@@ -178,6 +178,7 @@ export default {
       'getPositionRedShift',
       'getPositionWhiteShift',
       'getSelectedEmployees',
+      'getActualPosition',
     ]),
   },
   async created() {
@@ -185,36 +186,11 @@ export default {
     await this.$store.dispatch('ambilShift')
     await this.$store.dispatch('fetchEmployeeForSelect')
     await this.$store.dispatch('fetchActualPosition')
-
+    console.log('Actual Positions:', this.getActualPosition) // Tambahkan log ini
     this.selectEmployeesByShift()
-    this.fillUnavailablePositions()
     this.defaultPosition()
   },
   methods: {
-    fillUnavailablePositions() {
-      const actualPositions = this.$store.getters.getActualPosition
-      console.log('Actual Positions:', actualPositions) // Menampilkan data actual positions ke konsol
-
-      for (const positionKey in actualPositions) {
-        if (
-          !this.selectedEmployees[positionKey] &&
-          actualPositions[positionKey]
-        ) {
-          const actualEmployee = { ...actualPositions[positionKey] }
-          this.selectedEmployees[positionKey] = actualEmployee
-          console.log('Filled position:', positionKey, actualEmployee)
-        } else if (
-          !this.selectedEmployees[positionKey] &&
-          !this.positions.find((position) => position.key === positionKey)
-            .default
-        ) {
-          console.log('Unfilled position with no default:', positionKey)
-        } else {
-          console.log('Unfilled position:', positionKey)
-        }
-      }
-    },
-
     displayTodayDate() {
       this.todaydate = moment().format('DD-MM-YYYY')
     },
@@ -231,9 +207,8 @@ export default {
       )
     },
     updateSelectedEmployee(positionKey, employee) {
-      // Jika karyawan dipilih dan merupakan objek
       if (employee && typeof employee === 'object') {
-        // Periksa apakah karyawan sebelumnya memiliki posisi default yang sama dengan yang dipilih
+        // Periksa jika posisi sebelumnya dari karyawan yang dipilih adalah default
         const previousDefaultPosition = Object.keys(
           this.selectedEmployees,
         ).find(
@@ -241,25 +216,22 @@ export default {
             this.selectedEmployees[key] === employee && key !== positionKey,
         )
 
-        // Atur selectedEmployee sesuai posisi yang dipilih
+        // Set karyawan yang dipilih ke posisi
         this.selectedEmployees[positionKey] = employee
-        // Panggil fungsi updatePosition untuk memperbarui posisi
         this.updatePosition(positionKey)
 
         if (previousDefaultPosition) {
-          // Jika ya, kosongkan posisi default sebelumnya
+          // Jika posisi sebelumnya adalah posisi default, kosongkan posisi tersebut
           this.selectedEmployees[previousDefaultPosition] = null
-          // Panggil fungsi updatePosition untuk memperbarui posisi default yang dikosongkan
           this.updatePosition(previousDefaultPosition)
         }
       } else {
-        console.error('Employee bukan objek:', employee)
-        // Jika karyawan tidak mengisi posisinya
-        // dan posisi default sebelumnya adalah positionKey
-        if (this.selectedEmployees[positionKey] === this.defaultPosition) {
-          // Atur default position menjadi null
+        // Jika karyawan tidak dipilih, kosongkan posisi
+        if (
+          this.selectedEmployees[positionKey] &&
+          this.selectedEmployees[positionKey] === this.defaultPosition
+        ) {
           this.selectedEmployees[positionKey] = null
-          // Panggil fungsi updatePosition dengan default position kosong
           this.updatePosition(positionKey)
         }
       }
@@ -286,15 +258,42 @@ export default {
       alert(`Pos ${positionKey} berhasil dikirim`)
     },
 
-    defaultPosition() {
+    async defaultPosition() {
       const currentShift = this.getCurrentShift
       const employeesWithCurrentShift =
         currentShift === 'Red'
           ? this.getPositionRedShift
           : this.getPositionWhiteShift
+
+      // Dapatkan posisi aktual dari getter
+      const actualPositions = this.getActualPosition || []
+      console.log('Actual Positions:', actualPositions)
+
+      // Convert array to object for easier lookup
+      const actualPositionMap = actualPositions.reduce((map, position) => {
+        map[position.employee_id] = position.actual_position
+        return map
+      }, {})
+
+      // Atur posisi default atau aktual
       for (const employee of employeesWithCurrentShift) {
         if (employee.status === 'Hadir') {
-          this.selectedEmployees[employee.default_position] = employee
+          const actualPosition = actualPositionMap[employee.employee_id]
+          if (actualPosition) {
+            console.log(
+              `Employee ${employee.nama} has actual position ${actualPosition}`,
+            )
+            // Jika actual_position ada, set ke posisi aktual
+            this.selectedEmployees[actualPosition] = employee
+          } else {
+            console.log(
+              `Employee ${employee.nama} has default position ${employee.default_position}`,
+            )
+            // Jika tidak, gunakan posisi default
+            if (employee.default_position) {
+              this.selectedEmployees[employee.default_position] = employee
+            }
+          }
         }
       }
     },
