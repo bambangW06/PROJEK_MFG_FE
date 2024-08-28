@@ -123,7 +123,7 @@ export default {
       )
       return [
         {
-          name: 'Libur',
+          name: 'Absen',
           data: Object.values(liburCounts),
         },
       ]
@@ -145,7 +145,7 @@ export default {
       )
       return [
         {
-          name: 'Libur',
+          name: 'Absen',
           data: Object.values(liburCounts),
         },
       ]
