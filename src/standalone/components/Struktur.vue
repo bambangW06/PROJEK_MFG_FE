@@ -43,7 +43,7 @@
                             <div class="employee-name">
                               {{
                                 getEmployeeByPosition('Group Leader', 0, 'Red')
-                                  .nama
+                                  ?.nama || ''
                               }}
                             </div>
                           </div>
@@ -64,7 +64,7 @@
                             <div class="employee-name">
                               {{
                                 getEmployeeByPosition('Team Leader', 1, 'Red')
-                                  .nama
+                                  ?.nama || ''
                               }}
                             </div>
                           </div>
@@ -85,7 +85,7 @@
                             <div class="employee-name">
                               {{
                                 getEmployeeByPosition('Team Member', 2, 'Red')
-                                  .nama
+                                  ?.nama || ''
                               }}
                             </div>
                           </div>
@@ -106,7 +106,7 @@
                             <div class="employee-name">
                               {{
                                 getEmployeeByPosition('Team Member', 3, 'Red')
-                                  .nama
+                                  ?.nama || ''
                               }}
                             </div>
                           </div>
@@ -130,7 +130,7 @@
                                   'Team Member',
                                   4,
                                   'Red',
-                                ).nama.split(' ')[0]
+                                )?.nama.split(' ')[0] || ''
                               }}
                             </div>
                           </div>
@@ -183,7 +183,7 @@
                                   'Group Leader',
                                   0,
                                   'White',
-                                ).nama
+                                )?.nama
                               }}
                             </div>
                           </div>
@@ -207,7 +207,7 @@
                                   'Team Leader',
                                   1,
                                   'White',
-                                ).nama.split(' ')[0]
+                                )?.nama.split(' ')[0] || ''
                               }}
                             </div>
                           </div>
@@ -231,7 +231,7 @@
                                   'Team Member',
                                   2,
                                   'White',
-                                ).nama.split(' ')[1]
+                                )?.nama.split(' ')[1] || ''
                               }}
                             </div>
                           </div>
@@ -255,7 +255,7 @@
                                   'Team Member',
                                   3,
                                   'White',
-                                ).nama.split(' ')[1]
+                                )?.nama.split(' ')[1] || ''
                               }}
                             </div>
                           </div>
@@ -279,7 +279,7 @@
                                   'Team Member',
                                   4,
                                   'White',
-                                ).nama.split(' ')[0]
+                                )?.nama.split(' ')[0] || ''
                               }}
                             </div>
                           </div>
