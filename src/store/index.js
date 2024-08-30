@@ -9,6 +9,7 @@ import DeliveryModule from './Delivery.Module'
 import MasterLineModule from './MasterLine.module'
 import KanbanToToolReg from './KanbanToToolReg.module'
 import METAModule from './META.module'
+import KanbanFromGel from './KanbanFromGel.module'
 
 export default createStore({
   state: {
@@ -38,5 +39,6 @@ export default createStore({
     MasterLineModule,
     KanbanToToolReg,
     METAModule,
+    KanbanFromGel,
   },
 })

@@ -3,7 +3,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Request Tool To Tool Regrinding</h5>
+          <h5 class="modal-title">Request To Tool Regrinding</h5>
           <button
             type="button"
             class="btn-close"
@@ -63,7 +63,7 @@
             class="btn btn-primary"
             data-bs-dismiss="modal"
           >
-            Save changes
+            Send Request
           </button>
         </div>
       </div>
@@ -74,7 +74,7 @@
   <div class="container-fluid">
     <div class="card p-2 mb-2">
       <div class="d-flex justify-content-between align-items-center">
-        <h4 class="text-center m-0">Request Tool To Tool Regrinding</h4>
+        <h4 class="text-center m-0">Request To Tool Regrinding</h4>
         <button
           type="button"
           class="btn btn-primary position-relative"

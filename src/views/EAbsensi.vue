@@ -67,7 +67,7 @@
     </div>
 
     <!-- Tabel Detail Kehadiran -->
-    <div v-if="clickedDetails.length > 0" class="card mt-4">
+    <div v-if="clickedDetails.length > 0" ref="detailTable" class="card mt-4">
       <div class="card-body">
         <h5>Detail Kehadiran - {{ clickedEmployee }}</h5>
         <table class="table table-bordered">
@@ -237,6 +237,12 @@ export default {
         .sort((a, b) => new Date(a.date_absence) - new Date(b.date_absence))
 
       this.clickedEmployee = `${employeeName} (${noreg})`
+      // Fokus layar ke tabel detail setelah mengklik bar chart
+      this.$nextTick(() => {
+        if (this.$refs.detailTable) {
+          this.$refs.detailTable.scrollIntoView({ behavior: 'smooth' })
+        }
+      })
     },
     handleClickOutside(event) {
       // Check if the click was outside the card

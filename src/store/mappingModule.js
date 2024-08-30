@@ -117,7 +117,7 @@ const actions = {
     try {
       const response = await axios.get(`${API_URL}/position/position`)
       const data = response.data
-      console.log('data fetchactualposition', data)
+
       if (data.message === 'Success to Get Data') {
         const employees = data.data
         const employeesWithPhotoUrl = employees.map((employee) => {

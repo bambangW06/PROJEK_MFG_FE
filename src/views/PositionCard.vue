@@ -72,12 +72,7 @@ export default {
       return !this.selectedEmployee
     },
   },
-  mounted() {
-    console.log('PositionCard mounted with:', {
-      position: this.position,
-      selectedEmployee: this.selectedEmployee,
-    })
-  },
+
   methods: {
     handleChange(event) {
       const selectedId = event.target.value

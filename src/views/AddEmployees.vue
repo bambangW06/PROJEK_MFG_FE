@@ -42,6 +42,7 @@
             <option disable selected></option>
             <option>Red</option>
             <option>White</option>
+            <option>Non Shift</option>
           </select>
 
           <label>Jabatan</label>
@@ -50,6 +51,7 @@
             <option>Group Leader</option>
             <option>Team Leader</option>
             <option>Team Member</option>
+            <option>Supervisor</option>
           </select>
         </div>
         <!-- Modal Body -->

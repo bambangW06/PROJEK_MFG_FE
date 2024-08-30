@@ -66,6 +66,7 @@ import Popover from './Popover.vue'
 import { mapGetters } from 'vuex'
 import moment from 'moment-timezone'
 import { reactive, toRefs } from 'vue'
+import { ACTION_GET_SUPERVISOR, GET_SUPERVISOR } from '@/store/EmployeeModule'
 
 export default {
   name: 'MappingJob',
@@ -90,8 +91,17 @@ export default {
         QC: null,
         SettingDelivery: null,
         OilSupply: null,
+        Supervisor: null,
       },
       positions: [
+        {
+          key: 'Supervisor',
+          top: '20%',
+          left: '25%',
+          popoverTop: '20%',
+          popoverLeft: '32%',
+          label: 'SPV',
+        },
         {
           key: 'GL',
           top: '7%',
@@ -179,14 +189,15 @@ export default {
       'getPositionWhiteShift',
       'getSelectedEmployees',
       'getActualPosition',
+      GET_SUPERVISOR,
     ]),
   },
   async created() {
     await this.displayTodayDate()
     await this.$store.dispatch('ambilShift')
     await this.$store.dispatch('fetchEmployeeForSelect')
+    await this.$store.dispatch(ACTION_GET_SUPERVISOR)
     await this.$store.dispatch('fetchActualPosition')
-    console.log('Actual Positions:', this.getActualPosition) // Tambahkan log ini
     this.selectEmployeesByShift()
     this.defaultPosition()
   },
@@ -259,6 +270,7 @@ export default {
     },
 
     async defaultPosition() {
+      const API_URL = process.env.VUE_APP_API_URL
       const currentShift = this.getCurrentShift
       const employeesWithCurrentShift =
         currentShift === 'Red'
@@ -267,7 +279,6 @@ export default {
 
       // Dapatkan posisi aktual dari getter
       const actualPositions = this.getActualPosition || []
-      console.log('Actual Positions:', actualPositions)
 
       // Convert array to object for easier lookup
       const actualPositionMap = actualPositions.reduce((map, position) => {
@@ -280,15 +291,9 @@ export default {
         if (employee.status === 'Hadir') {
           const actualPosition = actualPositionMap[employee.employee_id]
           if (actualPosition) {
-            console.log(
-              `Employee ${employee.nama} has actual position ${actualPosition}`,
-            )
             // Jika actual_position ada, set ke posisi aktual
             this.selectedEmployees[actualPosition] = employee
           } else {
-            console.log(
-              `Employee ${employee.nama} has default position ${employee.default_position}`,
-            )
             // Jika tidak, gunakan posisi default
             if (employee.default_position) {
               this.selectedEmployees[employee.default_position] = employee
@@ -296,7 +301,41 @@ export default {
           }
         }
       }
+
+      // Ambil data supervisor dari store
+      const supervisorData = this.GET_SUPERVISOR[0] // Pastikan GET_SUPERVISOR mengembalikan array dengan data supervisor
+
+      if (supervisorData) {
+        // Pastikan photourl menggunakan API_URL
+        if (
+          supervisorData.photourl &&
+          !supervisorData.photourl.startsWith(API_URL)
+        ) {
+          supervisorData.photourl = `${API_URL}${supervisorData.photourl}`
+        }
+
+        // Tambahkan supervisor ke employees jika belum ada
+        const existingEmployee = this.employees.find(
+          (emp) => emp.employee_id === supervisorData.employee_id,
+        )
+        if (!existingEmployee) {
+          this.employees.push({
+            ...supervisorData,
+            jabatan: 'Supervisor', // Atur jabatan supervisor
+          })
+        }
+
+        // Atur supervisor ke posisi Supervisor
+        this.selectedEmployees['Supervisor'] = {
+          ...supervisorData,
+          jabatan: 'Supervisor', // Atur jabatan supervisor
+        }
+      }
+
+      // Log final state of selectedEmployees
+      console.log('Final selectedEmployees:', this.selectedEmployees)
     },
+
     showPopover(positionKey) {
       this.popovers[positionKey] = true
     },

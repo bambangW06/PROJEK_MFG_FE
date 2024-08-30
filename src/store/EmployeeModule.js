@@ -1,9 +1,14 @@
 import axios from 'axios'
 const API_URL = process.env.VUE_APP_API_URL
+export const ACTION_GET_SUPERVISOR = 'ACTION_GET_SUPERVISOR'
+export const GET_SUPERVISOR = 'GET_SUPERVISOR'
+export const ACTION_GET_KARYAWAN = 'ACTION_GET_KARYAWAN'
+export const SET_SUPERVISOR = 'SET_SUPERVISOR'
 
 const state = {
   response: null,
   karyawan: [],
+  SUPERVISOR: [],
 
   // token: null,
   // fullname: null,
@@ -16,9 +21,9 @@ const getters = {
   getKaryawanList(state) {
     return state.karyawan
   },
-  // getFullname(state) {
-  //   return state.fullname;
-  // },
+  GET_SUPERVISOR(state) {
+    return state.SUPERVISOR
+  },
 }
 
 const mutations = {
@@ -33,7 +38,6 @@ const mutations = {
         ? karyawan.photourl.replace(/\\/g, '/')
         : null
       const previewUrl = relativePath ? API_URL + relativePath : null
-      console.log('previewUrl', previewUrl)
       return {
         ...karyawan,
         previewUrl: previewUrl,
@@ -41,9 +45,32 @@ const mutations = {
     })
     state.karyawan = karyawanListWithPreview
   },
+  SET_SUPERVISOR(state, payload) {
+    const supervisorPreview = payload.map((supervisor) => {
+      const relativePath = supervisor.photourl
+        ? supervisor.photourl.replace(/\\/g, '/')
+        : null
+      const previewUrl = relativePath ? API_URL + relativePath : null
+      console.log('Photourl:', supervisor.photourl) // Debugging
+      console.log('Preview URL:', previewUrl) // Debugging
+      return {
+        ...supervisor,
+        previewUrl: previewUrl,
+      }
+    })
+    state.SUPERVISOR = supervisorPreview
+  },
 }
 
 const actions = {
+  async ACTION_GET_SUPERVISOR({ commit }) {
+    try {
+      const response = await axios.get(API_URL + '/select/supervisor')
+      commit(SET_SUPERVISOR, response.data.data)
+    } catch (error) {
+      console.log(error)
+    }
+  },
   async ActionTambahKaryawan({ commit, dispatch }, payload) {
     try {
       const formData = new FormData()
