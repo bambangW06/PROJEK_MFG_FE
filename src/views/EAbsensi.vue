@@ -5,62 +5,66 @@
         <h4 class="text-center m-0">Absensi Member Tool & Coolant</h4>
       </div>
     </div>
-    <div ref="detailsCard" class="row">
-      <!-- Grafik Red Shift Hadir -->
-      <div class="col-md-6 mb-4" v-if="redShiftHadirSeries.length > 0">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">Red Shift Hadir</h5>
-            <ApexChart
-              type="bar"
-              :options="redShiftHadirOptions"
-              :series="redShiftHadirSeries"
-              @dataPointSelection="handleBarClick('redShiftHadir', $event)"
-            />
-          </div>
-        </div>
-      </div>
-      <!-- Grafik White Shift Hadir -->
-      <div class="col-md-6 mb-4" v-if="whiteShiftHadirSeries.length > 0">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">White Shift Hadir</h5>
-            <ApexChart
-              type="bar"
-              :options="whiteShiftHadirOptions"
-              :series="whiteShiftHadirSeries"
-              @dataPointSelection="handleBarClick('whiteShiftHadir', $event)"
-            />
-          </div>
-        </div>
-      </div>
+    <div class="card mt-2">
+      <h3 class="text-center m-0">{{ currentMonth }}</h3>
 
-      <!-- Grafik Red Shift Libur -->
-      <div class="col-md-6 mb-4" v-if="redShiftLiburSeries.length > 0">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">Red Shift Absen</h5>
-            <ApexChart
-              type="bar"
-              :options="redShiftLiburOptions"
-              :series="redShiftLiburSeries"
-              @dataPointSelection="handleBarClick('redShiftLibur', $event)"
-            />
+      <div ref="detailsCard" class="row mt-2">
+        <!-- Grafik Red Shift Hadir -->
+        <div class="col-md-6 mb-4" v-if="redShiftHadirSeries.length > 0">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Red Shift Hadir</h5>
+              <ApexChart
+                type="bar"
+                :options="redShiftHadirOptions"
+                :series="redShiftHadirSeries"
+                @dataPointSelection="handleBarClick('redShiftHadir', $event)"
+              />
+            </div>
           </div>
         </div>
-      </div>
+        <!-- Grafik White Shift Hadir -->
+        <div class="col-md-6 mb-4" v-if="whiteShiftHadirSeries.length > 0">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">White Shift Hadir</h5>
+              <ApexChart
+                type="bar"
+                :options="whiteShiftHadirOptions"
+                :series="whiteShiftHadirSeries"
+                @dataPointSelection="handleBarClick('whiteShiftHadir', $event)"
+              />
+            </div>
+          </div>
+        </div>
 
-      <!-- Grafik White Shift Libur -->
-      <div class="col-md-6 mb-4" v-if="whiteShiftLiburSeries.length > 0">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">White Shift Absen</h5>
-            <ApexChart
-              type="bar"
-              :options="whiteShiftLiburOptions"
-              :series="whiteShiftLiburSeries"
-              @dataPointSelection="handleBarClick('whiteShiftLibur', $event)"
-            />
+        <!-- Grafik Red Shift Libur -->
+        <div class="col-md-6 mb-4" v-if="redShiftLiburSeries.length > 0">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Red Shift Absen</h5>
+              <ApexChart
+                type="bar"
+                :options="redShiftLiburOptions"
+                :series="redShiftLiburSeries"
+                @dataPointSelection="handleBarClick('redShiftLibur', $event)"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Grafik White Shift Libur -->
+        <div class="col-md-6 mb-4" v-if="whiteShiftLiburSeries.length > 0">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">White Shift Absen</h5>
+              <ApexChart
+                type="bar"
+                :options="whiteShiftLiburOptions"
+                :series="whiteShiftLiburSeries"
+                @dataPointSelection="handleBarClick('whiteShiftLibur', $event)"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -102,6 +106,7 @@ export default {
     return {
       clickedEmployee: '',
       clickedDetails: [], // Menyimpan detail kehadiran yang diklik
+      currentMonth: '',
     }
   },
   computed: {
@@ -164,6 +169,26 @@ export default {
     },
   },
   methods: {
+    functionCurrentMonth() {
+      const date = new Date()
+      const month = date.getMonth() + 1
+      const year = date.getFullYear()
+      const months = [
+        'Januari',
+        'Februari',
+        'Maret',
+        'April',
+        'Mei',
+        'Juni',
+        'Juli',
+        'Agustus',
+        'September',
+        'Oktober',
+        'November',
+        'Desember',
+      ]
+      this.currentMonth = months[month - 1] + ' ' + year
+    },
     countAbsensi(data) {
       const counts = {}
       data?.forEach((item) => {
@@ -194,6 +219,15 @@ export default {
           title: {
             text: 'Jumlah',
           },
+          axisBorder: {
+            show: true,
+            color: '#000',
+          },
+          axisTicks: {
+            show: true, // Menampilkan garis tick
+            color: '#000', // Warna garis tick
+            height: 6, // Panjang garis tick
+          },
         },
         yaxis: {
           title: {
@@ -208,6 +242,11 @@ export default {
                 ? value.slice(0, maxLength) + '...'
                 : value
             },
+          },
+          axisTicks: {
+            show: true, // Menampilkan garis tick
+            color: '#000', // Warna garis tick
+            height: 6, // Panjang garis tick
           },
         },
 
@@ -256,6 +295,7 @@ export default {
     },
   },
   mounted() {
+    this.functionCurrentMonth()
     this.$store.dispatch('Action_Get_History_Absence')
     document.addEventListener('click', this.handleClickOutside)
   },

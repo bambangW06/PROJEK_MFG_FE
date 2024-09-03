@@ -182,7 +182,9 @@ const actions = {
           dateAbsence: localTime,
           currentShift: state.currentShift,
         })
-        // console.log(response.data)
+
+        console.log('response', response.status)
+        return response.status
       }
     } catch (error) {
       console.error('Error sending data to backend:', error)

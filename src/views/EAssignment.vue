@@ -337,15 +337,17 @@ export default {
           : this.whiteShiftEmployees[cardIndex]
       const selectedStatus = employee.status
       // console.log('selectedStatus:', selectedStatus);
-      await this.$store.dispatch('updateEmployeeStatus', {
+      let response = await this.$store.dispatch('updateEmployeeStatus', {
         shiftIndex,
         cardIndex,
         status: selectedStatus,
       })
-
-      this.$store.dispatch('fetchHistoryAbsence')
-      this.updatePercentageHadir()
-      alert('Status diperbarui')
+      if (response === 201) {
+        this.$store.dispatch('fetchHistoryAbsence')
+        this.updatePercentageHadir()
+      } else {
+        alert('gagal update status')
+      }
     },
 
     async updatePercentageHadir() {

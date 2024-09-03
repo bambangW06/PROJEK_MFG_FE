@@ -117,18 +117,19 @@ export default {
               icon: 'cilCheckCircle',
               parentId: 'ROOT',
             },
-            {
-              component: 'CNavItem',
-              name: 'History Absensi', // Nama menu untuk EAssesment
-              to: '/EAbsensi', // Path yang dituju saat menu EAssesment diklik
-              icon: 'cilHistory', // Ikonya bisa disesuaikan
-              parentId: 'ROOT',
-            },
+
             {
               component: 'CNavItem',
               name: 'Mapping Job', // Nama menu untuk EAssesment
               to: '/MappingJob', // Path yang dituju saat menu EAssesment diklik
               icon: 'cilMap', // Ikonya bisa disesuaikan
+              parentId: 'ROOT',
+            },
+            {
+              component: 'CNavItem',
+              name: ' Jumlah Absensi ', // Nama menu untuk EAssesment
+              to: '/EAbsensi', // Path yang dituju saat menu EAssesment diklik
+              icon: 'cilHistory', // Ikonya bisa disesuaikan
               parentId: 'ROOT',
             },
             {
