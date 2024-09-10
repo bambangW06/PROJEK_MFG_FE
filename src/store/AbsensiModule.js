@@ -22,10 +22,15 @@ const state = {
 
 const getters = {
   getRedShiftEmployees(state) {
-    return state.redShiftEmployees
+    // Misalnya state.redShiftEmployees berisi semua data karyawan dari shift merah
+    return state.redShiftEmployees.filter(
+      (employee) => employee.jabatan !== 'Others',
+    )
   },
   getWhiteShiftEmployees(state) {
-    return state.whiteShiftEmployees
+    return state.whiteShiftEmployees.filter(
+      (employee) => employee.jabatan !== 'Others',
+    )
   },
   getSelectedStatus(state) {
     return state.selectedStatus

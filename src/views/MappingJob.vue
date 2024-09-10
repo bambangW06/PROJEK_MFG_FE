@@ -105,7 +105,7 @@ export default {
           left: '30%',
           popoverTop: '80%',
           popoverLeft: '36%',
-          label: 'C/B & C/R',
+          label: 'C/B & Crank',
           content: ['1. Manage Kiriko Line Cylinder Block Dan Crank Shaft.'],
         },
         {
