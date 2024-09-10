@@ -52,8 +52,30 @@
             <option>Team Leader</option>
             <option>Team Member</option>
             <option>Supervisor</option>
+            <option>Others</option>
           </select>
+          <label for="defaultPos">Pos</label>
+          <div>
+            <select
+              v-model="newUser.defaultPos"
+              class="form-control"
+              id="defaultPos"
+            >
+              <option disable selected></option>
+              <option>Supervisor</option>
+              <option>GL</option>
+              <option>TL</option>
+              <option>NC</option>
+              <option>SettingDelivery</option>
+              <option>OilSupply</option>
+              <option>CB</option>
+              <option>CH</option>
+              <option>CoolantSupply</option>
+              <option>ConsentrasiCheck</option>
+            </select>
+          </div>
         </div>
+
         <!-- Modal Body -->
 
         <div class="modal-footer">
@@ -123,6 +145,7 @@
             <option disable selected></option>
             <option>Red</option>
             <option>White</option>
+            <option>Non Shift</option>
           </select>
 
           <label>Jabatan</label>
@@ -131,8 +154,32 @@
             <option>Group Leader</option>
             <option>Team Leader</option>
             <option>Team Member</option>
+            <option>Supervisor</option>
+            <option>Others</option>
           </select>
+          <label for="defaultPos">Pos</label>
+          <div>
+            <select
+              v-model="editedUser.defaultPos"
+              class="form-control"
+              id="defaultPos"
+            >
+              <option disable selected></option>
+              <option value=""></option>
+              <option>Supervisor</option>
+              <option>GL</option>
+              <option>TL</option>
+              <option>NC</option>
+              <option>SettingDelivery</option>
+              <option>OilSupply</option>
+              <option>CB</option>
+              <option>CH</option>
+              <option>CoolantSupply</option>
+              <option>ConsentasiCheck</option>
+            </select>
+          </div>
         </div>
+
         <!-- Modal Body -->
 
         <div class="modal-footer">
@@ -330,6 +377,7 @@ export default {
         jabatan: '',
         previewUrl: '',
         profile: '',
+        defaultPos: '',
       },
       editedUser: {
         // Inisialisasi editedUser
@@ -340,6 +388,7 @@ export default {
         selectedFile: null,
         previewUrl: '',
         profile: '',
+        defaultPos: '',
       },
       pageSize: 5, // Jumlah item per halaman
       currentPage: 1, // Halaman saat ini
@@ -475,6 +524,7 @@ export default {
           selectedFile: null,
           previewUrl: '',
           profile: '',
+          defaultPos: '',
         }
         // Setelah menambahkan karyawan, reset input file
         const inputFile = this.$refs.inputFile
@@ -558,6 +608,7 @@ export default {
               selectedFile: null,
               previewUrl: '',
               profile: '',
+              defaultPos: '',
             }
 
             console.log('Response dari server:', response) // Tambahkan logging untuk response dari server

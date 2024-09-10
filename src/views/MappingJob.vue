@@ -66,7 +66,11 @@ import Popover from './Popover.vue'
 import { mapGetters } from 'vuex'
 import moment from 'moment-timezone'
 import { reactive, toRefs } from 'vue'
-import { ACTION_GET_SUPERVISOR, GET_SUPERVISOR } from '@/store/EmployeeModule'
+import {
+  ACTION_GET_OTHERS,
+  ACTION_GET_SUPERVISOR,
+  GET_SUPERVISOR,
+} from '@/store/EmployeeModule'
 
 export default {
   name: 'MappingJob',
@@ -92,8 +96,48 @@ export default {
         SettingDelivery: null,
         OilSupply: null,
         Supervisor: null,
+        CB: null,
       },
       positions: [
+        {
+          key: 'CB',
+          top: '80%',
+          left: '30%',
+          popoverTop: '80%',
+          popoverLeft: '36%',
+          label: 'C/B & C/R',
+          content: ['1. Manage Kiriko Line Cylinder Block Dan Crank Shaft.'],
+        },
+        {
+          key: 'CH',
+          top: '80%',
+          left: '36%',
+          popoverTop: '80%',
+          popoverLeft: '42%',
+          label: 'C/H & CAM',
+          content: ['1. Manage Kiriko Line Cylinder Head Dan Cam Shaft.'],
+        },
+        {
+          key: 'CoolantSupply',
+          top: '80%',
+          left: '42%',
+          popoverTop: '80%',
+          popoverLeft: '48%',
+          label: 'Manage Coolant',
+          content: ['1. Supply Coolant to Line Cylinder Head Dan Cam Shaft'],
+        },
+        {
+          key: 'ConsentrasiCheck',
+          top: '80%',
+          left: '48%',
+          popoverTop: '80%',
+          popoverLeft: '54%',
+          label: ' Manage Coolant',
+          content: [
+            '1. Check Konsentrasi dan Ph Coolant.',
+            '2. Manage Limbah Dan Filtramag',
+          ],
+        },
         {
           key: 'Supervisor',
           top: '20%',
@@ -196,7 +240,6 @@ export default {
     await this.displayTodayDate()
     await this.$store.dispatch('ambilShift')
     await this.$store.dispatch('fetchEmployeeForSelect')
-    await this.$store.dispatch(ACTION_GET_SUPERVISOR)
     await this.$store.dispatch('fetchActualPosition')
     this.selectEmployeesByShift()
     this.defaultPosition()
@@ -214,7 +257,7 @@ export default {
       // console.log('getPositionRedShift', this.getPositionRedShift)
       // console.log('getPositionWhiteShift', this.getPositionWhiteShift)
       this.employees = employeesByShift.filter(
-        (employee) => employee.status === 'Hadir',
+        (employee) => employee.status === 'Hadir' || employee.status === null,
       )
     },
     updateSelectedEmployee(positionKey, employee) {
@@ -288,7 +331,7 @@ export default {
 
       // Atur posisi default atau aktual
       for (const employee of employeesWithCurrentShift) {
-        if (employee.status === 'Hadir') {
+        if (employee.status === 'Hadir' || employee.status === null) {
           const actualPosition = actualPositionMap[employee.employee_id]
           if (actualPosition) {
             // Jika actual_position ada, set ke posisi aktual

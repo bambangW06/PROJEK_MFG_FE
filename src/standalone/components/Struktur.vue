@@ -495,7 +495,7 @@ export default {
 
       // Menyaring karyawan yang statusnya bukan 'Hadir'
       const filteredEmployees = selectedEmployees.filter(
-        (employee) => employee.status !== 'Hadir',
+        (employee) => employee.status !== 'Hadir' && employee.status !== null,
       )
 
       return filteredEmployees
