@@ -52,6 +52,11 @@ const routes = [
         name: 'KanbanFromGel',
         component: () => import('@/views/ToolManagement/KanbanFromGel.vue'),
       },
+      {
+        path: '/tool/LaporanHarian',
+        name: 'LaporanHarian',
+        component: () => import('@/views/ToolManagement/LaporanHarian.vue'),
+      },
 
       {
         path: '/tool',

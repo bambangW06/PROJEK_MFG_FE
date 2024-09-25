@@ -223,26 +223,45 @@ const actions = {
     try {
       const historyAbsence = state.historyAbsence
 
+      // Jabatan yang diinginkan
+      const validJabatan = ['Group Leader', 'Team Leader', 'Team Member']
+
       // Hitung total karyawan dan total yang hadir sesuai dengan kondisi
       let totalEmployees
       let totalHadir
       if (state.currentShift === null) {
-        // console.log('state.currentShift', state.currentShift);
-        totalEmployees =
-          state.redShiftEmployees.length + state.whiteShiftEmployees.length
+        // Semua shift, hitung hanya yang memiliki jabatan tertentu
+        const allEmployees = [
+          ...state.redShiftEmployees,
+          ...state.whiteShiftEmployees,
+        ]
+        totalEmployees = allEmployees.filter((employee) =>
+          validJabatan.includes(employee.jabatan),
+        ).length
+
         totalHadir = historyAbsence.filter(
-          (absence) => absence.status === 'Hadir',
+          (absence) =>
+            absence.status === 'Hadir' &&
+            validJabatan.includes(absence.jabatan),
         ).length
       } else {
+        // Berdasarkan shift yang dipilih
         const shiftEmployees =
           state.currentShift === 'Red'
             ? state.redShiftEmployees
             : state.whiteShiftEmployees
-        totalEmployees = shiftEmployees.length
+
+        const filteredShiftEmployees = shiftEmployees.filter((employee) =>
+          validJabatan.includes(employee.jabatan),
+        )
+
+        totalEmployees = filteredShiftEmployees.length
+
         totalHadir = historyAbsence.filter(
           (absence) =>
             absence.status === 'Hadir' &&
-            shiftEmployees.some(
+            validJabatan.includes(absence.jabatan) &&
+            filteredShiftEmployees.some(
               (employee) => employee.employee_id === absence.employee_id,
             ),
         ).length

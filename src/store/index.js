@@ -10,6 +10,7 @@ import MasterLineModule from './MasterLine.module'
 import KanbanToToolReg from './KanbanToToolReg.module'
 import METAModule from './META.module'
 import KanbanFromGel from './KanbanFromGel.module'
+import LaporanHarian from './LaporanHarian.module'
 
 export default createStore({
   state: {
@@ -40,5 +41,6 @@ export default createStore({
     KanbanToToolReg,
     METAModule,
     KanbanFromGel,
+    LaporanHarian,
   },
 })
