@@ -263,7 +263,7 @@
       isScrolled ? 'scrolled' : '',
     ]"
   >
-    <div :class="['card', 'card-scrolled', isScrolled ? 'scrolled' : '']">
+    <div class="card p-2 mb-2">
       <div class="d-flex justify-content-between align-items-center">
         <h4 class="text-center m-0">Laporan Harian</h4>
         <div class="d-flex align-items-center">
@@ -955,7 +955,7 @@ export default {
 
 .custom-table {
   width: 100%;
-  border-collapse: collapse;
+  border: 1px solid black;
 }
 
 .custom-table th,
@@ -978,33 +978,5 @@ input {
 }
 .fc {
   width: fit-content;
-}
-.card-laporan-harian {
-  position: sticky;
-  top: 120px; /* Sesuaikan dengan tinggi header/nav bar */
-  z-index: 1000;
-}
-.card-scrolled.scrolled {
-  background-color: #0056b3 !important; /* Warna biru saat scroll */
-  color: white; /* Ubah teks jadi putih */
-}
-.card-scrolled {
-  padding: 4px;
-  margin-bottom: 4px;
-}
-.table-bordered th {
-  background-color: rgb(198, 240, 240);
-}
-.table-bordered {
-  border: 1px solid black;
-}
-.table-wrapper {
-  overflow-y: auto; /* Scroll hanya pada isi tabel */
-  max-height: 400px; /* Sesuaikan dengan tinggi yang diinginkan */
-}
-.sticky-thead th {
-  position: sticky;
-  top: 0;
-  z-index: 10;
 }
 </style>
