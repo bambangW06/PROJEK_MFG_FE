@@ -297,63 +297,64 @@
           </button>
         </form>
       </div>
-
-      <table class="table mt-3 text-center tb-emp table-bordered">
-        <thead style="height: 70px; font-size: large">
-          <tr>
-            <th scope="col">No</th>
-            <th scope="col">Nama</th>
-            <th scope="col">Noreg</th>
-            <th scope="col">Foto</th>
-            <th scope="col">Shift</th>
-            <th scope="col">Jabatan</th>
-            <th scope="col">Action</th>
-          </tr>
-        </thead>
-        <tbody id="dataKaryawan" style="text-align: center" class="fntSz">
-          <!-- Data Karyawan akan ditampilkan di sini -->
-          <tr
-            v-for="(karyawan, index) in searchResult.length > 0
-              ? searchResult
-              : paginatedData"
-            :key="karyawan.employee_id"
-          >
-            <td class="vAm">{{ index + 1 }}</td>
-            <td class="vAm">{{ karyawan.nama }}</td>
-            <td class="vAm">{{ karyawan.noreg }}</td>
-            <td style="width: 10%">
-              <img
-                v-if="karyawan.previewUrl"
-                :src="karyawan.previewUrl"
-                :alt="karyawan.nama"
-                style="max-width: 50%; height: 100%"
-              />
-            </td>
-            <td class="vAm">{{ karyawan.shift }}</td>
-            <td class="vAm">{{ karyawan.jabatan }}</td>
-            <td class="vAm">
-              <button
-                type="button"
-                class="btn btn-sm"
-                data-bs-toggle="modal"
-                data-bs-target="#editModal"
-                @click="prepareEdit(karyawan, index)"
-              >
-                <i class="fas fa-edit text-primary"></i>
-              </button>
-              <button
-                type="button"
-                class="btn btn-sm"
-                data-bs-toggle="modal"
-                data-bs-target="#deleteConfirmationModal"
-                @click="showDeleteConfirmation(karyawan.employee_id)"
-              >
-                <i class="fas fa-trash-alt text-danger"></i>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="table mt-3 text-center tb-emp table-bordered">
+          <thead style="height: 70px; font-size: large">
+            <tr>
+              <th scope="col">No</th>
+              <th scope="col">Nama</th>
+              <th scope="col">Noreg</th>
+              <th scope="col">Foto</th>
+              <th scope="col">Shift</th>
+              <th scope="col">Jabatan</th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody id="dataKaryawan" style="text-align: center" class="fntSz">
+            <!-- Data Karyawan akan ditampilkan di sini -->
+            <tr
+              v-for="(karyawan, index) in searchResult.length > 0
+                ? searchResult
+                : paginatedData"
+              :key="karyawan.employee_id"
+            >
+              <td class="vAm">{{ index + 1 }}</td>
+              <td class="vAm">{{ karyawan.nama }}</td>
+              <td class="vAm">{{ karyawan.noreg }}</td>
+              <td style="width: 10%">
+                <img
+                  v-if="karyawan.previewUrl"
+                  :src="karyawan.previewUrl"
+                  :alt="karyawan.nama"
+                  style="max-width: 50%; height: 100%"
+                />
+              </td>
+              <td class="vAm">{{ karyawan.shift }}</td>
+              <td class="vAm">{{ karyawan.jabatan }}</td>
+              <td class="vAm">
+                <button
+                  type="button"
+                  class="btn btn-sm"
+                  data-bs-toggle="modal"
+                  data-bs-target="#editModal"
+                  @click="prepareEdit(karyawan, index)"
+                >
+                  <i class="fas fa-edit text-primary"></i>
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-sm"
+                  data-bs-toggle="modal"
+                  data-bs-target="#deleteConfirmationModal"
+                  @click="showDeleteConfirmation(karyawan.employee_id)"
+                >
+                  <i class="fas fa-trash-alt text-danger"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
   <!--  container-fluid -->

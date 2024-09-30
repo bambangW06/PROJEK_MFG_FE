@@ -47,22 +47,27 @@ const routes = [
         name: 'Mapping Job',
         component: () => import('@/views/MappingJob.vue'),
       },
-      {
-        path: '/tool/kanbanFromGel',
-        name: 'KanbanFromGel',
-        component: () => import('@/views/ToolManagement/KanbanFromGel.vue'),
-      },
+      // {
+      //   path: '/tool/kanbanFromGel',
+      //   name: 'KanbanFromGel',
+      //   component: () => import('@/views/ToolManagement/KanbanFromGel.vue'),
+      // },
       {
         path: '/tool/LaporanHarian',
         name: 'LaporanHarian',
         component: () => import('@/views/ToolManagement/LaporanHarian.vue'),
       },
-
       {
-        path: '/tool',
-        name: 'DashboardTool',
-        component: () => import('@/views/DashboardTool.vue'),
+        path: '/tool/nextProses',
+        name: 'ProblemReport',
+        component: () => import('@/views/ToolManagement/ProblemReport.vue'),
       },
+
+      // {
+      //   path: '/tool',
+      //   name: 'DashboardTool',
+      //   component: () => import('@/views/DashboardTool.vue'),
+      // },
 
       {
         path: '/planSchedule',

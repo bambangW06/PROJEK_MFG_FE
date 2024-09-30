@@ -310,54 +310,56 @@
           </li>
         </ul>
       </nav>
-      <table class="table custom-table tb-emp table-bordered mt-1">
-        <thead>
-          <tr>
-            <th>No</th>
-            <th>Line</th>
-            <th>Mesin</th>
-            <th>Shift</th>
-            <th>Tanggal Kuras</th>
-            <th>Periodik</th>
-            <th>Waktu</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="(schedules, index) in paginatedData"
-            :key="schedules.schedule_id"
-          >
-            <td>{{ (currentPage - 1) * pageSize + index + 1 }}</td>
-            <td>{{ schedules.line_nm }}</td>
-            <td>{{ schedules.machine_nm }}</td>
-            <td>{{ schedules.shift }}</td>
-            <td>{{ schedules.last_krs }}</td>
-            <td>{{ schedules.period_val }}</td>
-            <td>{{ schedules.period_nm }}</td>
-            <td class="vAm">
-              <button
-                type="button"
-                class="btn btn-sm"
-                data-bs-toggle="modal"
-                data-bs-target="#modalEditScheduleKuras"
-                @click="editSchedule(schedules, index)"
-              >
-                <i class="fas fa-edit text-primary"></i>
-              </button>
-              <button
-                type="button"
-                class="btn btn-sm"
-                data-bs-toggle="modal"
-                data-bs-target="#deleteConfirmationModal"
-                @click="deleteSchedule(schedules.schedule_id)"
-              >
-                <i class="fas fa-trash-alt text-danger"></i>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="table custom-table tb-emp table-bordered mt-1">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Line</th>
+              <th>Mesin</th>
+              <th>Shift</th>
+              <th>Tanggal Kuras</th>
+              <th>Periodik</th>
+              <th>Waktu</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="(schedules, index) in paginatedData"
+              :key="schedules.schedule_id"
+            >
+              <td>{{ (currentPage - 1) * pageSize + index + 1 }}</td>
+              <td>{{ schedules.line_nm }}</td>
+              <td>{{ schedules.machine_nm }}</td>
+              <td>{{ schedules.shift }}</td>
+              <td>{{ schedules.last_krs }}</td>
+              <td>{{ schedules.period_val }}</td>
+              <td>{{ schedules.period_nm }}</td>
+              <td class="vAm">
+                <button
+                  type="button"
+                  class="btn btn-sm"
+                  data-bs-toggle="modal"
+                  data-bs-target="#modalEditScheduleKuras"
+                  @click="editSchedule(schedules, index)"
+                >
+                  <i class="fas fa-edit text-primary"></i>
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-sm"
+                  data-bs-toggle="modal"
+                  data-bs-target="#deleteConfirmationModal"
+                  @click="deleteSchedule(schedules.schedule_id)"
+                >
+                  <i class="fas fa-trash-alt text-danger"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
@@ -640,5 +642,28 @@ input-group .flex-grow-1 {
 }
 .table-bordered {
   border: 1px solid black;
+}
+.pagination {
+  display: flex;
+  flex-wrap: wrap; /* Membungkus elemen saat melebihi lebar */
+  justify-content: center; /* Menjaga pagination di tengah */
+}
+
+.page-item {
+  margin: 0 5px; /* Jarak antara item pagination */
+}
+
+.page-link {
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .pagination {
+    font-size: 0.85rem; /* Ukuran font lebih kecil di layar sempit */
+  }
+  .page-link {
+    padding: 0.25rem 0.5rem; /* Mengurangi padding untuk layar kecil */
+  }
 }
 </style>

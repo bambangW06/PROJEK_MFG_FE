@@ -108,54 +108,56 @@
     </div>
     <div v-else>
       <div v-if="results.length > 0" class="card p-2 mt-3">
-        <table class="table custom-table tb-emp table-bordered mt-1">
-          <thead>
-            <tr>
-              <th>No</th>
-              <th>Line</th>
-              <th>Mesin</th>
-              <th>Tanggal Check</th>
-              <th
-                v-if="
-                  paramNames.length > 0 &&
-                  selectedParam === paramNames[0].param_id
-                "
-              >
-                {{ paramNames[0].param_nm }}
-              </th>
-              <th
-                v-if="
-                  paramNames.length > 1 &&
-                  selectedParam === paramNames[1].param_id
-                "
-              >
-                {{ paramNames[1].param_nm }}
-              </th>
-              <th>Status Coolant</th>
-              <th>Terakhir Kuras</th>
-              <th>Alasan Kuras</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(result, index) in results" :key="index">
-              <td>{{ index + 1 }}</td>
-              <td>{{ result.line_nm }}</td>
-              <td>{{ result.machine_nm }}</td>
-              <td>{{ result.start_date }}</td>
-              <td v-if="selectedParam === paramNames[0].param_id">
-                {{ result.Konsentrasi }}
-              </td>
-              <td v-if="selectedParam === paramNames[1].param_id">
-                {{ result.PH }}
-              </td>
-              <td v-html="result.status"></td>
-              <td v-if="index === 0">{{ result.last_krs }}</td>
-              <td v-else>-</td>
-              <td v-if="index === 0">{{ result.reason_plan }}</td>
-              <td v-else>-</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <table class="table custom-table tb-emp table-bordered mt-1">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Line</th>
+                <th>Mesin</th>
+                <th>Tanggal Check</th>
+                <th
+                  v-if="
+                    paramNames.length > 0 &&
+                    selectedParam === paramNames[0].param_id
+                  "
+                >
+                  {{ paramNames[0].param_nm }}
+                </th>
+                <th
+                  v-if="
+                    paramNames.length > 1 &&
+                    selectedParam === paramNames[1].param_id
+                  "
+                >
+                  {{ paramNames[1].param_nm }}
+                </th>
+                <th>Status Coolant</th>
+                <th>Terakhir Kuras</th>
+                <th>Alasan Kuras</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(result, index) in results" :key="index">
+                <td>{{ index + 1 }}</td>
+                <td>{{ result.line_nm }}</td>
+                <td>{{ result.machine_nm }}</td>
+                <td>{{ result.start_date }}</td>
+                <td v-if="selectedParam === paramNames[0].param_id">
+                  {{ result.Konsentrasi }}
+                </td>
+                <td v-if="selectedParam === paramNames[1].param_id">
+                  {{ result.PH }}
+                </td>
+                <td v-html="result.status"></td>
+                <td v-if="index === 0">{{ result.last_krs }}</td>
+                <td v-else>-</td>
+                <td v-if="index === 0">{{ result.reason_plan }}</td>
+                <td v-else>-</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>

@@ -9,44 +9,46 @@
 
   <div class="container-fluid">
     <div class="card p-2 mb-2">
-      <table class="table table-bordered table-striped">
-        <thead>
-          <tr>
-            <th class="col-no">No</th>
-            <th class="col-request-date">Request Date</th>
-            <th class="col-line">Line</th>
-            <th class="col-tool-name">Tool Name</th>
-            <th class="col-op">OP</th>
-            <th class="col-quantity">Quantity</th>
-            <th class="col-notes">Problem</th>
-            <th class="col-action">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(kanban, index) in GET_KANBAN_FROM_GEL" :key="index">
-            <td>{{ index + 1 }}</td>
-            <td>{{ kanban.created_at }}</td>
-            <td>{{ kanban.line_nm }}</td>
-            <td>{{ kanban.tool_nm }}</td>
-            <td>{{ kanban.op_no }}</td>
-            <td>{{ kanban.quantity }}</td>
-            <td>{{ kanban.notes }}</td>
-            <td>
-              <button
-                v-if="!kanban.is_prepared"
-                type="button"
-                class="btn btn-primary"
-                @click="prepared(index)"
-              >
-                Prepare
-              </button>
-              <button v-else type="button" class="btn btn-success">
-                Prepared
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th class="col-no">No</th>
+              <th class="col-request-date">Request Date</th>
+              <th class="col-line">Line</th>
+              <th class="col-tool-name">Tool Name</th>
+              <th class="col-op">OP</th>
+              <th class="col-quantity">Quantity</th>
+              <th class="col-notes">Problem</th>
+              <th class="col-action">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(kanban, index) in GET_KANBAN_FROM_GEL" :key="index">
+              <td>{{ index + 1 }}</td>
+              <td>{{ kanban.created_at }}</td>
+              <td>{{ kanban.line_nm }}</td>
+              <td>{{ kanban.tool_nm }}</td>
+              <td>{{ kanban.op_no }}</td>
+              <td>{{ kanban.quantity }}</td>
+              <td>{{ kanban.notes }}</td>
+              <td>
+                <button
+                  v-if="!kanban.is_prepared"
+                  type="button"
+                  class="btn btn-primary"
+                  @click="prepared(index)"
+                >
+                  Prepare
+                </button>
+                <button v-else type="button" class="btn btn-success">
+                  Prepared
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>

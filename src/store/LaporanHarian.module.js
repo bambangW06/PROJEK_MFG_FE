@@ -15,9 +15,11 @@ export const ACTION_GET_STD_COUNTER = 'ACTION_GET_STD_COUNTER'
 export const ACTION_ADD_PROBLEM = 'ACTION_ADD_PROBLEM'
 export const ACTION_ADD_PROBLEM_NEXT_PROCESS = 'ACTION_ADD_PROBLEM_NEXT_PROCESS'
 
-export const ACTION_GET_PROBLEM = 'ACTION_GET_PROBLEM'
-export const SET_PROBLEM = 'SET_PROBLEM'
-export const GET_PROBLEM = 'GET_PROBLEM'
+export const ACTION_GET_PROBLEM_MODAL = 'ACTION_GET_PROBLEM_MODAL'
+export const SET_PROBLEM_MODAL = 'SET_PROBLEM_MODAL'
+export const GET_PROBLEM_MODAL = 'GET_PROBLEM_MODAL'
+
+export const ACTION_DELETE_PROBLEM = 'ACTION_DELETE_PROBLEM'
 
 export const ACTION_ADD_REPORT_REG_SET = 'ACTION_ADD_REPORT_REG_SET'
 
@@ -25,20 +27,30 @@ export const ACTION_GET_REPORT_REG_SET = 'ACTION_GET_REPORT_REG_SET'
 export const SET_REPORT = 'SET_REPORT'
 export const GET_REPORT = 'GET_REPORT'
 
+export const ACTION_GET_PROBLEM_TABLE = 'ACTION_GET_PROBLEM_TABLE'
+export const SET_PROBLEM_IN_PROSES = 'SET_PROBLEM_IN_PROSES'
+export const SET_PROBLEM_NEXT_PROCESS = 'SET_PROBLEM_NEXT_PROCESS'
+export const GET_PROBLEM_IN_PROCESS = 'GET_PROBLEM_IN_PROCESS'
+export const GET_PROBLEM_NEXT_PROCESS = 'GET_PROBLEM_NEXT_PROCESS'
+
 const state = {
   TOOLS: [],
   CATEGORIES: [],
   STD_COUNTER: [],
-  PROBLEM: [],
+  PROBLEM_MODAL: [],
   REPORT: [],
+  PROBLEM_IN_PROCESS: [],
+  PROBLEM_NEXT_PROCESS: [],
 }
 
 const getters = {
   GET_TOOLS: (state) => state.TOOLS,
   GET_CATEGORIES: (state) => state.CATEGORIES,
   GET_STD_COUNTER: (state) => state.STD_COUNTER,
-  GET_PROBLEM: (state) => state.PROBLEM,
+  GET_PROBLEM_MODAL: (state) => state.PROBLEM_MODAL,
   GET_REPORT: (state) => state.REPORT,
+  GET_PROBLEM_IN_PROCESS: (state) => state.PROBLEM_IN_PROCESS,
+  GET_PROBLEM_NEXT_PROCESS: (state) => state.PROBLEM_NEXT_PROCESS,
 }
 
 const mutations = {
@@ -51,11 +63,17 @@ const mutations = {
   SET_STD_COUNTER(state, payload) {
     state.STD_COUNTER = payload
   },
-  SET_PROBLEM(state, payload) {
-    state.PROBLEM = payload
+  SET_PROBLEM_MODAL(state, payload) {
+    state.PROBLEM_MODAL = payload
   },
   SET_REPORT(state, payload) {
     state.REPORT = payload
+  },
+  SET_PROBLEM_IN_PROSES(state, payload) {
+    state.PROBLEM_IN_PROCESS = payload
+  },
+  SET_PROBLEM_NEXT_PROCESS(state, payload) {
+    state.PROBLEM_NEXT_PROCESS = payload
   },
 }
 
@@ -90,7 +108,7 @@ const actions = {
       console.error('Error fetching tools:', error)
     }
   },
-  async ACTION_GET_PROBLEM({ commit }, payload) {
+  async ACTION_GET_PROBLEM_MODAL({ commit }, payload) {
     try {
       const modalType = payload.modalType
       // console.log(modalType)
@@ -98,15 +116,18 @@ const actions = {
       const selectedJam = payload.time_range
       // console.log(selectedJam)
 
+      const selectedDate = payload.selectedDate
+
       const response = await axios.get(`${API_URL}/problem/get`, {
         params: {
           modalType: modalType,
           time_range: selectedJam,
+          selectedDate: selectedDate,
         },
       })
 
       // console.log(response.data.data)
-      commit(SET_PROBLEM, response.data.data)
+      commit(SET_PROBLEM_MODAL, response.data.data)
     } catch (error) {
       console.error('Error fetching problem data:', error)
     }
@@ -132,6 +153,19 @@ const actions = {
       console.error('Error fetching tools:', error)
     }
   },
+  async ACTION_DELETE_PROBLEM({ commit }, payload) {
+    try {
+      const response = await axios.delete(`${API_URL}/problem/delete`, {
+        params: {
+          modalType: payload.modalType,
+          problem_id: payload.id,
+        },
+      })
+      return response
+    } catch (error) {
+      console.error('Error fetching tools:', error)
+    }
+  },
   async ACTION_ADD_REPORT_REG_SET({ commit }, payload) {
     try {
       // console.log('payload vuex', payload)
@@ -145,9 +179,35 @@ const actions = {
   },
   async ACTION_GET_REPORT_REG_SET({ commit }, payload) {
     try {
-      const response = await axios.get(`${API_URL}/tools/get/${payload}`)
+      const response = await axios.get(`${API_URL}/tools/get`, {
+        params: {
+          selectedDate: payload,
+        },
+      })
+      console.log(response.data.data)
+
       commit(SET_REPORT, response.data.data)
-      // console.log(response.data.data)
+      return response
+    } catch (error) {
+      console.error('Error fetching tools:', error)
+    }
+  },
+  async ACTION_GET_PROBLEM_TABLE({ commit }, payload) {
+    try {
+      const response = await axios.get(`${API_URL}/problem/table`, {
+        params: {
+          selectedDate: payload,
+        },
+      })
+      console.log(response.data.data)
+
+      commit(SET_PROBLEM_IN_PROSES, response.data.data.inProcess)
+      // console.log('SET_PROBLEM_IN_PROSES', response.data.data.inProcess)
+
+      commit(SET_PROBLEM_NEXT_PROCESS, response.data.data.nextProcess)
+      // console.log('SET_PROBLEM_NEXT_PROCESS', response.data.data.nextProcess)
+
+      return response
     } catch (error) {
       console.error('Error fetching tools:', error)
     }

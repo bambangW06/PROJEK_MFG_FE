@@ -107,7 +107,7 @@
             class="btn btn-primary"
             @click="addProblem"
           >
-            Save changes
+            Save
           </button>
         </div>
       </div>
@@ -138,8 +138,8 @@
                 <th>Action</th>
               </tr>
             </thead>
-            <tbody v-if="GET_PROBLEM.length > 0">
-              <tr v-for="(problem, index) in GET_PROBLEM" :key="index">
+            <tbody v-if="GET_PROBLEM_MODAL.length > 0">
+              <tr v-for="(problem, index) in GET_PROBLEM_MODAL" :key="index">
                 <td>{{ index + 1 }}</td>
                 <td>{{ problem.category_nm }}</td>
                 <td>{{ problem.problem_nm }}</td>
@@ -178,8 +178,8 @@
                 <th>Action</th>
               </tr>
             </thead>
-            <tbody v-if="GET_PROBLEM.length > 0">
-              <tr v-for="(problem, index) in GET_PROBLEM" :key="index">
+            <tbody v-if="GET_PROBLEM_MODAL.length > 0">
+              <tr v-for="(problem, index) in GET_PROBLEM_MODAL" :key="index">
                 <td>{{ index + 1 }}</td>
                 <td>{{ problem.line_nm }}</td>
                 <td>{{ problem.machine_nm }}</td>
@@ -256,12 +256,20 @@
     </div>
   </div>
 
-  <div class="container-fluid">
-    <div class="card p-2 mb-2">
+  <div
+    :class="[
+      'container-fluid',
+      'card-laporan-harian',
+      isScrolled ? 'scrolled' : '',
+    ]"
+  >
+    <div :class="['card', 'card-scrolled', isScrolled ? 'scrolled' : '']">
       <div class="d-flex justify-content-between align-items-center">
         <h4 class="text-center m-0">Laporan Harian</h4>
         <div class="d-flex align-items-center">
-          <span>{{ today }}</span>
+          <span
+            ><strong>{{ today }}</strong></span
+          >
         </div>
       </div>
     </div>
@@ -269,127 +277,149 @@
 
   <div class="container-fluid">
     <div class="card p-2 mb-2">
-      <div class="d-flex justify-content-end mb-1">
-        <input
-          type="date"
-          class="form-control ms-auto"
-          style="max-width: 200px"
-          v-model="selectedDate"
-          @change="getReport()"
-        />
+      <div class="d-flex justify-content-between align-items-center mb-1">
+        <!-- Shift dropdown di sebelah kiri -->
+        <div class="d-flex align-items-center">
+          <select
+            class="form-select"
+            v-model="selectedShift"
+            style="max-width: 150px"
+          >
+            <option value="Siang">Siang</option>
+            <option value="Malam">Malam</option>
+          </select>
+        </div>
+
+        <!-- Tanggal input di sebelah kanan -->
+        <div>
+          <input
+            type="date"
+            class="form-control"
+            style="max-width: 200px"
+            v-model="selectedDate"
+            @change="getReport()"
+          />
+        </div>
       </div>
-      <table class="table custom-table tb-emp table-bordered">
-        <thead>
-          <tr>
-            <th style="width: 100px">Jam</th>
-            <th style="width: 80px">From CL/R</th>
-            <th style="width: 80px">Penambahan Tool</th>
-            <th style="width: 80px">Regrind & Setting</th>
-            <th style="width: 80px">Tool Delay</th>
-            <th style="width: 80px">Waktu Delay</th>
-            <th>Problem In Proses</th>
-            <th>Problem Next Proses</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(row, index) in tableData" :key="index">
-            <td>{{ row.jam }}</td>
-            <td>
-              <input
-                class="form-control"
-                type="number"
-                v-model="row.from_clr"
-              />
-            </td>
-            <td>
-              <input
-                class="form-control"
-                type="number"
-                v-model="row.penambahan_tool"
-              />
-            </td>
-            <td>
-              <input
-                class="form-control"
-                type="number"
-                v-model="row.regrind_setting"
-              />
-            </td>
-            <td>
-              <input
-                readonly
-                class="form-control"
-                type="number"
-                v-model="row.tool_delay"
-              />
-            </td>
-            <td>
-              <input
-                readonly
-                class="form-control"
-                type="text"
-                v-model="row.waktu_delay"
-              />
-            </td>
-            <td>
-              <button
-                class="btn btn-primary me-2"
-                data-bs-toggle="modal"
-                data-bs-target="#addProblemModal"
-                @click="
-                  setModalTitle('Add Problem In Proses', 'category', row.jam)
-                "
-              >
-                Add
-              </button>
-              <button
-                class="btn btn-success"
-                data-bs-toggle="modal"
-                data-bs-target="#viewProblemModal"
-                @click="
-                  handleViewProblem(
-                    'View Problem in Proses',
-                    'category',
-                    row.jam,
-                  )
-                "
-              >
-                View
-              </button>
-            </td>
-            <td>
-              <button
-                class="btn btn-primary me-2"
-                data-bs-toggle="modal"
-                data-bs-target="#addProblemModal"
-                @click="
-                  setModalTitle(
-                    'Add Problem Next Proses',
-                    'next proses',
-                    row.jam,
-                  )
-                "
-              >
-                Add
-              </button>
-              <button
-                class="btn btn-success"
-                data-bs-toggle="modal"
-                data-bs-target="#viewProblemModal"
-                @click="
-                  handleViewProblem(
-                    'View Problem Next Proses',
-                    'next proses',
-                    row.jam,
-                  )
-                "
-              >
-                View
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+
+      <!-- Scroll hanya pada tabel -->
+      <div class="table-wrapper">
+        <table
+          class="table custom-table tb-emp table-bordered"
+          style="table-layout: fixed"
+        >
+          <thead class="sticky-thead">
+            <tr>
+              <th style="width: 100px">Jam</th>
+              <th style="width: 80px">From CL/R</th>
+              <th style="width: 80px">Penambahan Tool</th>
+              <th style="width: 80px">Regrind & Setting</th>
+              <th style="width: 80px">Tool Delay</th>
+              <th style="width: 80px">Waktu Delay</th>
+              <th>Problem In Proses</th>
+              <th>Problem Next Proses</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(row, index) in filteredDataByShift" :key="index">
+              <td>{{ row.jam }}</td>
+              <td>
+                <input
+                  class="form-control"
+                  type="number"
+                  v-model="row.from_clr"
+                />
+              </td>
+              <td>
+                <input
+                  class="form-control"
+                  type="number"
+                  v-model="row.penambahan_tool"
+                />
+              </td>
+              <td>
+                <input
+                  class="form-control"
+                  type="number"
+                  v-model="row.regrind_setting"
+                />
+              </td>
+              <td>
+                <input
+                  readonly
+                  class="form-control"
+                  type="number"
+                  v-model="row.tool_delay"
+                />
+              </td>
+              <td>
+                <input
+                  readonly
+                  class="form-control"
+                  type="text"
+                  v-model="row.waktu_delay"
+                />
+              </td>
+              <td>
+                <button
+                  class="btn btn-primary me-2"
+                  data-bs-toggle="modal"
+                  data-bs-target="#addProblemModal"
+                  @click="
+                    setModalTitle('Add Problem In Proses', 'category', row.jam)
+                  "
+                >
+                  Add
+                </button>
+                <button
+                  class="btn btn-success"
+                  data-bs-toggle="modal"
+                  data-bs-target="#viewProblemModal"
+                  @click="
+                    handleViewProblem(
+                      'View Problem in Proses',
+                      'category',
+                      row.jam,
+                    )
+                  "
+                >
+                  View
+                </button>
+              </td>
+              <td>
+                <button
+                  class="btn btn-primary me-2"
+                  data-bs-toggle="modal"
+                  data-bs-target="#addProblemModal"
+                  @click="
+                    setModalTitle(
+                      'Add Problem Next Proses',
+                      'next proses',
+                      row.jam,
+                    )
+                  "
+                >
+                  Add
+                </button>
+                <button
+                  class="btn btn-success"
+                  data-bs-toggle="modal"
+                  data-bs-target="#viewProblemModal"
+                  @click="
+                    handleViewProblem(
+                      'View Problem Next Proses',
+                      'next proses',
+                      row.jam,
+                    )
+                  "
+                >
+                  View
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
@@ -404,18 +434,20 @@ import {
   ACTION_ADD_PROBLEM,
   ACTION_ADD_PROBLEM_NEXT_PROCESS,
   ACTION_ADD_REPORT_REG_SET,
+  ACTION_DELETE_PROBLEM,
   ACTION_GET_CATEGORIES,
-  ACTION_GET_PROBLEM,
+  ACTION_GET_PROBLEM_MODAL,
   ACTION_GET_REPORT_REG_SET,
   ACTION_GET_STD_COUNTER,
   ACTION_GET_TOOLS,
   GET_CATEGORIES,
   GET_PROBLEM,
+  GET_PROBLEM_MODAL,
   GET_REPORT,
   GET_STD_COUNTER,
   GET_TOOLS,
 } from '@/store/LaporanHarian.module'
-import { get } from 'jquery'
+import moment from 'moment-timezone'
 
 export default {
   name: 'LaporanHarian',
@@ -425,6 +457,8 @@ export default {
 
   data() {
     return {
+      selectedShift: '',
+      isScrolled: false,
       today: new Date().toLocaleDateString('id-ID', {
         weekday: 'long',
         year: 'numeric',
@@ -439,11 +473,11 @@ export default {
       toolOptions: [],
       counter: '',
       stdCounter: '',
-      problemNextProcess: '',
+      problemNextProcess: [],
       modalType: '',
       selectedJam: '',
       selectedCategory: '',
-      problemCategory: '',
+      problemCategory: [],
       timeCategory: '',
       selectedDate: '',
       selectedProblemId: null,
@@ -538,52 +572,74 @@ export default {
       GET_TOOLS,
       GET_CATEGORIES,
       GET_STD_COUNTER,
-      GET_PROBLEM,
+      GET_PROBLEM_MODAL,
       GET_REPORT,
     ]),
+    filteredDataByShift() {
+      if (this.selectedShift === 'Siang') {
+        // Filter jam antara 07:30 sampai 20:00
+        return this.tableData.filter((item) => {
+          const jam = this.convertTo24Hour(item.jam)
+          return jam >= '07:30' && jam <= '20:00'
+        })
+      } else if (this.selectedShift === 'Malam') {
+        // Filter jam antara 20:00 sampai 07:30 di hari berikutnya
+        return this.tableData.filter((item) => {
+          const jam = this.convertTo24Hour(item.jam)
+          return jam < '07:30' || jam >= '20:00'
+        })
+      } else {
+        // Tampilkan semua data jika shift belum dipilih
+        return this.tableData
+      }
+    },
   },
   watch: {
     tableData: {
       handler(newValue) {
-        newValue.forEach((row) => {
-          // Perhitungan tool_delay
-          if (row.from_clr && row.penambahan_tool && row.regrind_setting) {
-            row.tool_delay =
-              row.from_clr + row.penambahan_tool - row.regrind_setting
-          } else {
-            row.tool_delay = ''
-          }
+        if (
+          !this.selectedDate ||
+          this.selectedDate === moment().format('YYYY-MM-DD')
+        ) {
+          newValue.forEach((row) => {
+            // Perhitungan tool_delay
+            if (row.from_clr && row.penambahan_tool && row.regrind_setting) {
+              row.tool_delay =
+                row.from_clr + row.penambahan_tool - row.regrind_setting
+            } else {
+              row.tool_delay = ''
+            }
 
-          // Perhitungan waktu_delay
-          if (row.tool_delay) {
-            row.waktu_delay = `${row.tool_delay * 15}'`
-          } else {
-            row.waktu_delay = ''
-          }
+            // Perhitungan waktu_delay
+            if (row.tool_delay) {
+              row.waktu_delay = `${row.tool_delay * 15}'`
+            } else {
+              row.waktu_delay = ''
+            }
 
-          // Reset reportSent flag jika ada perubahan pada row
-          if (
-            row.from_clr !== row.previousFromClr ||
-            row.penambahan_tool !== row.previousPenambahan ||
-            row.regrind_setting !== row.previousRegrindSetting
-          ) {
-            row.reportSent = false // Reset flag jika ada perubahan
-          }
+            // Reset reportSent flag jika ada perubahan pada row
+            if (
+              row.from_clr !== row.previousFromClr ||
+              row.penambahan_tool !== row.previousPenambahan ||
+              row.regrind_setting !== row.previousRegrindSetting
+            ) {
+              row.reportSent = false // Reset flag jika ada perubahan
+            }
+            // Hanya panggil addReportReg jika waktu_delay terisi dan belum dikirim
+            if (row.waktu_delay && !row.reportSent) {
+              // Gunakan setTimeout untuk memberikan jeda
+              setTimeout(() => {
+                this.addReportReg(row)
+                row.reportSent = true // Tandai bahwa data ini sudah diproses
+              }, 2000) // 2000 ms = 2 detik
 
-          // Hanya panggil addReportReg jika waktu_delay terisi dan belum dikirim
-          if (row.waktu_delay && !row.reportSent) {
-            // Gunakan setTimeout untuk memberikan jeda
-            setTimeout(() => {
-              this.addReportReg(row)
-              row.reportSent = true // Tandai bahwa data ini sudah diproses
-            }, 2000) // 2000 ms = 2 detik
-
-            // Simpan nilai sebelumnya untuk pengecekan di kemudian hari
-            row.previousFromClr = row.from_clr
-            row.previousPenambahan = row.penambahan_tool
-            row.previousRegrindSetting = row.regrind_setting
-          }
-        })
+              // Simpan nilai sebelumnya untuk pengecekan di kemudian hari
+              row.previousFromClr = row.from_clr
+              row.previousPenambahan = row.penambahan_tool
+              row.previousRegrindSetting = row.regrind_setting
+            }
+          })
+        }
       },
       deep: true,
     },
@@ -601,10 +657,15 @@ export default {
           '00:30 - 02:30': 7,
           '02:40 - 05:45': 8,
           '05:45 - 07:00': 9,
-
-          // Tambahkan rentang waktu lainnya jika ada
         }
-
+        // Reset tableData sebelum mengisi data baru
+        this.tableData.forEach((row) => {
+          row.from_clr = ''
+          row.penambahan_tool = ''
+          row.regrind_setting = ''
+          row.tool_delay = ''
+          row.waktu_delay = ''
+        })
         // Sinkronisasi data dari GET_REPORT ke tableData
         newValue.forEach((report) => {
           const timeRange = report.time_range
@@ -627,8 +688,31 @@ export default {
     this.$store.dispatch('fetchLines')
     this.$store.dispatch(ACTION_GET_CATEGORIES)
     this.$store.dispatch(ACTION_GET_REPORT_REG_SET, this.selectedDate)
+    window.addEventListener('scroll', this.handleScroll)
+    this.setShiftByCurrentTime()
+  },
+  beforeDestroy() {
+    window.removeEventListener('scroll', this.handleScroll) // Hapus listener ketika component di-destroy
   },
   methods: {
+    setShiftByCurrentTime() {
+      const now = new Date()
+      const currentHour = now.getHours()
+      console.log(currentHour)
+
+      if (currentHour >= 7 && currentHour < 20) {
+        this.selectedShift = 'Siang'
+      } else {
+        this.selectedShift = 'Malam'
+      }
+    },
+    convertTo24Hour(time) {
+      // Implementasi logika konversi jam ke format 24-jam jika perlu
+      return time
+    },
+    handleScroll() {
+      this.isScrolled = window.scrollY > 0 // Ubah isScrolled jadi true jika scroll lebih dari 0
+    },
     handleViewProblem(title, type, jam) {
       try {
         // Set judul modal dan tipe
@@ -653,13 +737,10 @@ export default {
         const payload = {
           modalType: this.modalType, // Mengambil tipe modal dari state
           time_range: this.selectedJam, // Mengambil jam yang dipilih dari state
+          selectedDate: this.selectedDate, // Mengambil tanggal yang dipilih dari state
         }
 
-        // Debugging: pastikan nilai yang diambil benar
-        // console.log('Modal type:', this.modalType)
-        // console.log('Selected jam:', this.selectedJam)
-        // console.log('Payload:', payload)
-        await this.$store.dispatch(ACTION_GET_PROBLEM, payload)
+        await this.$store.dispatch(ACTION_GET_PROBLEM_MODAL, payload)
       } catch (error) {
         console.log('Error saat fetchProblemData:', error)
       }
@@ -766,14 +847,86 @@ export default {
       try {
         const selectedDate = this.selectedDate
         console.log('payload', selectedDate)
-        await this.$store.dispatch(ACTION_GET_REPORT_REG_SET, selectedDate)
+        let response = await this.$store.dispatch(
+          ACTION_GET_REPORT_REG_SET,
+          selectedDate,
+        )
+        if (response.data.data.length === 0) {
+          this.$swal({
+            icon: 'error',
+            text: 'Data not found!',
+          })
+        }
       } catch (error) {
         console.log(error)
       }
     },
     deleteProblem(problemId) {
       this.selectedProblemId = problemId
-      console.log('ini problem id', this.selectedProblemId)
+      // console.log('ini problem id', this.selectedProblemId)
+    },
+    async actionDeleteProblem() {
+      try {
+        // Siapkan payload sesuai dengan tipe modal
+        let payload
+        if (this.modalType === 'category') {
+          payload = {
+            modalType: this.modalType,
+            id: this.selectedProblemId,
+          }
+        } else if (this.modalType === 'next proses') {
+          payload = {
+            modalType: this.modalType,
+            id: this.selectedProblemId,
+          }
+        }
+
+        // Panggil API untuk delete
+        let response = await this.$store.dispatch(
+          ACTION_DELETE_PROBLEM,
+          payload,
+        )
+
+        if (response.status === 200) {
+          // Jika delete berhasil, hapus item dari data yang ditampilkan di modal
+          this.updateModalView()
+
+          // Tampilkan pesan sukses
+          this.$swal({
+            icon: 'success',
+            title: 'Deleted!',
+            text: 'Data berhasil dihapus.',
+          })
+        }
+      } catch (error) {
+        console.log(error)
+        this.$swal({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Gagal menghapus data!',
+        })
+      }
+    },
+
+    updateModalView() {
+      if (
+        this.modalType === 'category' &&
+        Array.isArray(this.problemCategory)
+      ) {
+        this.problemCategory = this.problemCategory.filter(
+          (problem) => problem.id !== this.selectedProblemId,
+        )
+      } else if (
+        this.modalType === 'next proses' &&
+        Array.isArray(this.problemNextProcess)
+      ) {
+        this.problemNextProcess = this.problemNextProcess.filter(
+          (problem) => problem.id !== this.selectedProblemId,
+        )
+      }
+
+      // Panggil ulang data dari API jika diperlukan
+      this.fetchProblemData()
     },
 
     resetModal() {
@@ -812,7 +965,7 @@ export default {
 }
 
 .custom-table th {
-  background-color: #f8fafa;
+  background-color: rgb(198, 240, 240);
 }
 
 .custom-table td {
@@ -825,5 +978,33 @@ input {
 }
 .fc {
   width: fit-content;
+}
+.card-laporan-harian {
+  position: sticky;
+  top: 120px; /* Sesuaikan dengan tinggi header/nav bar */
+  z-index: 1000;
+}
+.card-scrolled.scrolled {
+  background-color: #0056b3 !important; /* Warna biru saat scroll */
+  color: white; /* Ubah teks jadi putih */
+}
+.card-scrolled {
+  padding: 4px;
+  margin-bottom: 4px;
+}
+.table-bordered th {
+  background-color: rgb(198, 240, 240);
+}
+.table-bordered {
+  border: 1px solid black;
+}
+.table-wrapper {
+  overflow-y: auto; /* Scroll hanya pada isi tabel */
+  max-height: 400px; /* Sesuaikan dengan tinggi yang diinginkan */
+}
+.sticky-thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 </style>
