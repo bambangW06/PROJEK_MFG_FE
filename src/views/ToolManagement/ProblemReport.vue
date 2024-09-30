@@ -14,14 +14,29 @@
 
   <div class="container-fluid">
     <div class="card p-2">
-      <div class="d-flex justify-content-end mt-1">
-        <input
-          type="date"
-          class="form-control ms-auto"
-          style="max-width: 200px"
-          v-model="selectedDate"
-          @change="getProblemTable()"
-        />
+      <div class="d-flex justify-content-between align-items-center mb-1">
+        <!-- Shift dropdown di sebelah kiri -->
+        <div class="d-flex align-items-center">
+          <select
+            class="form-select"
+            v-model="selectedShift"
+            style="max-width: 150px"
+          >
+            <option value="Siang">Siang</option>
+            <option value="Malam">Malam</option>
+          </select>
+        </div>
+
+        <!-- Tanggal input di sebelah kanan -->
+        <div>
+          <input
+            type="date"
+            class="form-control"
+            style="max-width: 200px"
+            v-model="selectedDate"
+            @change="getProblemTable()"
+          />
+        </div>
       </div>
       <div class="card p-2 mt-2">
         <h4 class="text-center">Problem In Proses</h4>
@@ -38,10 +53,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr
-                v-for="(problem, index) in GET_PROBLEM_IN_PROCESS"
-                :key="index"
-              >
+              <tr v-for="(problem, index) in filteredInProcess" :key="index">
                 <td>{{ index + 1 }}</td>
                 <td>{{ problem.created_dt }}</td>
                 <td>{{ problem.time_range }}</td>
@@ -71,10 +83,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr
-                v-for="(problem, index) in GET_PROBLEM_NEXT_PROCESS"
-                :key="index"
-              >
+              <tr v-for="(problem, index) in filteredNextProcess" :key="index">
                 <td>{{ index + 1 }}</td>
                 <td>{{ problem.created_dt }}</td>
                 <td>{{ problem.time_range }}</td>
@@ -111,10 +120,43 @@ export default {
         day: 'numeric',
       }),
       selectedDate: '',
+      selectedShift: 'Siang',
     }
   },
   computed: {
     ...mapGetters([GET_PROBLEM_IN_PROCESS, GET_PROBLEM_NEXT_PROCESS]),
+
+    filteredInProcess() {
+      return this.GET_PROBLEM_IN_PROCESS.filter((problem) => {
+        const timeRange = problem.time_range // Misal: "07:30 - 08:00"
+        const [startTime, endTime] = timeRange.split(' - ').map((t) => {
+          const [hour, minute] = t.split(':')
+          return parseInt(hour) + parseInt(minute) / 60 // Mengubah menjadi format jam desimal
+        })
+
+        if (this.selectedShift === 'Siang') {
+          return startTime >= 7 && endTime <= 20 // Jam siang
+        } else {
+          return startTime >= 20 || startTime < 7 // Jam malam
+        }
+      })
+    },
+
+    filteredNextProcess() {
+      return this.GET_PROBLEM_NEXT_PROCESS.filter((problem) => {
+        const timeRange = problem.time_range // Misal: "07:30 - 08:00"
+        const [startTime, endTime] = timeRange.split(' - ').map((t) => {
+          const [hour, minute] = t.split(':')
+          return parseInt(hour) + parseInt(minute) / 60 // Mengubah menjadi format jam desimal
+        })
+
+        if (this.selectedShift === 'Siang') {
+          return startTime >= 7 && endTime <= 20 // Jam siang
+        } else {
+          return startTime >= 20 || startTime < 7 // Jam malam
+        }
+      })
+    },
   },
   mounted() {
     this.$store.dispatch(ACTION_GET_PROBLEM_TABLE, this.selectedDate)
