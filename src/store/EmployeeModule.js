@@ -158,29 +158,6 @@ const actions = {
       throw error
     }
   },
-  async ActionSearchKaryawan({ commit }, payload) {
-    try {
-      const response = await axios.get(API_URL + '/employees/search', {
-        params: {
-          searchInput: payload.searchInput,
-        },
-      })
-      if (response.data && response.data.data) {
-        // Periksa keberadaan properti 'data'
-        commit('setKaryawanList', response.data.data)
-        commit('setResponse', response.data)
-        console.log('Hasil pencarian:', response.data.data)
-        return response // Mengembalikan respons jika berhasil
-      } else {
-        throw new Error('Respons tidak valid')
-      }
-    } catch (error) {
-      console.error('Error searching employees:', error)
-      // Cetak error untuk mengetahui apa yang menyebabkan masalah
-      console.error('Detail error:', error.response.data)
-      throw error
-    }
-  },
 }
 
 export default {

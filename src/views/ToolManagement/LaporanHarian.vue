@@ -681,6 +681,14 @@ export default {
             this.tableData[index].waktu_delay = report.time_delay || ''
           }
         })
+      } else {
+        this.tableData.forEach((row) => {
+          row.from_clr = ''
+          row.penambahan_tool = ''
+          row.regrind_setting = ''
+          row.tool_delay = ''
+          row.waktu_delay = ''
+        })
       }
     },
   },
@@ -854,7 +862,7 @@ export default {
         if (response.data.data.length === 0) {
           this.$swal({
             icon: 'error',
-            text: 'Data not found!',
+            text: 'NO DATA!',
           })
         }
       } catch (error) {

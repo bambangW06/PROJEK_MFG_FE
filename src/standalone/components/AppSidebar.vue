@@ -127,7 +127,7 @@ export default {
             },
             {
               component: 'CNavItem',
-              name: ' Jumlah Absensi ', // Nama menu untuk EAssesment
+              name: ' History Kehadiran ', // Nama menu untuk EAssesment
               to: '/EAbsensi', // Path yang dituju saat menu EAssesment diklik
               icon: 'cilHistory', // Ikonya bisa disesuaikan
               parentId: 'ROOT',

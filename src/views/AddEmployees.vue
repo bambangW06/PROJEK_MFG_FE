@@ -244,19 +244,27 @@
       </div>
     </div>
   </div>
-  <div class="container-fluid mt-2">
+  <div class="container-fluid">
     <div class="card p-2">
-      <!-- <div class="card-body"> -->
-      <div class="navbar d-flex justify-content-between align-items-center">
+      <div class="d-flex justify-content-end w-100">
+        <h4>List Karyawan</h4>
         <button
-          class="btn btn-primary"
+          class="btn btn-primary ms-auto"
+          style="width: fit-content"
           data-bs-toggle="modal"
           data-bs-target="#modalTambahKaryawan"
         >
-          <i class="fas fa-plus"></i>
+          Tambah Karyawan
         </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid mt-2">
+    <div class="card p-2">
+      <div class="d-flex align-items-center">
         <!-- Pagination -->
-        <nav aria-label="Page navigation">
+        <nav aria-label="Page navigation" class="ms-auto">
           <ul class="pagination justify-content-center mb-0">
             <li class="page-item" :class="{ disabled: currentPage === 1 }">
               <button class="page-link" @click="goToPage(currentPage - 1)">
@@ -286,17 +294,17 @@
           </ul>
         </nav>
 
-        <form class="d-flex">
-          <input type="text" v-model="searchInput" placeholder="Cari" />
-          <button
-            type="submit"
-            @click.prevent="searchKaryawan"
-            class="btn btn-primary"
-          >
-            <i class="fas fa-search"></i>
-          </button>
-        </form>
+        <!-- Search input -->
+        <input
+          class="form-control ms-auto"
+          type="text"
+          v-model="searchInput"
+          placeholder="Cari"
+          @input="filterKaryawan"
+          style="max-width: 150px"
+        />
       </div>
+
       <div class="table-responsive">
         <table class="table mt-3 text-center tb-emp table-bordered">
           <thead style="height: 70px; font-size: large">
@@ -313,9 +321,7 @@
           <tbody id="dataKaryawan" style="text-align: center" class="fntSz">
             <!-- Data Karyawan akan ditampilkan di sini -->
             <tr
-              v-for="(karyawan, index) in searchResult.length > 0
-                ? searchResult
-                : paginatedData"
+              v-for="(karyawan, index) in paginatedData"
               :key="karyawan.employee_id"
             >
               <td class="vAm">{{ index + 1 }}</td>
@@ -396,21 +402,30 @@ export default {
       selectedEmployeeIndex: -1, // Inisialisasi dengan nilai -1
       selectedEmployee: {}, // Objek untuk menyimpan ID karyawan yang akan dihapus
       searchInput: '', // Properti search untuk menyimpan nilai input pencarian
-      searchResult: [],
     }
   },
   computed: {
-    ...mapGetters(['getKaryawanList', 'getSearchResult']),
+    ...mapGetters(['getKaryawanList']),
     ...mapGetters(['getResponse']),
 
+    // Total halaman berdasarkan data karyawan yang difilter
     totalPages() {
-      const data =
-        this.searchResult.length > 0 ? this.searchResult : this.getKaryawanList
+      const data = this.filteredKaryawanList
       return Math.ceil(data.length / this.pageSize)
     },
+
+    // Data karyawan yang telah difilter
+    filteredKaryawanList() {
+      const searchTerm = this.searchInput.toLowerCase()
+      return this.getKaryawanList.filter((karyawan) => {
+        // Misalnya, kita ingin memfilter berdasarkan nama karyawan
+        return karyawan.nama.toLowerCase().includes(searchTerm)
+      })
+    },
+
+    // Data yang dipaginasikan berdasarkan data yang telah difilter
     paginatedData() {
-      const data =
-        this.searchResult.length > 0 ? this.searchResult : this.getKaryawanList
+      const data = this.filteredKaryawanList
       const startIndex = (this.currentPage - 1) * this.pageSize
       const endIndex = this.currentPage * this.pageSize
       return data.slice(startIndex, endIndex)
@@ -651,24 +666,6 @@ export default {
       } catch (error) {
         console.error('Gagal menghapus karyawan:', error)
         alert('Gagal menghapus karyawan.')
-      }
-    },
-    async searchKaryawan() {
-      try {
-        console.log('Mengirim permintaan pencarian karyawan:', this.searchInput)
-        // Simpan nilai searchInput sebelum membersihkan input
-        const searchInput = this.searchInput
-        // Kirim permintaan pencarian ke backend dan tunggu responsnya
-        const response = await this.$store.dispatch('ActionSearchKaryawan', {
-          searchInput,
-        })
-        console.log('Permintaan pencarian berhasil dikirim.')
-        // Setelah menerima hasil pencarian dari backend, perbarui variabel searchResult
-        this.searchResult = response.data // Misalnya response.data berisi data hasil pencarian
-        console.log('Hasil pencarian:', this.searchResult)
-      } catch (error) {
-        console.error('Gagal Mencari karyawan:', error)
-        alert('Karyawan tidak ditemukan.')
       }
     },
   },

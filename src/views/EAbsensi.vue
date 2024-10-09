@@ -2,9 +2,17 @@
   <div class="container-fluid">
     <div class="card p-2 mb-2">
       <div class="d-flex justify-content-between align-items-center">
-        <h4 class="text-center m-0">Absensi Member Tool & Coolant</h4>
+        <h4 class="text-center m-0">History Kehadiran Member Tool & Coolant</h4>
+        <input
+          type="month"
+          class="form-control w-auto ml-auto"
+          v-model="selectedMonth"
+          style="min-width: 100px"
+          @input="changeMonth()"
+        />
       </div>
     </div>
+
     <div class="card mt-2">
       <h3 class="text-center m-0">{{ currentMonth }}</h3>
 
@@ -171,8 +179,9 @@ export default {
   methods: {
     functionCurrentMonth() {
       const date = new Date()
-      const month = date.getMonth() + 1
-      const year = date.getFullYear()
+      this.updateCurrentMonth(date.getFullYear(), date.getMonth() + 1)
+    },
+    updateCurrentMonth(year, month) {
       const months = [
         'Januari',
         'Februari',
@@ -187,7 +196,7 @@ export default {
         'November',
         'Desember',
       ]
-      this.currentMonth = months[month - 1] + ' ' + year
+      this.currentMonth = `${months[month - 1]} ${year}`
     },
     countAbsensi(data) {
       const counts = {}
@@ -199,6 +208,13 @@ export default {
         }
       })
       return counts
+    },
+    async changeMonth() {
+      if (this.selectedMonth) {
+        const [year, month] = this.selectedMonth.split('-')
+        this.updateCurrentMonth(year, month)
+        this.$store.dispatch('Action_Get_History_Absence', this.selectedMonth)
+      }
     },
     getChartOptions(data) {
       return {
@@ -236,11 +252,15 @@ export default {
           },
           labels: {
             formatter: (value) => {
-              // Batasi panjang label dengan menggunakan slice
-              const maxLength = 10 // Panjang maksimal label
-              return value.length > maxLength
-                ? value.slice(0, maxLength) + '...'
-                : value
+              const maxLength = 10
+              // Pastikan value adalah string sebelum melakukan operasi slice
+              if (typeof value === 'string') {
+                return value.length > maxLength
+                  ? value.slice(0, maxLength) + '...'
+                  : value
+              }
+              // Kembalikan value apa adanya jika bukan string
+              return value
             },
           },
           axisTicks: {
@@ -296,7 +316,7 @@ export default {
   },
   mounted() {
     this.functionCurrentMonth()
-    this.$store.dispatch('Action_Get_History_Absence')
+    this.$store.dispatch('Action_Get_History_Absence', this.selectedMonth)
     document.addEventListener('click', this.handleClickOutside)
   },
   beforeDestroy() {

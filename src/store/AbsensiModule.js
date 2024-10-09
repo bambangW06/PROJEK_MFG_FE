@@ -279,11 +279,16 @@ const actions = {
     }
   },
 
-  async Action_Get_History_Absence({ commit }) {
+  async Action_Get_History_Absence({ commit }, payload) {
     try {
-      const response = await axios.get(`${API_URL}/histories/get`)
+      console.log('payload', payload)
+      const response = await axios.get(`${API_URL}/histories/get`, {
+        params: {
+          selectedMonth: payload,
+        },
+      })
       commit('Set_History_Absence', response.data.data)
-      console.log('response', response.data.data)
+      // console.log('response', response.data.data)
     } catch (error) {
       console.log(error)
     }
