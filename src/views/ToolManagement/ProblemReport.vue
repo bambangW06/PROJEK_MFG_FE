@@ -160,8 +160,20 @@ export default {
   },
   mounted() {
     this.$store.dispatch(ACTION_GET_PROBLEM_TABLE, this.selectedDate)
+    this.setShiftByCurrentTime()
   },
   methods: {
+    setShiftByCurrentTime() {
+      const now = new Date()
+      const currentHour = now.getHours()
+      // console.log(currentHour)
+
+      if (currentHour >= 7 && currentHour < 20) {
+        this.selectedShift = 'Siang'
+      } else {
+        this.selectedShift = 'Malam'
+      }
+    },
     async getProblemTable() {
       try {
         console.log(this.selectedDate)
