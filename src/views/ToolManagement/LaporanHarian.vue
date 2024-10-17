@@ -128,7 +128,7 @@
           ></button>
         </div>
         <div v-if="modalType === 'category'" class="modal-body">
-          <table class="table table-bordered">
+          <table class="table table-bordered custom-table">
             <thead>
               <tr>
                 <th>No</th>
@@ -165,7 +165,7 @@
         </div>
 
         <div v-if="modalType === 'next proses'">
-          <table class="table table-bordered">
+          <table class="table table-bordered custom-table">
             <thead>
               <tr>
                 <th>No</th>
@@ -310,11 +310,11 @@
         >
           <thead class="sticky-thead">
             <tr>
-              <th style="width: 100px">Jam</th>
-              <th style="width: 80px">From CL/R</th>
-              <th style="width: 80px">Penambahan Tool</th>
-              <th style="width: 80px">Regrind & Setting</th>
-              <th style="width: 80px">Tool Delay</th>
+              <th style="width: 95px">Jam</th>
+              <th style="width: 80px">Request CL/R</th>
+              <th style="width: 95px">Penambahan Tool</th>
+              <th style="width: 75px">Regrind Setting</th>
+              <th style="width: 75px">Tool Delay</th>
               <th style="width: 80px">Waktu Delay</th>
               <th>Problem In Proses</th>
               <th>Problem Next Proses</th>
@@ -420,6 +420,117 @@
           </tbody>
         </table>
       </div>
+      <div class="row">
+        <div class="col text-center">
+          <div class="card">
+            <h4>OEE</h4>
+            <table class="table table-bordered custom-table">
+              <thead>
+                <tr>
+                  <th>Man Power</th>
+                  <th>Jam Kerja</th>
+                  <th>Total Reg/Setting</th>
+                  <th>OEE</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <input v-model="actMp" type="number" class="form-control" />
+                  </td>
+                  <td>
+                    <input
+                      v-model="jamKerja"
+                      type="number"
+                      class="form-control"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      :value="totalRegSetting"
+                      type="number"
+                      class="form-control"
+                      readonly
+                    />
+                  </td>
+                  <td>
+                    <!-- Menampilkan nilai OEE menggunakan computed property -->
+                    <input
+                      :value="formattedOEE"
+                      type="text"
+                      class="form-control"
+                      readonly
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="col text-center">
+          <div class="card">
+            <h4>Absensi Karyawan</h4>
+            <table class="table table-bordered custom-table table-absensi">
+              <thead>
+                <tr>
+                  <th>GL</th>
+                  <th>TL</th>
+                  <th
+                    v-for="(item, index) in getKehadiranByJabatan(
+                      'Team Member',
+                    )"
+                    :key="'opr-header-' + index"
+                  >
+                    OPR
+                  </th>
+                  <th>Ttl</th>
+                  <th>Eva</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span
+                      v-for="item in getKehadiranByJabatan('Group Leader')"
+                      :key="item.absen_id"
+                    >
+                      <span
+                        v-if="item.status === 'Hadir'"
+                        class="hollow-circle"
+                      ></span>
+                      <span v-else>❌</span>
+                    </span>
+                  </td>
+                  <td>
+                    <span
+                      v-for="item in getKehadiranByJabatan('Team Leader')"
+                      :key="item.absen_id"
+                    >
+                      <span
+                        v-if="item.status === 'Hadir'"
+                        class="hollow-circle"
+                      ></span>
+                      <span v-else>❌</span>
+                    </span>
+                  </td>
+                  <td
+                    v-for="item in getKehadiranByJabatan('Team Member')"
+                    :key="item.absen_id"
+                  >
+                    <span
+                      v-if="item.status === 'Hadir'"
+                      class="hollow-circle"
+                    ></span>
+                    <span v-else>❌</span>
+                  </td>
+                  <td>{{ totalHadir }}</td>
+                  <td>{{ evaluasiHadir }}%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -431,16 +542,21 @@ import Treeselect from 'vue3-treeselect'
 // import the styles
 import 'vue3-treeselect/dist/vue3-treeselect.css'
 import {
+  ACTION_ADD_OEE,
   ACTION_ADD_PROBLEM,
   ACTION_ADD_PROBLEM_NEXT_PROCESS,
   ACTION_ADD_REPORT_REG_SET,
   ACTION_DELETE_PROBLEM,
+  ACTION_GET_ABSENSI,
   ACTION_GET_CATEGORIES,
+  ACTION_GET_OEE,
   ACTION_GET_PROBLEM_MODAL,
   ACTION_GET_REPORT_REG_SET,
   ACTION_GET_STD_COUNTER,
   ACTION_GET_TOOLS,
+  GET_ABSENSI,
   GET_CATEGORIES,
+  GET_OEE,
   GET_PROBLEM,
   GET_PROBLEM_MODAL,
   GET_REPORT,
@@ -563,6 +679,9 @@ export default {
           waktu_delay: '',
         },
       ],
+      actMp: '', // Input manual untuk Mp Opr
+      jamKerja: '', // Input manual untuk Jam Kerja
+      isFetching: false,
     }
   },
   computed: {
@@ -574,6 +693,8 @@ export default {
       GET_STD_COUNTER,
       GET_PROBLEM_MODAL,
       GET_REPORT,
+      GET_OEE,
+      GET_ABSENSI,
     ]),
     filteredDataByShift() {
       if (this.selectedShift === 'Siang') {
@@ -592,6 +713,37 @@ export default {
         // Tampilkan semua data jika shift belum dipilih
         return this.tableData
       }
+    },
+    totalRegSetting() {
+      const total = this.filteredDataByShift.reduce((total, row) => {
+        return total + (parseFloat(row.regrind_setting) || 0)
+      }, 0)
+      // console.log('Total Reg Setting:', total) // Debug log
+      return total
+    },
+    calculatedOEE() {
+      // Menghitung OEE berdasarkan formula
+      if (this.actMp && this.jamKerja && this.totalRegSetting) {
+        return (
+          100 -
+          ((this.actMp * this.jamKerja) / this.totalRegSetting) * 100
+        ).toFixed(2)
+      }
+      return 0 // Kembalikan 0 jika ada input yang tidak lengkap
+    },
+    formattedOEE() {
+      return `${this.calculatedOEE}%` // Menggabungkan nilai OEE dengan simbol %
+    },
+    totalHadir() {
+      return this.GET_ABSENSI.filter((item) => item.status === 'Hadir').length
+    },
+    evaluasiHadir() {
+      // Cek apakah ada data absensi
+      if (this.GET_ABSENSI.length === 0) {
+        return 0 // Set persentase ke 0 jika tidak ada data
+      }
+      // Hitung persentase kehadiran
+      return ((this.totalHadir / this.GET_ABSENSI.length) * 100).toFixed(2)
     },
   },
   watch: {
@@ -691,6 +843,19 @@ export default {
         })
       }
     },
+    actMp() {
+      this.checkAndSend()
+    },
+    jamKerja() {
+      this.checkAndSend()
+    },
+    totalRegSetting() {
+      this.checkAndSend()
+    },
+    selectedShift() {
+      this.fetchOEE()
+      this.absensiKaryawan()
+    },
   },
   mounted() {
     this.$store.dispatch('fetchLines')
@@ -698,15 +863,90 @@ export default {
     this.$store.dispatch(ACTION_GET_REPORT_REG_SET, this.selectedDate)
     window.addEventListener('scroll', this.handleScroll)
     this.setShiftByCurrentTime()
+    this.fetchOEE()
+    this.isInitialized = true
   },
   beforeDestroy() {
     window.removeEventListener('scroll', this.handleScroll) // Hapus listener ketika component di-destroy
   },
   methods: {
+    async absensiKaryawan() {
+      try {
+        let response = await this.$store.dispatch(
+          ACTION_GET_ABSENSI,
+          this.selectedShift,
+        )
+        if (response.status === 200) {
+          if (this.GET_ABSENSI?.length > 0) {
+            console.log(this.GET_ABSENSI)
+          } else {
+            console.log('mangtabsss')
+          }
+        }
+      } catch (error) {
+        console.log(error)
+        this.$swal({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Something went wrong!',
+        })
+      }
+    },
+    getKehadiranByJabatan(jabatan) {
+      return this.GET_ABSENSI.filter((item) => item.jabatan === jabatan)
+    },
+    async fetchOEE() {
+      await this.$store.dispatch(ACTION_GET_OEE, this.selectedShift)
+      if (this.GET_OEE.length > 0) {
+        this.actMp = this.GET_OEE[0].act_mp
+        this.jamKerja = this.GET_OEE[0].jam_kerja
+      } else {
+        this.actMp = ''
+        this.jamKerja = ''
+      }
+    },
+    checkAndSend() {
+      // console.log(
+      //   'actMp:',
+      //   this.actMp,
+      //   'jamKerja:',
+      //   this.jamKerja,
+      //   'totalRegSetting:',
+      //   this.totalRegSetting,
+      // )
+      // Cek apakah semua input terisi sebelum mengirim
+      if (this.actMp && this.jamKerja && this.totalRegSetting) {
+        this.actionAddOEE() // Panggil metode untuk mengirim data
+      }
+    },
+    async actionAddOEE() {
+      try {
+        const payload = {
+          shift: this.selectedShift,
+          actMp: this.actMp,
+          jamKerja: this.jamKerja,
+          total: this.totalRegSetting,
+          oee: this.calculatedOEE,
+        }
+        // console.log('payload:', payload)
+        let response = await this.$store.dispatch(ACTION_ADD_OEE, payload)
+
+        if (response.status === 201) {
+          this.fetchOEE()
+        }
+      } catch (error) {
+        console.log('Error saat actionAddOEE:', error)
+        this.$swal({
+          icon: 'error',
+          title: 'Gagal',
+          text: 'Gagal menambahkan OEE',
+        })
+      }
+    },
     setShiftByCurrentTime() {
       const now = new Date()
       const currentHour = now.getHours()
-      console.log(currentHour)
+      // console.log(currentHour)
 
       if (currentHour >= 7 && currentHour < 20) {
         this.selectedShift = 'Siang'
@@ -824,6 +1064,8 @@ export default {
       }
     },
     async addReportReg(row) {
+      if (this.isFetching) return // Jika sudah ada permintaan yang sedang berlangsung
+      this.isFetching = true
       try {
         const payload = {
           time_range: row.jam,
@@ -849,9 +1091,13 @@ export default {
           title: 'Oops...',
           text: 'Something went wrong!',
         })
+      } finally {
+        this.isFetching = false // Reset flag setelah selesai
       }
     },
     async getReport() {
+      if (this.isFetching) return // Jika sudah ada permintaan yang sedang berlangsung
+      this.isFetching = true
       try {
         const selectedDate = this.selectedDate
         console.log('payload', selectedDate)
@@ -867,6 +1113,8 @@ export default {
         }
       } catch (error) {
         console.log(error)
+      } finally {
+        this.isFetching = false // Reset flag setelah selesai
       }
     },
     deleteProblem(problemId) {
@@ -986,5 +1234,23 @@ input {
 }
 .fc {
   width: fit-content;
+}
+.hollow-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5em; /* Sesuaikan ukuran agar sesuai */
+  height: 100%;
+  vertical-align: middle;
+}
+.hollow-circle {
+  width: 1em;
+  height: 1em;
+  border: 2px solid green;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+.table-absensi {
+  height: 85px; /* Sesuaikan dengan tinggi yang diinginkan */
 }
 </style>

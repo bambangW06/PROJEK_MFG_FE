@@ -33,12 +33,12 @@ const routes = [
         component: () => import('@/views/EAssignment.vue'),
       },
       {
-        path: '/AddEmployees',
+        path: '/employeesData',
         name: 'Data Karyawan',
         component: () => import('@/views/AddEmployees.vue'),
       },
       {
-        path: '/EAbsensi',
+        path: '/grafikAbsensi',
         name: 'Absensi Karyawan',
         component: () => import('@/views/EAbsensi.vue'),
       },

@@ -128,14 +128,14 @@ export default {
             {
               component: 'CNavItem',
               name: ' History Kehadiran ', // Nama menu untuk EAssesment
-              to: '/EAbsensi', // Path yang dituju saat menu EAssesment diklik
+              to: '/grafikAbsensi', // Path yang dituju saat menu EAssesment diklik
               icon: 'cilHistory', // Ikonya bisa disesuaikan
               parentId: 'ROOT',
             },
             {
               component: 'CNavItem',
               name: 'Data Karyawan', // Nama menu untuk EAssesment
-              to: '/AddEmployees', // Path yang dituju saat menu EAssesment diklik
+              to: '/employeesData', // Path yang dituju saat menu EAssesment diklik
               icon: 'cilGroup', // Ikonya bisa disesuaikan
               parentId: 'ROOT',
             },

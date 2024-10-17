@@ -33,6 +33,15 @@ export const SET_PROBLEM_NEXT_PROCESS = 'SET_PROBLEM_NEXT_PROCESS'
 export const GET_PROBLEM_IN_PROCESS = 'GET_PROBLEM_IN_PROCESS'
 export const GET_PROBLEM_NEXT_PROCESS = 'GET_PROBLEM_NEXT_PROCESS'
 
+export const ACTION_ADD_OEE = 'ACTION_ADD_OEE'
+export const ACTION_GET_OEE = 'ACTION_GET_OEE'
+export const SET_OEE = 'SET_OEE'
+export const GET_OEE = 'GET_OEE'
+
+export const ACTION_GET_ABSENSI = 'ACTION_GET_ABSENSI'
+export const SET_ABSENSI = 'SET_ABSENSI'
+export const GET_ABSENSI = 'GET_ABSENSI'
+
 const state = {
   TOOLS: [],
   CATEGORIES: [],
@@ -41,6 +50,8 @@ const state = {
   REPORT: [],
   PROBLEM_IN_PROCESS: [],
   PROBLEM_NEXT_PROCESS: [],
+  OEE: [],
+  ABSENSI: [],
 }
 
 const getters = {
@@ -51,6 +62,8 @@ const getters = {
   GET_REPORT: (state) => state.REPORT,
   GET_PROBLEM_IN_PROCESS: (state) => state.PROBLEM_IN_PROCESS,
   GET_PROBLEM_NEXT_PROCESS: (state) => state.PROBLEM_NEXT_PROCESS,
+  GET_OEE: (state) => state.OEE,
+  GET_ABSENSI: (state) => state.ABSENSI,
 }
 
 const mutations = {
@@ -75,9 +88,43 @@ const mutations = {
   SET_PROBLEM_NEXT_PROCESS(state, payload) {
     state.PROBLEM_NEXT_PROCESS = payload
   },
+  SET_OEE(state, payload) {
+    state.OEE = payload
+  },
+  SET_ABSENSI(state, payload) {
+    state.ABSENSI = payload
+  },
 }
 
 const actions = {
+  async ACTION_GET_ABSENSI({ commit }, payload) {
+    try {
+      const response = await axios.get(`${API_URL}/oee/absensi/${payload}`)
+      commit(SET_ABSENSI, response.data.data)
+      console.log(response.data.data)
+      return response
+    } catch (error) {
+      console.error('Error fetching tools:', error)
+    }
+  },
+  async ACTION_GET_OEE({ commit }, payload) {
+    try {
+      const response = await axios.get(`${API_URL}/oee/get/${payload}`)
+      commit(SET_OEE, response.data.data)
+      // console.log(response.data.data)
+      return response
+    } catch (error) {
+      console.error('Error fetching tools:', error)
+    }
+  },
+  async ACTION_ADD_OEE({ commit }, payload) {
+    try {
+      const response = await axios.post(`${API_URL}/oee/add`, payload)
+      return response
+    } catch (error) {
+      console.error('Error fetching tools:', error)
+    }
+  },
   async ACTION_GET_TOOLS({ commit }, payload) {
     try {
       const response = await axios.get(`${API_URL}/tools/get/${payload}`)
@@ -184,7 +231,7 @@ const actions = {
           selectedDate: payload,
         },
       })
-      console.log(response.data.data)
+      // console.log(response.data.data)
 
       commit(SET_REPORT, response.data.data)
       return response
