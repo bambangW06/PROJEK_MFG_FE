@@ -424,7 +424,7 @@
         <div class="col text-center">
           <div class="card">
             <h4>OEE</h4>
-            <table class="table table-bordered custom-table">
+            <table class="table table-bordered custom-table table-oee">
               <thead>
                 <tr>
                   <th>Man Power</th>
@@ -1251,6 +1251,15 @@ input {
   box-sizing: border-box;
 }
 .table-absensi {
-  height: 85px; /* Sesuaikan dengan tinggi yang diinginkan */
+  height: 75px; /* Sesuaikan dengan tinggi yang diinginkan */
+}
+.table-oee tbody {
+  max-height: 100px; /* Sesuaikan tinggi yang diinginkan */
+  overflow-y: auto; /* Menambahkan scroll jika konten terlalu banyak */
+}
+
+.table-oee td,
+.table-oee th {
+  padding: 5px; /* Mengurangi padding agar lebih kompak */
 }
 </style>
