@@ -777,12 +777,16 @@ export default {
             ) {
               row.reportSent = false // Reset flag jika ada perubahan
             }
+
             // Hanya panggil addReportReg jika waktu_delay terisi dan belum dikirim
             if (row.waktu_delay && !row.reportSent) {
               // Gunakan setTimeout untuk memberikan jeda
               setTimeout(() => {
-                this.addReportReg(row)
-                row.reportSent = true // Tandai bahwa data ini sudah diproses
+                if (!row.reportSent) {
+                  // Cegah pemanggilan ulang
+                  this.addReportReg(row)
+                  row.reportSent = true // Tandai bahwa data ini sudah diproses
+                }
               }, 2000) // 2000 ms = 2 detik
 
               // Simpan nilai sebelumnya untuk pengecekan di kemudian hari
@@ -799,9 +803,9 @@ export default {
       if (newValue && newValue.length) {
         // Pemetaan rentang waktu di tableData
         const timeRanges = {
-          '07:30 - 09:30': 0, // Misalkan index 0 di tableData untuk jam 07:30 - 09:30
-          '09:40 - 11:45': 1, // Misalkan index 1 di tableData untuk jam 09:40 - 11:45
-          '12:30 - 14:00': 2, // Dan seterusnya
+          '07:30 - 09:30': 0,
+          '09:40 - 11:45': 1,
+          '12:30 - 14:00': 2,
           '14:10 - 16:00': 3,
           '16:00 - 20:00': 4,
           '20:00 - 22:00': 5,
@@ -810,14 +814,19 @@ export default {
           '02:40 - 05:45': 8,
           '05:45 - 07:00': 9,
         }
-        // Reset tableData sebelum mengisi data baru
+
+        // Reset hanya data yang relevan
         this.tableData.forEach((row) => {
-          row.from_clr = ''
-          row.penambahan_tool = ''
-          row.regrind_setting = ''
-          row.tool_delay = ''
-          row.waktu_delay = ''
+          if (!row.jam) {
+            // Reset hanya jika 'jam' tidak ada
+            row.from_clr = ''
+            row.penambahan_tool = ''
+            row.regrind_setting = ''
+            row.tool_delay = ''
+            row.waktu_delay = ''
+          }
         })
+
         // Sinkronisasi data dari GET_REPORT ke tableData
         newValue.forEach((report) => {
           const timeRange = report.time_range
@@ -825,15 +834,17 @@ export default {
           // Cek apakah time_range dari report cocok dengan salah satu rentang waktu di tableData
           const index = timeRanges[timeRange]
           if (index !== undefined && this.tableData[index]) {
-            // Masukkan data dari report ke tableData berdasarkan index
-            this.tableData[index].from_clr = report.from_gel || ''
-            this.tableData[index].penambahan_tool = report.penambahan || ''
-            this.tableData[index].regrind_setting = report.reg_set || ''
-            this.tableData[index].tool_delay = report.tool_delay || ''
-            this.tableData[index].waktu_delay = report.time_delay || ''
+            // Langsung ubah nilai dalam tableData
+            const targetRow = this.tableData[index]
+            targetRow.from_clr = report.from_gel || ''
+            targetRow.penambahan_tool = report.penambahan || ''
+            targetRow.regrind_setting = report.reg_set || ''
+            targetRow.tool_delay = report.tool_delay || ''
+            targetRow.waktu_delay = report.time_delay || ''
           }
         })
       } else {
+        // Jika tidak ada data dari GET_REPORT, reset tableData secara hati-hati
         this.tableData.forEach((row) => {
           row.from_clr = ''
           row.penambahan_tool = ''
@@ -1075,7 +1086,7 @@ export default {
           tool_delay: row.tool_delay,
           time_delay: row.waktu_delay,
         }
-        // console.log('payload', payload)
+        console.log('payload', payload)
         let response = await this.$store.dispatch(
           ACTION_ADD_REPORT_REG_SET,
           payload,
