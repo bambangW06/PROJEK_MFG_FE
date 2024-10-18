@@ -892,25 +892,46 @@ export default {
       if (newValue !== oldValue) {
         this.now = new Date() // Update waktu saat shift berubah
 
-        // Reset nilai terkait shift
-        this.actMp = null // Reset actMp saat shift berubah
-        this.jamKerja = null // Reset jamKerja saat shift berubah
-        this.totalRegSetting = null // Reset totalRegSetting saat shift berubah
-        this.calculatedOEE = null // Reset calculatedOEE saat shift berubah
-        this.shouldSend = false // Pastikan flag di-reset
-
-        // Cek nilai setelah reset
-        console.log('Reset values on shift change:', {
-          actMp: this.actMp,
-          jamKerja: this.jamKerja,
-          totalRegSetting: this.totalRegSetting,
-          calculatedOEE: this.calculatedOEE,
-        })
-
         // Fetch OEE data untuk shift baru
-        this.fetchOEE() // Fetch OEE data for the new shift
-        this.absensiKaryawan() // Update employee attendance data
+        this.fetchOEE()
+          .then((oeeData) => {
+            // Setelah mendapatkan data OEE baru, reset nilai
+            this.actMp = oeeData.actMp // Set actMp dari data OEE baru
+            this.jamKerja = oeeData.jamKerja // Set jamKerja dari data OEE baru
+            this.totalRegSetting = oeeData.totalRegSetting // Set totalRegSetting dari data OEE baru
+            this.calculatedOEE = oeeData.calculatedOEE // Set calculatedOEE dari data OEE baru
+
+            this.shouldSend = false // Reset flag untuk tidak mengirim data
+            console.log('Reset values on shift change:', {
+              actMp: this.actMp,
+              jamKerja: this.jamKerja,
+              totalRegSetting: this.totalRegSetting,
+              calculatedOEE: this.calculatedOEE,
+            })
+
+            // Cek dan kirim jika perlu
+            this.checkAndSend()
+          })
+          .catch((error) => {
+            console.error('Error fetching OEE data:', error)
+          })
       }
+    },
+
+    fetchOEE() {
+      // Ganti dengan logika pengambilan OEE sesuai shift
+      return new Promise((resolve, reject) => {
+        // Simulasi pengambilan data OEE
+        setTimeout(() => {
+          const oeeData = {
+            actMp: 0, // Ambil data sesuai shift baru
+            jamKerja: 0,
+            totalRegSetting: 0,
+            calculatedOEE: 0,
+          }
+          resolve(oeeData)
+        }, 1000)
+      })
     },
   },
   mounted() {
