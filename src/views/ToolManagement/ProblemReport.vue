@@ -113,18 +113,34 @@ export default {
   name: 'ProblemReport',
   data() {
     return {
-      today: new Date().toLocaleDateString('id-ID', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      }),
+      now: new Date(),
       selectedDate: '',
       selectedShift: 'Siang',
     }
   },
   computed: {
     ...mapGetters([GET_PROBLEM_IN_PROCESS, GET_PROBLEM_NEXT_PROCESS]),
+    today() {
+      // Dapatkan waktu sekarang
+      let currentDate = new Date(this.now)
+
+      // Atur batas waktu jam 07:00 hari ini
+      let shiftSiangStart = new Date(currentDate)
+      shiftSiangStart.setHours(7, 0, 0, 0) // Set waktu ke jam 07:00 hari ini
+
+      // Jika waktu sekarang masih sebelum jam 07:00, gunakan tanggal kemarin
+      if (currentDate < shiftSiangStart) {
+        currentDate.setDate(currentDate.getDate() - 1) // Set tanggal ke kemarin
+      }
+
+      // Format tanggal dalam bahasa Indonesia
+      return currentDate.toLocaleDateString('id-ID', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+    },
 
     filteredInProcess() {
       return this.GET_PROBLEM_IN_PROCESS.filter((problem) => {
