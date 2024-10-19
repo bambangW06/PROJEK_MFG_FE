@@ -678,6 +678,7 @@ export default {
       jamKerja: '', // Input manual untuk Jam Kerja
       isFetching: false,
       shouldSend: false,
+      hasManualInput: false,
     }
   },
   computed: {
@@ -881,57 +882,25 @@ export default {
         this.shouldSend = false // Reset flag jika OEE tidak valid
       }
     },
-
-    totalRegSetting(newValue, oldValue) {
-      if (newValue !== oldValue) {
-        this.shouldSend = true // Set flag untuk mengindikasikan perubahan
-        this.checkAndSend() // Cek dan kirim jika perlu
-      }
-    },
     selectedShift(newValue, oldValue) {
       if (newValue !== oldValue) {
         this.now = new Date() // Update waktu saat shift berubah
+        this.absensiKaryawan()
 
-        // Fetch OEE data untuk shift baru
+        // Reset nilai dan flag
+        this.actMp = 0
+        this.jamKerja = 0
+        this.shouldSend = false
         this.fetchOEE()
-          .then((oeeData) => {
-            // Setelah mendapatkan data OEE baru, reset nilai
-            this.actMp = oeeData.actMp // Set actMp dari data OEE baru
-            this.jamKerja = oeeData.jamKerja // Set jamKerja dari data OEE baru
-            this.totalRegSetting = oeeData.totalRegSetting // Set totalRegSetting dari data OEE baru
-            this.calculatedOEE = oeeData.calculatedOEE // Set calculatedOEE dari data OEE baru
-
-            this.shouldSend = false // Reset flag untuk tidak mengirim data
-            console.log('Reset values on shift change:', {
-              actMp: this.actMp,
-              jamKerja: this.jamKerja,
-              totalRegSetting: this.totalRegSetting,
-              calculatedOEE: this.calculatedOEE,
-            })
-
-            // Cek dan kirim jika perlu
-            this.checkAndSend()
-          })
-          .catch((error) => {
-            console.error('Error fetching OEE data:', error)
-          })
       }
     },
 
-    fetchOEE() {
-      // Ganti dengan logika pengambilan OEE sesuai shift
-      return new Promise((resolve, reject) => {
-        // Simulasi pengambilan data OEE
-        setTimeout(() => {
-          const oeeData = {
-            actMp: 0, // Ambil data sesuai shift baru
-            jamKerja: 0,
-            totalRegSetting: 0,
-            calculatedOEE: 0,
-          }
-          resolve(oeeData)
-        }, 1000)
-      })
+    selectedDate(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.absensiKaryawan()
+        this.actMp = 0
+        this.jamKerja = 0
+      }
     },
   },
   mounted() {
@@ -940,7 +909,6 @@ export default {
     this.$store.dispatch(ACTION_GET_REPORT_REG_SET, this.selectedDate)
     window.addEventListener('scroll', this.handleScroll)
     this.setShiftByCurrentTime()
-    this.fetchOEE()
     this.isInitialized = true
   },
   beforeDestroy() {
@@ -949,10 +917,12 @@ export default {
   methods: {
     async absensiKaryawan() {
       try {
-        let response = await this.$store.dispatch(
-          ACTION_GET_ABSENSI,
-          this.selectedShift,
-        )
+        const payload = {
+          date: this.selectedDate,
+          shift: this.selectedShift,
+        }
+
+        let response = await this.$store.dispatch(ACTION_GET_ABSENSI, payload)
         if (response.status === 200) {
           if (this.GET_ABSENSI?.length > 0) {
             console.log(this.GET_ABSENSI)
@@ -976,10 +946,10 @@ export default {
     checkAndSend() {
       // Cek apakah semua input terisi sebelum mengirim
       if (
-        this.actMp &&
-        this.jamKerja &&
-        this.totalRegSetting &&
-        this.calculatedOEE
+        this.actMp > 0 &&
+        this.jamKerja > 0 &&
+        this.totalRegSetting > 0 &&
+        this.calculatedOEE > 0
       ) {
         if (this.shouldSend) {
           // Siapkan payload dengan data yang sesuai dengan shift yang dipilih
@@ -1000,6 +970,33 @@ export default {
         this.shouldSend = false // Reset flag jika tidak ada data yang valid
       }
     },
+    async fetchOEE() {
+      try {
+        const payload = {
+          date: this.selectedDate,
+          shift: this.selectedShift,
+        }
+        await this.$store.dispatch(ACTION_GET_OEE, payload)
+
+        const filteredData = this.GET_OEE.find(
+          (oee) => oee.shift === this.selectedShift,
+        )
+
+        if (filteredData) {
+          this.actMp = filteredData.act_mp != null ? filteredData.act_mp : 0 // Reset jika null
+          this.jamKerja =
+            filteredData.jam_kerja != null ? filteredData.jam_kerja : 0 // Reset jika null
+          this.shouldSend = true // Set flag jika data valid
+        } else {
+          // Jika tidak ada data, reset
+          this.actMp = 0
+          this.jamKerja = 0
+          this.shouldSend = false // Reset flag jika tidak ada data valid
+        }
+      } catch (error) {
+        console.error('Error fetching OEE data:', error)
+      }
+    },
 
     async actionAddOEE(payload) {
       try {
@@ -1017,16 +1014,7 @@ export default {
         })
       }
     },
-    async fetchOEE() {
-      await this.$store.dispatch(ACTION_GET_OEE, this.selectedShift)
-      if (this.GET_OEE.length > 0) {
-        this.actMp = this.GET_OEE[0].act_mp
-        this.jamKerja = this.GET_OEE[0].jam_kerja
-      } else {
-        this.actMp = ''
-        this.jamKerja = ''
-      }
-    },
+
     setShiftByCurrentTime() {
       const now = new Date()
       const currentHour = now.getHours()

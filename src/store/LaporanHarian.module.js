@@ -99,7 +99,12 @@ const mutations = {
 const actions = {
   async ACTION_GET_ABSENSI({ commit }, payload) {
     try {
-      const response = await axios.get(`${API_URL}/oee/absensi/${payload}`)
+      const response = await axios.get(`${API_URL}/oee/absensi`, {
+        params: {
+          date: payload.date,
+          shift: payload.shift,
+        },
+      })
       commit(SET_ABSENSI, response.data.data)
       console.log(response.data.data)
       return response
@@ -109,7 +114,12 @@ const actions = {
   },
   async ACTION_GET_OEE({ commit }, payload) {
     try {
-      const response = await axios.get(`${API_URL}/oee/get/${payload}`)
+      const response = await axios.get(`${API_URL}/oee/get`, {
+        params: {
+          date: payload.date,
+          shift: payload.shift,
+        },
+      })
       commit(SET_OEE, response.data.data)
       // console.log(response.data.data)
       return response
