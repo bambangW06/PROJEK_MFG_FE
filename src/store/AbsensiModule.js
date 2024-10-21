@@ -160,6 +160,8 @@ const actions = {
       const data = response.data
 
       const currentShift = data.data[0].current_shift
+      console.log('currentShift', currentShift)
+
       commit('setCurrentShift', currentShift)
     } catch (error) {
       console.log('eror bro :', error)

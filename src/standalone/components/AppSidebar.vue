@@ -145,7 +145,7 @@ export default {
         {
           componet: 'CNavGroup',
           name: 'Tool Management', // Nama menu untuk EAssesment
-          icon: 'cilPencil', // Ikonya bisa disesuaikan
+          icon: 'cilSettings', // Ikonya bisa disesuaikan
           items: [
             // {
             //   component: 'CNavItem',
@@ -158,14 +158,14 @@ export default {
               component: 'CNavItem',
               name: 'Laporan Harian', // Nama menu untuk EAssesment
               to: '/tool/LaporanHarian', // Path yang dituju saat menu EAssesment diklik
-              icon: 'cilPencil', // Ikonya bisa disesuaikan
+              icon: 'cilSpreadsheet', // Ikonya bisa disesuaikan
               parentId: 'ROOT',
             },
             {
               component: 'CNavItem',
               name: 'Problem Report', // Nama menu untuk EAssesment
               to: '/tool/nextProses', // Path yang dituju saat menu EAssesment diklik
-              icon: 'cilPencil', // Ikonya bisa disesuaikan
+              icon: 'cilWarning', // Ikonya bisa disesuaikan
               parentId: 'ROOT',
             },
             // {
@@ -181,7 +181,7 @@ export default {
         {
           component: 'CNavGroup',
           name: 'Coolant Management', // Nama menu untuk EAssesment
-          icon: 'cilPencil', // Ikonya bisa disesuaikan
+          icon: 'cilDrop', // Ikonya bisa disesuaikan
           items: [
             {
               component: 'CNavItem',

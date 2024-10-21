@@ -77,6 +77,7 @@
               placeholder="Select Tool"
               :clearable="true"
               :searchable="true"
+              @select="onToolSelect"
             />
           </div>
           <label>Counter</label>
@@ -146,12 +147,12 @@
                 <td>{{ problem.waktu }}'</td>
                 <td>
                   <button
-                    class="btn btn-danger btn-sm"
+                    class="btn p-0"
                     data-bs-toggle="modal"
                     data-bs-target="#deleteProblemModal"
                     @click="deleteProblem(problem.problem_id)"
                   >
-                    <i class="fas fa-trash" aria-hidden="true"></i>
+                    <i class="fas fa-trash text-danger" aria-hidden="true"></i>
                   </button>
                 </td>
               </tr>
@@ -362,17 +363,17 @@
               </td>
               <td>
                 <button
-                  class="btn btn-primary me-2"
+                  class="btn me-2"
                   data-bs-toggle="modal"
                   data-bs-target="#addProblemModal"
                   @click="
                     setModalTitle('Add Problem In Proses', 'category', row.jam)
                   "
                 >
-                  Add
+                  <i class="fas fa-edit text-danger"></i>
                 </button>
                 <button
-                  class="btn btn-success"
+                  class="btn"
                   data-bs-toggle="modal"
                   data-bs-target="#viewProblemModal"
                   @click="
@@ -383,12 +384,12 @@
                     )
                   "
                 >
-                  View
+                  <i class="fas fa-eye text-dark"></i>
                 </button>
               </td>
               <td>
                 <button
-                  class="btn btn-primary me-2"
+                  class="btn me-2"
                   data-bs-toggle="modal"
                   data-bs-target="#addProblemModal"
                   @click="
@@ -399,10 +400,10 @@
                     )
                   "
                 >
-                  Add
+                  <i class="fas fa-edit text-danger"></i>
                 </button>
                 <button
-                  class="btn btn-success"
+                  class="btn"
                   data-bs-toggle="modal"
                   data-bs-target="#viewProblemModal"
                   @click="
@@ -413,7 +414,7 @@
                     )
                   "
                 >
-                  View
+                  <i class="fas fa-eye text-dark"></i>
                 </button>
               </td>
             </tr>
@@ -537,10 +538,9 @@
 
 <script>
 import { mapGetters } from 'vuex'
-// import the component
 import Treeselect from 'vue3-treeselect'
-// import the styles
 import 'vue3-treeselect/dist/vue3-treeselect.css'
+
 import {
   ACTION_ADD_OEE,
   ACTION_ADD_PROBLEM,
@@ -766,6 +766,20 @@ export default {
     },
   },
   watch: {
+    selectedTool: {
+      handler(newVal) {
+        console.log('newVal via watcher sebelum if:', newVal)
+
+        if (newVal) {
+          const toolId = newVal
+          console.log('toolId via watcher:', toolId)
+          this.onToolSelect()
+        } else {
+          console.log('Tool ID not found via watcher!')
+        }
+      },
+      deep: true,
+    },
     tableData: {
       handler(newValue) {
         if (
@@ -806,7 +820,7 @@ export default {
                   this.addReportReg(row)
                   row.reportSent = true // Tandai bahwa data ini sudah diproses
                 }
-              }, 2000) // 2000 ms = 2 detik
+              }, 5000) // 2000 ms = 2 detik
 
               // Simpan nilai sebelumnya untuk pengecekan di kemudian hari
               row.previousFromClr = row.from_clr
@@ -915,6 +929,13 @@ export default {
     window.removeEventListener('scroll', this.handleScroll) // Hapus listener ketika component di-destroy
   },
   methods: {
+    async onToolSelect(selectedTool) {
+      try {
+        console.log('selectedTool', selectedTool)
+        this.selectedTool = selectedTool.id
+        console.log('this selectedTool', this.selectedTool)
+      } catch (error) {}
+    },
     async absensiKaryawan() {
       try {
         const payload = {

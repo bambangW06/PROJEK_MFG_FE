@@ -50,6 +50,7 @@
                 <th>Category</th>
                 <th>Problem</th>
                 <th>Waktu</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -60,6 +61,14 @@
                 <td>{{ problem.category_nm }}</td>
                 <td>{{ problem.problem_nm }}</td>
                 <td>{{ problem.waktu }}'</td>
+                <td>
+                  <button class="btn me-2">
+                    <i class="fas fa-edit text-primary"></i>
+                  </button>
+                  <button class="btn">
+                    <i class="fas fa-trash text-danger"></i>
+                  </button>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -80,6 +89,7 @@
                 <th>Act Counter</th>
                 <th>Std Counter</th>
                 <th>Problem</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -93,6 +103,14 @@
                 <td>{{ problem.act_counter }}</td>
                 <td>{{ problem.std_counter }}</td>
                 <td>{{ problem.problem_nm }}</td>
+                <td>
+                  <button class="btn me-2">
+                    <i class="fas fa-edit text-primary"></i>
+                  </button>
+                  <button class="btn">
+                    <i class="fas fa-trash text-danger"></i>
+                  </button>
+                </td>
               </tr>
             </tbody>
           </table>

@@ -315,6 +315,7 @@
               <th scope="col">Foto</th>
               <th scope="col">Shift</th>
               <th scope="col">Jabatan</th>
+              <th scope="col">Pos</th>
               <th scope="col">Action</th>
             </tr>
           </thead>
@@ -337,6 +338,7 @@
               </td>
               <td class="vAm">{{ karyawan.shift }}</td>
               <td class="vAm">{{ karyawan.jabatan }}</td>
+              <td class="vAm">{{ karyawan.default_position }}</td>
               <td class="vAm">
                 <button
                   type="button"

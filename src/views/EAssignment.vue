@@ -299,7 +299,7 @@ export default {
       return this.getPercentageHadir // Menggunakan getter dari Vuex
     },
     currentShift() {
-      return this.$store.getters.getCurrentShift
+      return this.getCurrentShift
     },
   },
   methods: {
@@ -314,8 +314,8 @@ export default {
       // console.log('ini shift vue', shift);
       await this.$store.dispatch('addCurrentShift', shift)
       // Panggil metode untuk menghitung ulang persentase hadir saat shift berubah
-      this.$store.dispatch('ambilShift')
-      this.$store.dispatch('fetchHistoryAbsence')
+      await this.$store.dispatch('ambilShift')
+      await this.$store.dispatch('fetchHistoryAbsence')
     },
     async updateStatus(shiftIndex, cardIndex) {
       if (!this.currentShift) {
@@ -358,7 +358,7 @@ export default {
       }
     },
   },
-  created() {
+  mounted() {
     // Fetch data from Vuex action when component is created
     this.$store.dispatch('fetchEmployeeData')
     this.$store.dispatch('ambilShift')

@@ -236,7 +236,7 @@ export default {
       GET_SUPERVISOR,
     ]),
   },
-  async created() {
+  async mounted() {
     await this.displayTodayDate()
     await this.$store.dispatch('ambilShift')
     await this.$store.dispatch('fetchEmployeeForSelect')
