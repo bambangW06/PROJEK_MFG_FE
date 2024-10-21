@@ -10,6 +10,7 @@
             class="btn-close"
             data-bs-dismiss="modal"
             aria-label="Close"
+            @click="resetModal()"
           ></button>
         </div>
         <div v-if="modalType === 'category'" class="modal-body">
@@ -81,9 +82,11 @@
             />
           </div>
           <label>Counter</label>
-          <div>
+          <div class="input-group">
             <input type="number" class="form-control" v-model="counter" />
+            <span class="input-group-text"> <strong>/ {{ stdCounter }}</strong></span>
           </div>
+
           <label> Problem</label>
           <div>
             <input
@@ -99,6 +102,7 @@
             type="button"
             class="btn btn-secondary"
             data-bs-dismiss="modal"
+            @click="resetModal()"
           >
             Close
           </button>
@@ -552,8 +556,9 @@ import {
   ACTION_GET_OEE,
   ACTION_GET_PROBLEM_MODAL,
   ACTION_GET_REPORT_REG_SET,
-  ACTION_GET_STD_COUNTER,
+  ACTION_GET_TIME_RANGES,
   ACTION_GET_TOOLS,
+  ACTION_STD_COUNTER,
   GET_ABSENSI,
   GET_CATEGORIES,
   GET_OEE,
@@ -766,20 +771,20 @@ export default {
     },
   },
   watch: {
-    selectedTool: {
-      handler(newVal) {
-        console.log('newVal via watcher sebelum if:', newVal)
+    // selectedTool: {
+    //   handler(newVal) {
+    //     console.log('newVal via watcher sebelum if:', newVal)
 
-        if (newVal) {
-          const toolId = newVal
-          console.log('toolId via watcher:', toolId)
-          this.onToolSelect()
-        } else {
-          console.log('Tool ID not found via watcher!')
-        }
-      },
-      deep: true,
-    },
+    //     if (newVal) {
+    //       const toolId = newVal
+    //       console.log('toolId via watcher:', toolId)
+    //       this.onToolSelect()
+    //     } else {
+    //       console.log('Tool ID not found via watcher!')
+    //     }
+    //   },
+    //   deep: true,
+    // },
     tableData: {
       handler(newValue) {
         if (
@@ -931,10 +936,33 @@ export default {
   methods: {
     async onToolSelect(selectedTool) {
       try {
-        console.log('selectedTool', selectedTool)
+        // Simpan tool yang dipilih
         this.selectedTool = selectedTool.id
-        console.log('this selectedTool', this.selectedTool)
-      } catch (error) {}
+        console.log('Selected Tool:', this.selectedTool)
+
+        // Dispatch action untuk mendapatkan counter berdasarkan tool yang dipilih
+        let response = await this.$store.dispatch(
+          ACTION_STD_COUNTER,
+          this.selectedTool,
+        )
+        console.log('Response dari ACTION_STD_COUNTER:', response)
+
+        // Jika respons sukses dan data tersedia di GET_STD_COUNTER
+        if (response.status === 200 && response.data.data.length > 0) {
+          // Ambil stdCounter dari data yang diterima
+          this.stdCounter = this.GET_STD_COUNTER[0].std_counter
+        } else {
+          // Handle jika respons tidak sesuai atau data kosong
+          console.log(
+            'Tidak ada data counter yang ditemukan atau respons tidak berhasil.',
+          )
+        }
+
+        console.log('stdCounter:', this.stdCounter)
+      } catch (error) {
+        // Tangani error jika terjadi kesalahan
+        console.error('Error saat memilih tool:', error)
+      }
     },
     async absensiKaryawan() {
       try {

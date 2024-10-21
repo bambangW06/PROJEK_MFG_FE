@@ -11,7 +11,8 @@ export const ACTION_GET_CATEGORIES = 'ACTION_GET_CATEGORIES'
 
 export const GET_STD_COUNTER = 'GET_STD_COUNTER'
 export const SET_STD_COUNTER = 'SET_STD_COUNTER'
-export const ACTION_GET_STD_COUNTER = 'ACTION_GET_STD_COUNTER'
+export const ACTION_STD_COUNTER = 'ACTION_STD_COUNTER'
+
 export const ACTION_ADD_PROBLEM = 'ACTION_ADD_PROBLEM'
 export const ACTION_ADD_PROBLEM_NEXT_PROCESS = 'ACTION_ADD_PROBLEM_NEXT_PROCESS'
 
@@ -42,6 +43,10 @@ export const ACTION_GET_ABSENSI = 'ACTION_GET_ABSENSI'
 export const SET_ABSENSI = 'SET_ABSENSI'
 export const GET_ABSENSI = 'GET_ABSENSI'
 
+export const ACTION_GET_TIME_RANGES = 'ACTION_GET_TIME_RANGES'
+export const SET_TIME_RANGES = 'SET_TIME_RANGES'
+export const GET_TIME_RANGES = 'GET_TIME_RANGES'
+
 const state = {
   TOOLS: [],
   CATEGORIES: [],
@@ -52,6 +57,7 @@ const state = {
   PROBLEM_NEXT_PROCESS: [],
   OEE: [],
   ABSENSI: [],
+  TIME_RANGES: [],
 }
 
 const getters = {
@@ -64,6 +70,8 @@ const getters = {
   GET_PROBLEM_NEXT_PROCESS: (state) => state.PROBLEM_NEXT_PROCESS,
   GET_OEE: (state) => state.OEE,
   GET_ABSENSI: (state) => state.ABSENSI,
+
+  GET_TIME_RANGES: (state) => state.TIME_RANGES,
 }
 
 const mutations = {
@@ -94,9 +102,24 @@ const mutations = {
   SET_ABSENSI(state, payload) {
     state.ABSENSI = payload
   },
+
+  SET_TIME_RANGES(state, payload) {
+    state.TIME_RANGES = payload
+  },
 }
 
 const actions = {
+  async ACTION_GET_TIME_RANGES({ commit }, payload) {
+    try {
+      const response = await axios.get(
+        `${API_URL}/laporan/timeranges/${payload}`,
+      )
+      console.log(response.data.data)
+      commit(SET_TIME_RANGES, response.data.data)
+    } catch (error) {
+      console.error('Error fetching timerange:', error)
+    }
+  },
   async ACTION_GET_ABSENSI({ commit }, payload) {
     try {
       const response = await axios.get(`${API_URL}/oee/absensi`, {
@@ -159,7 +182,6 @@ const actions = {
     try {
       const response = await axios.get(`${API_URL}/laporan/get/${payload}`)
       commit(SET_STD_COUNTER, response.data.data)
-      // console.log(response.data.data)
       return response
     } catch (error) {
       console.error('Error fetching tools:', error)
