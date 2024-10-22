@@ -725,37 +725,15 @@ export default {
     filteredDataByShift() {
       if (this.selectedShift === 'Siang') {
         // Filter jam antara 07:30 sampai 20:00
-        const filtered = this.tableData.filter((item) => {
+        return this.tableData.filter((item) => {
           const jam = this.convertTo24Hour(item.jam)
           return jam >= '07:30' && jam <= '20:00'
         })
-
-        // Mengisi penambahan tool berdasarkan tool_delay dari baris sebelumnya jika from_clr diisi
-        return filtered.map((item, index) => {
-          if (index > 0) {
-            if (item.from_clr) {
-              // Jika from_clr diisi, mengisi penambahan tool dengan tool_delay dari baris sebelumnya
-              item.penambahan_tool = filtered[index - 1].tool_delay || 0
-            }
-          }
-          return item
-        })
       } else if (this.selectedShift === 'Malam') {
         // Filter jam antara 20:00 sampai 07:30 di hari berikutnya
-        const filtered = this.tableData.filter((item) => {
+        return this.tableData.filter((item) => {
           const jam = this.convertTo24Hour(item.jam)
           return jam < '07:30' || jam >= '20:00'
-        })
-
-        // Mengisi penambahan tool berdasarkan tool_delay dari baris sebelumnya jika from_clr diisi
-        return filtered.map((item, index) => {
-          if (index > 0) {
-            if (item.from_clr) {
-              // Jika from_clr diisi, mengisi penambahan tool dengan tool_delay dari baris sebelumnya
-              item.penambahan_tool = filtered[index - 1].tool_delay || 0
-            }
-          }
-          return item
         })
       } else {
         // Tampilkan semua data jika shift belum dipilih
@@ -774,16 +752,8 @@ export default {
         return total + (parseFloat(row.from_clr) || 0)
       }, 0)
 
-      // Menambahkan total penambahan tool
-      const totalPenambahanTool = this.filteredDataByShift.reduce(
-        (total, row) => {
-          return total + (parseFloat(row.penambahan_tool) || 0)
-        },
-        0,
-      )
-
       // Menghitung total request
-      const total = totalFromClr + totalPenambahanTool
+      const total = totalFromClr
 
       // console.log('Total Request:', total) // Debug log
       return total
@@ -805,7 +775,7 @@ export default {
 
       if (totalRequestValue > 0) {
         // Pastikan total request tidak 0
-        return ((totalRegSettingValue / totalRequestValue) * 100) // Rumus OEE
+        return ((totalRequestValue / totalRegSettingValue) * 100) // Rumus OEE
           .toFixed(2)
       }
       return 0 // Kembalikan 0 jika total request adalah 0
