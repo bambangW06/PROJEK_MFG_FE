@@ -11,6 +11,7 @@ import KanbanToToolReg from './KanbanToToolReg.module'
 import METAModule from './META.module'
 import KanbanFromGel from './KanbanFromGel.module'
 import LaporanHarian from './LaporanHarian.module'
+import ProblemReportModule from './ProblemReport.module'
 
 export default createStore({
   state: {
@@ -42,5 +43,6 @@ export default createStore({
     METAModule,
     KanbanFromGel,
     LaporanHarian,
+    ProblemReportModule,
   },
 })

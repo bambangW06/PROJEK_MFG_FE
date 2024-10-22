@@ -725,15 +725,43 @@ export default {
     filteredDataByShift() {
       if (this.selectedShift === 'Siang') {
         // Filter jam antara 07:30 sampai 20:00
-        return this.tableData.filter((item) => {
+        const filtered = this.tableData.filter((item) => {
           const jam = this.convertTo24Hour(item.jam)
           return jam >= '07:30' && jam <= '20:00'
         })
+
+        // Mengisi penambahan tool berdasarkan tool_delay dari baris sebelumnya jika from_clr diisi
+        return filtered.map((item, index) => {
+          if (index > 0) {
+            if (item.from_clr) {
+              // Jika from_clr diisi, mengisi penambahan tool dengan tool_delay dari baris sebelumnya
+              item.penambahan_tool = filtered[index - 1].tool_delay || 0
+            } else {
+              // Jika from_clr kosong, kosongkan penambahan_tool
+              item.penambahan_tool = ''
+            }
+          }
+          return item
+        })
       } else if (this.selectedShift === 'Malam') {
         // Filter jam antara 20:00 sampai 07:30 di hari berikutnya
-        return this.tableData.filter((item) => {
+        const filtered = this.tableData.filter((item) => {
           const jam = this.convertTo24Hour(item.jam)
           return jam < '07:30' || jam >= '20:00'
+        })
+
+        // Mengisi penambahan tool berdasarkan tool_delay dari baris sebelumnya jika from_clr diisi
+        return filtered.map((item, index) => {
+          if (index > 0) {
+            if (item.from_clr) {
+              // Jika from_clr diisi, mengisi penambahan tool dengan tool_delay dari baris sebelumnya
+              item.penambahan_tool = filtered[index - 1].tool_delay || 0
+            } else {
+              // Jika from_clr kosong, kosongkan penambahan_tool
+              item.penambahan_tool = ''
+            }
+          }
+          return item
         })
       } else {
         // Tampilkan semua data jika shift belum dipilih
@@ -747,16 +775,48 @@ export default {
       // console.log('Total Reg Setting:', total) // Debug log
       return total
     },
+    totalRequest() {
+      const totalFromClr = this.filteredDataByShift.reduce((total, row) => {
+        return total + (parseFloat(row.from_clr) || 0)
+      }, 0)
+
+      // Menambahkan total penambahan tool
+      const totalPenambahanTool = this.filteredDataByShift.reduce(
+        (total, row) => {
+          return total + (parseFloat(row.penambahan_tool) || 0)
+        },
+        0,
+      )
+
+      // Menghitung total request
+      const total = totalFromClr + totalPenambahanTool
+
+      // console.log('Total Request:', total) // Debug log
+      return total
+    },
+    // calculatedOEE() {
+    //   // Menghitung OEE berdasarkan formula
+    //   if (this.actMp && this.jamKerja && this.totalRegSetting) {
+    //     return (
+    //       100 -
+    //       ((this.actMp * this.jamKerja) / this.totalRegSetting) * 100
+    //     ).toFixed(2)
+    //   }
+    //   return 0 // Kembalikan 0 jika ada input yang tidak lengkap
+    // },
     calculatedOEE() {
       // Menghitung OEE berdasarkan formula
-      if (this.actMp && this.jamKerja && this.totalRegSetting) {
-        return (
-          100 -
-          ((this.actMp * this.jamKerja) / this.totalRegSetting) * 100
-        ).toFixed(2)
+      const totalRequestValue = this.totalRequest // Mengambil total request
+      const totalRegSettingValue = this.totalRegSetting // Pastikan ini ada dalam data Anda
+
+      if (totalRequestValue > 0) {
+        // Pastikan total request tidak 0
+        return ((totalRegSettingValue / totalRequestValue) * 100) // Rumus OEE
+          .toFixed(2)
       }
-      return 0 // Kembalikan 0 jika ada input yang tidak lengkap
+      return 0 // Kembalikan 0 jika total request adalah 0
     },
+
     formattedOEE() {
       return `${this.calculatedOEE}%` // Menggabungkan nilai OEE dengan simbol %
     },
