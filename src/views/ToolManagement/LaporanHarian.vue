@@ -84,7 +84,9 @@
           <label>Counter</label>
           <div class="input-group">
             <input type="number" class="form-control" v-model="counter" />
-            <span class="input-group-text"> <strong>/ {{ stdCounter }}</strong></span>
+            <span class="input-group-text">
+              <strong>/ {{ stdCounter }}</strong></span
+            >
           </div>
 
           <label> Problem</label>
@@ -315,12 +317,12 @@
         >
           <thead class="sticky-thead">
             <tr>
-              <th style="width: 95px">Jam</th>
-              <th style="width: 80px">Request CL/R</th>
-              <th style="width: 95px">Penambahan Tool</th>
-              <th style="width: 75px">Regrind Setting</th>
-              <th style="width: 75px">Tool Delay</th>
-              <th style="width: 80px">Waktu Delay</th>
+              <th style="width: 95px">Time</th>
+              <th style="width: 100px">Clean Room Request</th>
+              <th style="width: 95px">Tool Addition</th>
+              <th style="width: 115px">Regrinding & Setting Result</th>
+              <th style="width: 100px">Tool Awaiting Processing</th>
+              <th style="width: 150px">Processing Time for Awaiting Tools</th>
               <th>Problem In Proses</th>
               <th>Problem Next Proses</th>
             </tr>
@@ -433,8 +435,8 @@
               <thead>
                 <tr>
                   <th>Man Power</th>
-                  <th>Jam Kerja</th>
-                  <th>Total Reg/Setting</th>
+                  <th>Working Hours</th>
+                  <th>Total Regrind</th>
                   <th>OEE</th>
                 </tr>
               </thead>
