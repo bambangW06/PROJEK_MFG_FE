@@ -736,9 +736,6 @@ export default {
             if (item.from_clr) {
               // Jika from_clr diisi, mengisi penambahan tool dengan tool_delay dari baris sebelumnya
               item.penambahan_tool = filtered[index - 1].tool_delay || 0
-            } else {
-              // Jika from_clr kosong, kosongkan penambahan_tool
-              item.penambahan_tool = ''
             }
           }
           return item
@@ -756,9 +753,6 @@ export default {
             if (item.from_clr) {
               // Jika from_clr diisi, mengisi penambahan tool dengan tool_delay dari baris sebelumnya
               item.penambahan_tool = filtered[index - 1].tool_delay || 0
-            } else {
-              // Jika from_clr kosong, kosongkan penambahan_tool
-              item.penambahan_tool = ''
             }
           }
           return item
