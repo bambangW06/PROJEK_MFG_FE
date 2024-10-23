@@ -797,20 +797,6 @@ export default {
     },
   },
   watch: {
-    // selectedTool: {
-    //   handler(newVal) {
-    //     console.log('newVal via watcher sebelum if:', newVal)
-
-    //     if (newVal) {
-    //       const toolId = newVal
-    //       console.log('toolId via watcher:', toolId)
-    //       this.onToolSelect()
-    //     } else {
-    //       console.log('Tool ID not found via watcher!')
-    //     }
-    //   },
-    //   deep: true,
-    // },
     tableData: {
       handler(newValue) {
         if (
@@ -927,6 +913,25 @@ export default {
         this.shouldSend = false // Reset flag jika OEE tidak valid
       }
     },
+    // Watch untuk actMp agar mendeteksi perubahan dan melakukan pengecekan
+    actMp(newValue, oldValue) {
+      if (newValue !== oldValue && newValue > 0) {
+        this.shouldSend = true
+        this.checkAndSend() // Cek dan kirim jika valid
+      } else {
+        this.shouldSend = false
+      }
+    },
+
+    // Watch untuk jamKerja agar mendeteksi perubahan dan melakukan pengecekan
+    jamKerja(newValue, oldValue) {
+      if (newValue !== oldValue && newValue > 0) {
+        this.shouldSend = true
+        this.checkAndSend() // Cek dan kirim jika valid
+      } else {
+        this.shouldSend = false
+      }
+    },
     selectedShift(newValue, oldValue) {
       if (newValue !== oldValue) {
         this.now = new Date() // Update waktu saat shift berubah
@@ -945,6 +950,7 @@ export default {
         this.absensiKaryawan()
         this.actMp = 0
         this.jamKerja = 0
+        this.fetchOEE()
       }
     },
   },
@@ -1078,6 +1084,7 @@ export default {
         let response = await this.$store.dispatch(ACTION_ADD_OEE, payload)
 
         if (response.status === 201) {
+          console.log('OEE added successfully')
           this.fetchOEE() // Ambil ulang data OEE setelah berhasil
         }
       } catch (error) {
