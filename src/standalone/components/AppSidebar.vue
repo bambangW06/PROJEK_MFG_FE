@@ -168,13 +168,13 @@ export default {
               icon: 'cilWarning', // Ikonya bisa disesuaikan
               parentId: 'ROOT',
             },
-            // {
-            //   component: 'CNavItem',
-            //   name: 'Pencapaian Regrinding', // Nama menu untuk EAssesment
-            //   to: '/tool/grafik', // Path yang dituju saat menu EAssesment diklik
-            //   icon: 'cilChart', // Ikonya bisa disesuaikan
-            //   parentId: 'ROOT',
-            // },
+            {
+              component: 'CNavItem',
+              name: 'Pencapaian Regrinding', // Nama menu untuk EAssesment
+              to: '/tool/grafik', // Path yang dituju saat menu EAssesment diklik
+              icon: 'cilChart', // Ikonya bisa disesuaikan
+              parentId: 'ROOT',
+            },
             // {
             //   component: 'CNavItem',
             //   name: 'Reservasi & Regrinding',

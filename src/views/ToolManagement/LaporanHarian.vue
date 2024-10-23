@@ -926,6 +926,18 @@ export default {
         this.fetchOEE()
       }
     },
+    actMp(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.shouldSend = true
+        this.checkAndSend()
+      }
+    },
+    jamKerja(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.shouldSend = true
+        this.checkAndSend()
+      }
+    },
   },
 
   mounted() {
