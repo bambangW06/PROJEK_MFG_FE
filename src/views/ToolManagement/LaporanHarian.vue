@@ -834,10 +834,11 @@ export default {
               setTimeout(() => {
                 if (!row.reportSent) {
                   // Cegah pemanggilan ulang
+                  console.log('Sending report for:', row)
                   this.addReportReg(row)
                   row.reportSent = true // Tandai bahwa data ini sudah diproses
                 }
-              }, 5000) // 2000 ms = 2 detik
+              }, 5000) // 5000 ms = 5 detik
 
               // Simpan nilai sebelumnya untuk pengecekan di kemudian hari
               row.previousFromClr = row.from_clr
@@ -867,8 +868,8 @@ export default {
 
         // Reset hanya data yang relevan
         this.tableData.forEach((row) => {
-          if (!row.jam) {
-            // Reset hanya jika 'jam' tidak ada
+          if (!row.jam && !row.isCritical) {
+            // Reset hanya jika 'jam' tidak ada dan bukan critical row
             row.from_clr = ''
             row.penambahan_tool = ''
             row.regrind_setting = ''
@@ -891,6 +892,7 @@ export default {
             targetRow.regrind_setting = report.reg_set || ''
             targetRow.tool_delay = report.tool_delay || ''
             targetRow.waktu_delay = report.time_delay || ''
+            targetRow.isCritical = true // Tandai sebagai critical row
           }
         })
       } else {
@@ -902,34 +904,6 @@ export default {
           row.tool_delay = ''
           row.waktu_delay = ''
         })
-      }
-    },
-
-    calculatedOEE(newValue, oldValue) {
-      if (newValue !== oldValue && newValue > 0) {
-        this.shouldSend = true // Set flag untuk mengindikasikan bahwa OEE telah berubah
-        this.checkAndSend() // Panggil untuk mengirim jika OEE valid
-      } else {
-        this.shouldSend = false // Reset flag jika OEE tidak valid
-      }
-    },
-    // Watch untuk actMp agar mendeteksi perubahan dan melakukan pengecekan
-    actMp(newValue, oldValue) {
-      if (newValue !== oldValue && newValue > 0) {
-        this.shouldSend = true
-        this.checkAndSend() // Cek dan kirim jika valid
-      } else {
-        this.shouldSend = false
-      }
-    },
-
-    // Watch untuk jamKerja agar mendeteksi perubahan dan melakukan pengecekan
-    jamKerja(newValue, oldValue) {
-      if (newValue !== oldValue && newValue > 0) {
-        this.shouldSend = true
-        this.checkAndSend() // Cek dan kirim jika valid
-      } else {
-        this.shouldSend = false
       }
     },
     selectedShift(newValue, oldValue) {
@@ -944,7 +918,6 @@ export default {
         this.fetchOEE()
       }
     },
-
     selectedDate(newValue, oldValue) {
       if (newValue !== oldValue) {
         this.absensiKaryawan()
@@ -954,6 +927,7 @@ export default {
       }
     },
   },
+
   mounted() {
     this.$store.dispatch('fetchLines')
     this.$store.dispatch(ACTION_GET_CATEGORIES)

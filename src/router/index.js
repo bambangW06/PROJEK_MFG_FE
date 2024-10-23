@@ -62,6 +62,11 @@ const routes = [
         name: 'ProblemReport',
         component: () => import('@/views/ToolManagement/ProblemReport.vue'),
       },
+      // {
+      //   path: '/tool/grafik',
+      //   name: 'PencapaianOEE',
+      //   component: () => import('@/views/ToolManagement/PencapaianOEE.vue'),
+      // },
 
       // {
       //   path: '/tool',

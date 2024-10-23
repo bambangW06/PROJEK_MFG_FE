@@ -278,7 +278,7 @@ const actions = {
           selectedDate: payload,
         },
       })
-      console.log(response.data.data)
+      // console.log(response.data.data)
 
       commit(SET_PROBLEM_IN_PROSES, response.data.data.inProcess)
       // console.log('SET_PROBLEM_IN_PROSES', response.data.data.inProcess)
