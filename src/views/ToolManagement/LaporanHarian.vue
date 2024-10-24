@@ -803,7 +803,11 @@ export default {
           !this.selectedDate ||
           this.selectedDate === moment().format('YYYY-MM-DD')
         ) {
-          newValue.forEach((row) => {
+          // Gunakan filteredDataByShift untuk memastikan hanya data shift terpilih yang diproses
+          const filteredData = this.filteredDataByShift
+          // console.log('filteredData:', filteredData)
+
+          filteredData.forEach((row) => {
             // Perhitungan tool_delay
             if (row.from_clr && row.penambahan_tool && row.regrind_setting) {
               row.tool_delay =
@@ -834,11 +838,11 @@ export default {
               setTimeout(() => {
                 if (!row.reportSent) {
                   // Cegah pemanggilan ulang
-                  console.log('Sending report for:', row)
+                  // console.log('Sending report for:', row)
                   this.addReportReg(row)
                   row.reportSent = true // Tandai bahwa data ini sudah diproses
                 }
-              }, 5000) // 5000 ms = 5 detik
+              }, 4000) // 4000 ms = 4 detik
 
               // Simpan nilai sebelumnya untuk pengecekan di kemudian hari
               row.previousFromClr = row.from_clr
@@ -850,6 +854,7 @@ export default {
       },
       deep: true,
     },
+
     GET_REPORT(newValue) {
       if (newValue && newValue.length) {
         // Pemetaan rentang waktu di tableData
@@ -956,14 +961,14 @@ export default {
       try {
         // Simpan tool yang dipilih
         this.selectedTool = selectedTool.id
-        console.log('Selected Tool:', this.selectedTool)
+        // console.log('Selected Tool:', this.selectedTool)
 
         // Dispatch action untuk mendapatkan counter berdasarkan tool yang dipilih
         let response = await this.$store.dispatch(
           ACTION_STD_COUNTER,
           this.selectedTool,
         )
-        console.log('Response dari ACTION_STD_COUNTER:', response)
+        // console.log('Response dari ACTION_STD_COUNTER:', response)
 
         // Jika respons sukses dan data tersedia di GET_STD_COUNTER
         if (response.status === 200 && response.data.data.length > 0) {
@@ -976,7 +981,7 @@ export default {
           )
         }
 
-        console.log('stdCounter:', this.stdCounter)
+        // console.log('stdCounter:', this.stdCounter)
       } catch (error) {
         // Tangani error jika terjadi kesalahan
         console.error('Error saat memilih tool:', error)
@@ -1136,7 +1141,7 @@ export default {
     async onLineChange() {
       try {
         const selectedLine = this.selectedLine.line_id
-        console.log(selectedLine)
+        // console.log(selectedLine)
         const line_nm = this.selectedLine.line_nm
         await this.$store.dispatch('fetchMachines', selectedLine)
 
@@ -1174,7 +1179,7 @@ export default {
             time_range: this.selectedJam,
           }
         }
-        console.log('payload', payload)
+        // console.log('payload', payload)
         if (this.modalType === 'category') {
           let response = await this.$store.dispatch(ACTION_ADD_PROBLEM, payload)
           if (response.status === 201) {
@@ -1215,15 +1220,18 @@ export default {
           tool_delay: row.tool_delay,
           time_delay: row.waktu_delay,
         }
-        console.log('payload', payload)
+        console.log('payload pcs', payload)
+
         let response = await this.$store.dispatch(
           ACTION_ADD_REPORT_REG_SET,
           payload,
         )
         if (response.status === 201) {
-          console.log('Success')
+          await this.$store.dispatch(
+            ACTION_GET_REPORT_REG_SET,
+            this.selectedDate,
+          )
         }
-        await this.$store.dispatch(ACTION_GET_REPORT_REG_SET, this.selectedDate)
       } catch (error) {
         console.log(error)
         this.$swal({
@@ -1240,7 +1248,7 @@ export default {
       this.isFetching = true
       try {
         const selectedDate = this.selectedDate
-        console.log('payload', selectedDate)
+        // console.log('payload', selectedDate)
         let response = await this.$store.dispatch(
           ACTION_GET_REPORT_REG_SET,
           selectedDate,
