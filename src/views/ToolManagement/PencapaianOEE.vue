@@ -378,6 +378,8 @@ export default {
             style: {
               colors: ['#000'],
             },
+            // offsetY: -20,
+            position: 'top',
           },
           xaxis: {
             categories: ['OEE', 'AV', 'PE', 'RQ'],
