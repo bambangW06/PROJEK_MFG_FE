@@ -1059,11 +1059,6 @@ export default {
           this.jamKerja =
             filteredData.jam_kerja != null ? filteredData.jam_kerja : 0 // Reset jika null
           this.shouldSend = true // Set flag jika data valid
-        } else {
-          // Jika tidak ada data, reset
-          this.actMp = 0
-          this.jamKerja = 0
-          this.shouldSend = false // Reset flag jika tidak ada data valid
         }
       } catch (error) {
         console.error('Error fetching OEE data:', error)
