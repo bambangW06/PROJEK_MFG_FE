@@ -116,6 +116,7 @@ const actions = {
       )
       console.log(response.data.data)
       commit(SET_TIME_RANGES, response.data.data)
+      return response
     } catch (error) {
       console.error('Error fetching timerange:', error)
     }

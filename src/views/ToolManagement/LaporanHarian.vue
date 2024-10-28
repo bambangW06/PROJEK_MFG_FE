@@ -775,7 +775,7 @@ export default {
 
       if (totalRequestValue > 0) {
         // Pastikan total request tidak 0
-        return ((totalRequestValue / totalRegSettingValue) * 100) // Rumus OEE
+        return ((totalRegSettingValue / totalRequestValue) * 100) // Rumus OEE
           .toFixed(2)
       }
       return 0 // Kembalikan 0 jika total request adalah 0

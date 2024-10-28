@@ -176,13 +176,17 @@ export default {
     },
   },
   watch: {
-    selectedDate() {
-      this.getOEE()
-      this.getProblem()
+    selectedDate(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.getOEE()
+        this.getProblem()
+      }
     },
-    selectedShift() {
-      this.getOEE()
-      this.getProblem()
+    selectedShift(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.getOEE()
+        this.getProblem()
+      }
     },
   },
 
