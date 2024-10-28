@@ -943,6 +943,12 @@ export default {
         this.checkAndSend()
       }
     },
+    calculatedOEE(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.shouldSend = true
+        this.checkAndSend()
+      }
+    },
   },
 
   mounted() {
@@ -1208,6 +1214,7 @@ export default {
       this.isFetching = true
       try {
         const payload = {
+          shift: this.selectedShift,
           time_range: row.jam,
           from_gel: row.from_clr,
           penambahan: row.penambahan_tool,
