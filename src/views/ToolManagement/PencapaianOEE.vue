@@ -214,6 +214,7 @@ export default {
         )
         if (response.status === 200) {
           let data = this.GET_PROBLEM_IN_PROCESS
+          console.log('data', data)
 
           if (data) {
             // Filter sesuai shift
@@ -252,7 +253,7 @@ export default {
 
             // Dapatkan waktu dari kategori "Performance Efficiency"
             const rqProblem = data.find(
-              (item) => item.category_nm === 'Rate of Quality',
+              (item) => item.category_nm === 'Rate Of Quality',
             )
             const rqTime = rqProblem ? parseInt(rqProblem.waktu, 10) : 0
 
