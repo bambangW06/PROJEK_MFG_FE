@@ -222,9 +222,14 @@
     </div>
   </div>
   <div class="container-fluid">
+    <div class="card text-center">
+      <h3>Master Schedule</h3>
+    </div>
+  </div>
+  <div class="container-fluid">
     <div class="card mt-3 p-2 text-center">
       <div class="row justify-content-center p-3 z-ind">
-        <div class="card col-6">
+        <div class="col-6">
           <div class="row">
             <div class="col">
               <h5 class="text-start">Line</h5>
@@ -277,9 +282,6 @@
             <i class="fas fa-plus"></i> Tambah Master Schedule
           </button>
         </div>
-      </div>
-      <div class="mt-3">
-        <h3>Master Schedule</h3>
       </div>
       <nav aria-label="Page navigation" class="mt-2">
         <ul class="pagination justify-content-center mb-0">

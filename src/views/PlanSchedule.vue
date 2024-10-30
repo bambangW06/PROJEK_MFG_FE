@@ -103,11 +103,11 @@
     <!--modal dialog-->
   </div>
   <div class="card">
+    <h3 class="text-center">Schedule Kuras Bulan : {{ currenthMonth }}</h3>
+  </div>
+  <div class="card mt-2">
     <div class="card-body">
-      <div class="card-header">
-        <h1 class="text-center">Schedule Kuras Bulan : {{ currenthMonth }}</h1>
-      </div>
-      <div class="table-responsive mt-2">
+      <div class="table-responsive">
         <div class="row">
           <div class="col">
             <nav aria-label="Page navigation">
@@ -155,7 +155,20 @@
               </ul>
             </nav>
           </div>
-          <div class="col-auto d-flex justify-content-end align-items-center">
+        </div>
+        <div class="row mt-2">
+          <div class="col">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search machine"
+              v-model="searchQuery"
+              style="width: fit-content"
+            />
+          </div>
+          <div
+            class="col-auto ms-auto d-flex justify-content-end align-items-center"
+          >
             <button
               class="btn btn-primary"
               data-bs-toggle="modal"
@@ -183,7 +196,7 @@
           </thead>
           <tbody>
             <tr
-              v-for="(kuras, index) in paginatedData"
+              v-for="(kuras, index) in filteredData"
               :key="kuras.schedule_id"
               :class="rowClass(index)"
             >
@@ -274,6 +287,7 @@ export default {
   },
   data() {
     return {
+      searchQuery: '',
       currentPage: 1,
       pageSize: 40,
       datepickerInstances: {},
@@ -334,6 +348,17 @@ export default {
 
         // Check if the month and year match the selected month and current year
         return month === this.selectedMonth && year === currentYear
+      })
+    },
+    filteredData() {
+      if (!this.searchQuery) {
+        return this.paginatedData
+      }
+
+      const lowerCaseQuery = this.searchQuery.toLowerCase()
+
+      return this.paginatedData.filter((kuras) => {
+        return kuras.machine_nm.toLowerCase().includes(lowerCaseQuery)
       })
     },
     monthWarnings() {

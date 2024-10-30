@@ -1,8 +1,8 @@
 <template>
-  <div class="card mt-3" style="z-index: 1" ref="cardRef">
-    <div class="card-header">
-      <h5 class="card-title text-center"><strong>History Coolant</strong></h5>
-    </div>
+  <div class="card">
+    <h3 class="card-title text-center"><strong>History Coolant</strong></h3>
+  </div>
+  <div class="card mt-2" style="z-index: 1" ref="cardRef">
     <div class="card-body">
       <div class="row gx-3">
         <div class="col-md-3">

@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid mt-2">
+  <div class="card">
     <div class="row">
       <div class="col fnrg">
         <h2 class="font-weight-bold">Kehadiran</h2>
@@ -10,7 +10,7 @@
     </div>
   </div>
 
-  <div class="container-fluid">
+  <div class="container">
     <div class="row mt-2">
       <!-- Bagian untuk Shift Red -->
       <div
@@ -273,9 +273,7 @@
       </div>
       <!--col-md-6 :class-->
     </div>
-    <!--row mt-2-->
   </div>
-  <!--container-fluid-->
 </template>
 
 <script>

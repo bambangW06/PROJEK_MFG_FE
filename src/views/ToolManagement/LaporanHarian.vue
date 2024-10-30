@@ -837,8 +837,6 @@ export default {
               // Gunakan setTimeout untuk memberikan jeda
               setTimeout(() => {
                 if (!row.reportSent) {
-                  // Cegah pemanggilan ulang
-                  // console.log('Sending report for:', row)
                   this.addReportReg(row)
                   row.reportSent = true // Tandai bahwa data ini sudah diproses
                 }

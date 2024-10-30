@@ -247,7 +247,7 @@
   <div class="container-fluid">
     <div class="card p-2">
       <div class="d-flex justify-content-end w-100">
-        <h4>List Karyawan</h4>
+        <h4>Data Karyawan</h4>
         <button
           class="btn btn-primary ms-auto"
           style="width: fit-content"
