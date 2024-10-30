@@ -161,9 +161,9 @@
             <input
               type="text"
               class="form-control"
-              placeholder="Search machine"
+              placeholder="Search machine..."
               v-model="searchQuery"
-              style="width: fit-content"
+              style="width: fit-content; border: 0.5px solid orange"
             />
           </div>
           <div
@@ -179,7 +179,7 @@
           </div>
         </div>
 
-        <table class="table custom-table tbl-emp table-bordered mt-3">
+        <table class="table custom-table tbl-emp table-bordered mt-1">
           <thead>
             <tr>
               <th style="width: 5%">No</th>
