@@ -1,11 +1,22 @@
 <template>
   <div class="card">
-    <div class="row">
-      <div class="col fnrg">
-        <h2 class="font-weight-bold">Kehadiran</h2>
+    <div class="row align-items-center p-3 border-bottom">
+      <div class="col text-center">
+        <h2 class="font-weight-bold mb-0">
+          Kehadiran:
+          <span
+            :style="{
+              color: parseFloat(percentageHadir) >= 100 ? '#000' : 'red',
+            }"
+          >
+            {{ percentageHadir }}
+          </span>
+        </h2>
       </div>
-      <div class="col fnlf">
-        <h2>{{ percentageHadir }}</h2>
+      <div class="col-auto text-end">
+        <span style="font-size: large; color: #000">
+          <strong>{{ today }}</strong>
+        </span>
       </div>
     </div>
   </div>
@@ -277,6 +288,7 @@
 </template>
 
 <script>
+import moment from 'moment'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
@@ -294,10 +306,28 @@ export default {
       return this.$store.getters.getSelectedStatus
     },
     percentageHadir() {
+      console.log(this.getPercentageHadir)
+
       return this.getPercentageHadir // Menggunakan getter dari Vuex
     },
     currentShift() {
       return this.getCurrentShift
+    },
+    today() {
+      // Dapatkan waktu sekarang dalam zona waktu Jakarta
+      let currentDate = moment().tz('Asia/Jakarta').locale('id')
+
+      // Atur batas waktu jam 07:00 hari ini di Jakarta
+      let shiftSiangStart = moment()
+        .tz('Asia/Jakarta')
+        .set({ hour: 7, minute: 0, second: 0, millisecond: 0 })
+
+      // Jika waktu sekarang masih sebelum jam 07:00, gunakan tanggal kemarin
+      if (currentDate.isBefore(shiftSiangStart)) {
+        currentDate.subtract(1, 'days') // Set tanggal ke kemarin
+      }
+      // Format tanggal dalam bahasa Indonesia
+      return currentDate.format('dddd, DD-MM-YY')
     },
   },
   methods: {
