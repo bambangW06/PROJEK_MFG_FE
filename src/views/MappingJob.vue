@@ -3,28 +3,32 @@
     <div class="card">
       <div class="card-body">
         <div class="row">
-          <div class="col-5">
-            <h6>PT.TOYOTA MOTOR MANUFACTURING INDONESIA</h6>
+          <!-- Kolom untuk Informasi Perusahaan -->
+          <div class="col-12 col-md-5 text-center text-md-start mb-2 mb-md-0">
+            <h6>PT. TOYOTA MOTOR MANUFACTURING INDONESIA</h6>
             <h6>ENGINE PRODUCTION KARAWANG DIVISION</h6>
             <h6>ENGINEERING SERVICE DEPARTMENT</h6>
           </div>
-          <div class="col-5 align-self-center">
+
+          <!-- Kolom untuk Judul -->
+          <div class="col-12 col-md-5 text-center text-md-start mb-2 mb-md-0">
             <h3>ASSIGNMENT MAN POWER</h3>
           </div>
-          <div class="col-2 d-flex align-items-center justify-content-end">
-            <input
-              class="form-control"
-              v-model="todaydate"
-              type="text"
-              readonly
-            />
+
+          <!-- Kolom untuk Tanggal -->
+          <div
+            class="col-12 col-md-2 d-flex justify-content-center justify-content-md-end"
+          >
+            <span class="date-display">
+              <strong>{{ todaydate }}</strong>
+            </span>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="container-fluid">
+  <div class="container-fluid mt-2">
     <div class="card">
       <div class="card-body" style="position: relative">
         <img
@@ -246,8 +250,23 @@ export default {
   },
   methods: {
     displayTodayDate() {
-      this.todaydate = moment().format('DD-MM-YYYY')
+      // Dapatkan waktu sekarang dalam zona waktu Jakarta
+      let currentDate = moment().tz('Asia/Jakarta').locale('id')
+
+      // Atur batas waktu jam 07:00 hari ini di Jakarta
+      let shiftSiangStart = moment()
+        .tz('Asia/Jakarta')
+        .set({ hour: 7, minute: 0, second: 0, millisecond: 0 })
+
+      // Jika waktu sekarang masih sebelum jam 07:00, gunakan tanggal kemarin
+      if (currentDate.isBefore(shiftSiangStart)) {
+        currentDate.subtract(1, 'days') // Set tanggal ke kemarin
+      }
+
+      // Format hasil akhir dan set ke todaydate
+      this.todaydate = currentDate.format('dddd, DD-MM-YY')
     },
+
     selectEmployeesByShift() {
       const currentShift = this.getCurrentShift
       const employeesByShift =
@@ -393,11 +412,14 @@ export default {
 </script>
 
 <style scoped>
-input.form-control {
-  border: none;
-  border-bottom: 1px solid black;
-  outline: none;
-  background-color: none;
-  font-size: x-large;
+.date-display {
+  font-size: large;
+  white-space: nowrap;
+}
+
+@media (max-width: 576px) {
+  .date-display {
+    font-size: medium; /* Ukuran lebih kecil di layar kecil */
+  }
 }
 </style>

@@ -1001,8 +1001,6 @@ export default {
         let response = await this.$store.dispatch(ACTION_GET_ABSENSI, payload)
         if (response.status === 200) {
           if (this.GET_ABSENSI?.length > 0) {
-            console.log(this.GET_ABSENSI)
-          } else {
             console.log('mangtabsss')
           }
         }
@@ -1019,7 +1017,7 @@ export default {
       return this.GET_ABSENSI.filter((item) => item.jabatan === jabatan)
     },
 
-    checkAndSend() {
+    async checkAndSend() {
       // Cek apakah semua input terisi sebelum mengirim
       if (
         this.actMp > 0 &&
@@ -1028,17 +1026,27 @@ export default {
         this.calculatedOEE > 0
       ) {
         if (this.shouldSend) {
-          // Siapkan payload dengan data yang sesuai dengan shift yang dipilih
-          const payload = {
-            shift: this.selectedShift,
-            actMp: this.actMp,
-            jamKerja: this.jamKerja,
-            total: this.totalRegSetting,
-            oee: this.calculatedOEE,
-          }
+          if (
+            !this.selectedDate ||
+            this.selectedDate === moment().format('YYYY-MM-DD')
+          ) {
+            // Jika selectedDate adalah hari ini, langsung kirim
+            this.sendOEEData()
+          } else {
+            // Jika selectedDate bukan hari ini, panggil fetchOEE terlebih dahulu
+            await this.fetchOEE()
 
-          this.actionAddOEE(payload) // Kirim payload yang sudah dipersiapkan
-          this.shouldSend = false // Reset flag setelah pengiriman
+            // Cek apakah fetchOEE menemukan data untuk tanggal dan shift yang dipilih
+            const isDataAvailable = this.actMp > 0 && this.jamKerja > 0
+            if (!isDataAvailable) {
+              // Jika data OEE untuk tanggal ini kosong, kirim data
+              this.sendOEEData()
+            } else {
+              console.log(
+                'Data untuk tanggal ini sudah ada, tidak akan mengirim ulang.',
+              )
+            }
+          }
         }
       } else {
         // Jika salah satu input kosong, jangan kirim
@@ -1046,6 +1054,21 @@ export default {
         this.shouldSend = false // Reset flag jika tidak ada data yang valid
       }
     },
+
+    // Fungsi untuk mengirim payload data OEE
+    async sendOEEData() {
+      const payload = {
+        shift: this.selectedShift,
+        actMp: this.actMp,
+        jamKerja: this.jamKerja,
+        total: this.totalRegSetting,
+        oee: this.calculatedOEE,
+      }
+
+      await this.actionAddOEE(payload) // Kirim payload yang sudah dipersiapkan
+      this.shouldSend = false // Reset flag setelah pengiriman
+    },
+
     async fetchOEE() {
       try {
         const payload = {

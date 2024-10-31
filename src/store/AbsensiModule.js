@@ -283,7 +283,7 @@ const actions = {
 
   async Action_Get_History_Absence({ commit }, payload) {
     try {
-      console.log('payload', payload)
+      // console.log('payload', payload)
       const response = await axios.get(`${API_URL}/histories/get`, {
         params: {
           selectedMonth: payload,

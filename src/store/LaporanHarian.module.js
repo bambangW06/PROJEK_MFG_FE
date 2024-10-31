@@ -130,7 +130,7 @@ const actions = {
         },
       })
       commit(SET_ABSENSI, response.data.data)
-      console.log(response.data.data)
+      // console.log(response.data.data)
       return response
     } catch (error) {
       console.error('Error fetching tools:', error)

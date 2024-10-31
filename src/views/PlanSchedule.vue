@@ -161,9 +161,9 @@
             <input
               type="text"
               class="form-control"
-              placeholder="Search machine..."
+              placeholder="Search Machine..."
               v-model="searchQuery"
-              style="width: fit-content; border: 0.5px solid orange"
+              style="width: fit-content"
             />
           </div>
           <div

@@ -3,13 +3,21 @@
     <div class="card p-2 mb-2">
       <div class="d-flex justify-content-between align-items-center">
         <h4 class="text-center m-0">History Kehadiran Member Tool & Coolant</h4>
-        <input
-          type="month"
-          class="form-control w-auto ml-auto"
-          v-model="selectedMonth"
-          style="min-width: 100px"
-          @input="changeMonth()"
-        />
+        <div style="width: fit-content" class="input-group">
+          <input
+            type="month"
+            class="form-control"
+            v-model="selectedMonth"
+            style="border-radius: 0.25rem 0 0 0.25rem"
+            @input="changeMonth()"
+          />
+          <span
+            class="input-group-text"
+            style="border-radius: 0 0.25rem 0.25rem 0; background-color: red"
+          >
+            <i class="fas fa-search"></i>
+          </span>
+        </div>
       </div>
     </div>
 
@@ -104,6 +112,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import ApexChart from 'vue3-apexcharts'
+import moment from 'moment-timezone'
 
 export default {
   name: 'EAbsensi',
@@ -115,6 +124,7 @@ export default {
       clickedEmployee: '',
       clickedDetails: [], // Menyimpan detail kehadiran yang diklik
       currentMonth: '',
+      selectedMonth: null,
     }
   },
   computed: {
@@ -176,11 +186,49 @@ export default {
       return this.getChartOptions(this.Get_History_Absence.whiteShiftLibur)
     },
   },
+  mounted() {
+    this.adjustSelectedMonth()
+    this.$store.dispatch('Action_Get_History_Absence', this.selectedMonth)
+    document.addEventListener('click', this.handleClickOutside)
+  },
+  beforeDestroy() {
+    document.removeEventListener('click', this.handleClickOutside)
+  },
   methods: {
-    functionCurrentMonth() {
-      const date = new Date()
-      this.updateCurrentMonth(date.getFullYear(), date.getMonth() + 1)
+    adjustSelectedMonth() {
+      const currentDate = moment().tz('Asia/Jakarta')
+
+      // Jika tidak ada selectedMonth yang dipilih, atur ke null
+      if (!this.selectedMonth) {
+        this.selectedMonth = null // Set to null untuk menampilkan input kosong
+      }
+
+      // Logika untuk menetapkan selectedMonth ke bulan yang sesuai
+      const startOfNextMonth = moment(currentDate)
+        .startOf('month')
+        .hour(0)
+        .minute(0)
+        .second(0)
+      const endOfCurrentMonth = moment(currentDate).endOf('month')
+
+      if (
+        currentDate.isBetween(
+          startOfNextMonth,
+          startOfNextMonth.clone().hour(7),
+        )
+      ) {
+        this.selectedMonth = endOfCurrentMonth
+          .subtract(1, 'month')
+          .format('YYYY-MM')
+      } else {
+        this.selectedMonth = currentDate.format('YYYY-MM')
+      }
+
+      // Memperbarui tampilan bulan yang dipilih
+      const [year, month] = this.selectedMonth.split('-')
+      this.updateCurrentMonth(year, month)
     },
+
     updateCurrentMonth(year, month) {
       const months = [
         'Januari',
@@ -198,6 +246,14 @@ export default {
       ]
       this.currentMonth = `${months[month - 1]} ${year}`
     },
+
+    async changeMonth() {
+      if (this.selectedMonth) {
+        const [year, month] = this.selectedMonth.split('-')
+        this.updateCurrentMonth(year, month)
+        this.$store.dispatch('Action_Get_History_Absence', this.selectedMonth)
+      }
+    },
     countAbsensi(data) {
       const counts = {}
       data?.forEach((item) => {
@@ -208,13 +264,6 @@ export default {
         }
       })
       return counts
-    },
-    async changeMonth() {
-      if (this.selectedMonth) {
-        const [year, month] = this.selectedMonth.split('-')
-        this.updateCurrentMonth(year, month)
-        this.$store.dispatch('Action_Get_History_Absence', this.selectedMonth)
-      }
     },
     getChartOptions(data) {
       return {
@@ -313,14 +362,6 @@ export default {
         this.clickedDetails = [] // Hide the details
       }
     },
-  },
-  mounted() {
-    this.functionCurrentMonth()
-    this.$store.dispatch('Action_Get_History_Absence', this.selectedMonth)
-    document.addEventListener('click', this.handleClickOutside)
-  },
-  beforeDestroy() {
-    document.removeEventListener('click', this.handleClickOutside)
   },
 }
 </script>
