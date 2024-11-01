@@ -80,17 +80,14 @@ const actions = {
       formData.append('shift', payload.shift)
       formData.append('jabatan', payload.jabatan)
       formData.append('foto', payload.selectedFile) // Tambahkan file foto ke FormData
-      formData.append('default_position', payload.defaultPos)
+      formData.append('default_position', payload.default_position)
+      console.log([...formData])
 
-      const result = await axios.post(
-        API_URL + '/employees/add',
-        formData, // Gunakan FormData sebagai payload
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data', // Ubah Content-Type menjadi multipart/form-data
-          },
+      const result = await axios.post(API_URL + '/employees/add', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
         },
-      )
+      })
       commit('setResponse', result)
 
       // Panggil aksi fetchKaryawanList untuk memperbarui daftar karyawan

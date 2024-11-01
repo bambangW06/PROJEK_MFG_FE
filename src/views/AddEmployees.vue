@@ -160,7 +160,7 @@
           <label for="defaultPos">Pos</label>
           <div>
             <select
-              v-model="editedUser.defaultPos"
+              v-model="editedUser.default_position"
               class="form-control"
               id="defaultPos"
             >
@@ -397,7 +397,7 @@ export default {
         selectedFile: null,
         previewUrl: '',
         profile: '',
-        defaultPos: '',
+        default_position: '',
       },
       pageSize: 5, // Jumlah item per halaman
       currentPage: 1, // Halaman saat ini
@@ -566,7 +566,7 @@ export default {
 
       // Cek apakah properti employee_id ada dalam objek karyawan
       if ('employee_id' in karyawan) {
-        console.log('employee_id ditemukan:', karyawan.employee_id)
+        console.log('employee_id ditemukan:', karyawan)
         // Salin data karyawan yang akan diedit ke editedUser
         this.editedUser = { ...karyawan, employee_id: karyawan.employee_id }
       } else {

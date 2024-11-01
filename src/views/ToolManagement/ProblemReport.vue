@@ -1,6 +1,69 @@
 <template>
+  <div class="modal" tabindex="-1" id="analisaProblemModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Analisa Problem</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <label>Tool</label>
+          <div>
+            <input type="text" class="form-control" v-model="tool" />
+          </div>
+          <label for="">Problem</label>
+          <div>
+            <input type="text" class="form-control" v-model="problem" />
+          </div>
+          <label for="">Analisa</label>
+          <div>
+            <textarea
+              type="text"
+              class="form-control"
+              v-model="analisa"
+            ></textarea>
+          </div>
+          <label for="">Foto</label>
+          <div>
+            <input
+              type="file"
+              class="form-control"
+              id="toolImage"
+              name="foto"
+              ref="fileInput"
+              multiple
+              @change="onFileImageChange"
+            />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Close
+          </button>
+          <button
+            type="button"
+            class="btn btn-danger"
+            @click="actionAddAnalisaProblem"
+            data-bs-dismiss="modal"
+          >
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="container-fluid">
-    <div class="card p-2 mb-2">
+    <div class="card p-2 mb-1">
       <div class="d-flex justify-content-between align-items-center">
         <h4 class="text-center m-0">Problem Report</h4>
         <div class="d-flex align-items-center">
@@ -75,11 +138,12 @@
                 <th>Tanggal</th>
                 <th>Jam</th>
                 <th>Line</th>
-                <th>Masin</th>
+                <th>Mesin</th>
                 <th>Tool</th>
                 <th>Act Counter</th>
                 <th>Std Counter</th>
                 <th>Problem</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -93,6 +157,16 @@
                 <td>{{ problem.act_counter }}</td>
                 <td>{{ problem.std_counter }}</td>
                 <td>{{ problem.problem_nm }}</td>
+                <td>
+                  <button
+                    class="btn btn-danger btn-sm"
+                    data-bs-toggle="modal"
+                    data-bs-target="#analisaProblemModal"
+                    @click="analisaProblem(problem)"
+                  >
+                    <i class="fas fa-edit" aria-hidden="true"></i>
+                  </button>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -100,8 +174,64 @@
       </div>
     </div>
   </div>
+
+  <div class="container-fluid">
+    <div class="card p-2 mt-1">
+      <div class="d-flex justify-content-between align-items-center">
+        <h4 class="text-center m-0">Analisa Problem Next Proses</h4>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid mt-1">
+    <div class="card p-2">
+      <table class="table table-bordered table-problem table-hover">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Tanggal</th>
+            <th>Line</th>
+            <th>Mesin</th>
+            <th>Tool</th>
+            <th>Proses</th>
+            <th>Counter</th>
+            <th>Problem</th>
+            <th>Analisa</th>
+            <th>Foto</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(problem, index) in GET_PROBLEM_ANALISA" :key="index">
+            <td>{{ index + 1 }}</td>
+            <td>{{ problem.created_dt }}</td>
+            <td>{{ problem.line_nm }}</td>
+            <td>{{ problem.machine_nm }}</td>
+            <td>{{ problem.tool_nm }}</td>
+            <td>{{ problem.process_nm }}</td>
+            <td>{{ problem.act_counter }}/{{ problem.std_counter }}</td>
+            <td>{{ problem.problem_nm }}</td>
+            <td>{{ problem.analisa }}</td>
+            <div v-if="Array.isArray(problem.foto)">
+              <img
+                v-for="(foto, fotoIndex) in problem.foto"
+                :key="fotoIndex"
+                :src="foto"
+                alt=""
+                class="thumbnail"
+              />
+            </div>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </template>
 <script>
+import {
+  ACTION_ADD_ANALISA_PROBLEM,
+  ACTION_GET_PROBLEM_ANALISA,
+  GET_PROBLEM_ANALISA,
+} from '@/store/Analisaproblem.module'
 import {
   ACTION_GET_PROBLEM_TABLE,
   GET_PROBLEM_IN_PROCESS,
@@ -116,10 +246,22 @@ export default {
       now: new Date(),
       selectedDate: '',
       selectedShift: 'Siang',
+      tool: '',
+      problem: '',
+      analisa: '',
+      foto: [],
+      tool_id: null,
+      problem_id: null,
+      created_dt: '',
+      machine_id: null,
     }
   },
   computed: {
-    ...mapGetters([GET_PROBLEM_IN_PROCESS, GET_PROBLEM_NEXT_PROCESS]),
+    ...mapGetters([
+      GET_PROBLEM_IN_PROCESS,
+      GET_PROBLEM_NEXT_PROCESS,
+      GET_PROBLEM_ANALISA,
+    ]),
     today() {
       // Dapatkan waktu sekarang
       let currentDate = new Date(this.now)
@@ -177,8 +319,98 @@ export default {
   mounted() {
     this.$store.dispatch(ACTION_GET_PROBLEM_TABLE, this.selectedDate)
     this.setShiftByCurrentTime()
+    this.getAnlisaProblem()
   },
   methods: {
+    analisaProblem(seletedProblem) {
+      try {
+        this.machine_id = seletedProblem.machine_id
+        this.problem_id = seletedProblem.problem_id
+        this.tool_id = seletedProblem.tool_id
+        this.created_dt = seletedProblem.created_dt
+        this.tool = seletedProblem.tool_nm
+        this.problem = seletedProblem.problem_nm
+        this.anlisa = ''
+        this.foto = []
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    onFileImageChange(event) {
+      const files = Array.from(event.target.files)
+      this.foto = [] // Reset daftar foto sebelumnya
+
+      files.forEach((file) => {
+        const maxSize = 500 * 1024 // 500 KB
+
+        if (!file.type.startsWith('image/')) {
+          alert('Pilih file gambar yang valid.')
+          return
+        }
+
+        if (file.size > maxSize) {
+          alert('Ukuran file terlalu besar. Maksimal 500 KB.')
+          return
+        }
+
+        this.foto.push(file) // Simpan file asli ke dalam foto
+        console.log('File berhasil diunggah:', file)
+        console.log('Daftar file yang diunggah:', this.foto)
+      })
+    },
+
+    async actionAddAnalisaProblem() {
+      try {
+        // Membuat objek payload
+        const payload = {
+          shift: this.selectedShift,
+          problem_id: this.problem_id,
+          problem_nm: this.problem,
+          tool_id: this.tool_id,
+          tool_nm: this.tool,
+          machine_id: this.machine_id,
+          created_dt: this.created_dt,
+          analisa: this.analisa,
+          foto: this.foto, // Menyimpan array file foto
+        }
+
+        // Mengirimkan payload ke store
+        const response = await this.$store.dispatch(
+          ACTION_ADD_ANALISA_PROBLEM,
+          payload,
+        )
+
+        if (response.status === 201) {
+          console.log('Data Berhasil')
+          this.getAnlisaProblem()
+        }
+
+        // Reset input
+        this.analisa = ''
+        this.foto = []
+        this.$refs.fileInput.value = null // Reset elemen input file
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async getAnlisaProblem() {
+      try {
+        // Mengambil data analisa problem setelah penambahan berhasil
+        let response = await this.$store.dispatch(ACTION_GET_PROBLEM_ANALISA, {
+          shift: this.selectedShift,
+          date: this.selectedDate,
+        })
+
+        if (response.status === 200 && this.GET_PROBLEM_ANALISA.length > 0) {
+          console.log('Data Berhasil di Dapat', this.GET_PROBLEM_ANALISA)
+        } else {
+          this.GET_PROBLEM_ANALISA = []
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    },
+
     setShiftByCurrentTime() {
       const now = new Date()
       const currentHour = now.getHours()
@@ -222,5 +454,13 @@ export default {
 .table-problem th {
   background-color: rgb(198, 240, 240);
   border: 1px solid black;
+}
+.thumbnail {
+  max-width: 100px; /* Set the maximum width for the image */
+  max-height: 100px; /* Set the maximum height for the image */
+  width: auto; /* Maintain aspect ratio */
+  height: auto; /* Maintain aspect ratio */
+  object-fit: cover; /* Optional: to maintain aspect ratio and fill the box */
+  margin: 5px; /* Optional: add some space between images */
 }
 </style>
