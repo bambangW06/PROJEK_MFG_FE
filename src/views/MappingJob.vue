@@ -332,7 +332,7 @@ export default {
     },
 
     async defaultPosition() {
-      const API_URL = process.env.VUE_APP_API_URL
+      // const API_URL = process.env.VUE_APP_API_URL
       const currentShift = this.getCurrentShift
       const employeesWithCurrentShift =
         currentShift === 'Red'
@@ -368,13 +368,13 @@ export default {
       const supervisorData = this.GET_SUPERVISOR[0] // Pastikan GET_SUPERVISOR mengembalikan array dengan data supervisor
 
       if (supervisorData) {
-        // Pastikan photourl menggunakan API_URL
-        if (
-          supervisorData.photourl &&
-          !supervisorData.photourl.startsWith(API_URL)
-        ) {
-          supervisorData.photourl = `${API_URL}${supervisorData.photourl}`
-        }
+        // // Pastikan photourl menggunakan API_URL
+        // if (
+        //   supervisorData.photourl &&
+        //   !supervisorData.photourl.startsWith(API_URL)
+        // ) {
+        //   supervisorData.photourl = `${API_URL}${supervisorData.photourl}`
+        // }
 
         // Tambahkan supervisor ke employees jika belum ada
         const existingEmployee = this.employees.find(

@@ -46,19 +46,12 @@ const mutations = {
     state.karyawan = karyawanListWithPreview
   },
   SET_SUPERVISOR(state, payload) {
-    const supervisorPreview = payload.map((supervisor) => {
-      const relativePath = supervisor.photourl
-        ? supervisor.photourl.replace(/\\/g, '/')
-        : null
-      const previewUrl = relativePath ? API_URL + relativePath : null
-      console.log('Photourl:', supervisor.photourl) // Debugging
-      console.log('Preview URL:', previewUrl) // Debugging
-      return {
-        ...supervisor,
-        previewUrl: previewUrl,
-      }
+    state.SUPERVISOR = payload.map((supervisor) => {
+      supervisor.photourl = API_URL + supervisor.photourl
+      console.log('supervisor', supervisor.photourl)
+
+      return supervisor
     })
-    state.SUPERVISOR = supervisorPreview
   },
 }
 

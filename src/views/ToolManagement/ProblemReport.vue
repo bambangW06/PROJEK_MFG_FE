@@ -185,19 +185,22 @@
 
   <div class="container-fluid mt-1">
     <div class="card p-2">
-      <table class="table table-bordered table-problem table-hover">
+      <table
+        class="table table-bordered table-problem table-hover"
+        style="table-layout: fixed; width: 100%"
+      >
         <thead>
           <tr>
-            <th>No</th>
-            <th>Tanggal</th>
-            <th>Line</th>
-            <th>Mesin</th>
-            <th>Tool</th>
-            <th>Proses</th>
-            <th>Counter</th>
-            <th>Problem</th>
-            <th>Analisa</th>
-            <th>Foto</th>
+            <th style="width: 5%">No</th>
+            <th style="width: 10%">Tanggal</th>
+            <th style="width: 10%">Line</th>
+            <th style="width: 10%">Mesin</th>
+            <th style="width: 10%">Tool</th>
+            <th style="width: 10%">Proses</th>
+            <th style="width: 10%">Counter</th>
+            <th style="width: 15%">Problem</th>
+            <th style="width: 35%" class="analisa-column">Analisa</th>
+            <th style="width: 15%" class="foto-column">Foto</th>
           </tr>
         </thead>
         <tbody>
@@ -210,16 +213,18 @@
             <td>{{ problem.process_nm }}</td>
             <td>{{ problem.act_counter }}/{{ problem.std_counter }}</td>
             <td>{{ problem.problem_nm }}</td>
-            <td>{{ problem.analisa }}</td>
-            <div v-if="Array.isArray(problem.foto)">
-              <img
-                v-for="(foto, fotoIndex) in problem.foto"
-                :key="fotoIndex"
-                :src="foto"
-                alt=""
-                class="thumbnail"
-              />
-            </div>
+            <td class="analisa-column">{{ problem.analisa }}</td>
+            <td class="foto-column">
+              <div v-if="Array.isArray(problem.foto)">
+                <img
+                  v-for="(foto, fotoIndex) in problem.foto"
+                  :key="fotoIndex"
+                  :src="foto"
+                  alt=""
+                  class="thumbnail"
+                />
+              </div>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -456,11 +461,18 @@ export default {
   border: 1px solid black;
 }
 .thumbnail {
-  max-width: 100px; /* Set the maximum width for the image */
-  max-height: 100px; /* Set the maximum height for the image */
-  width: auto; /* Maintain aspect ratio */
-  height: auto; /* Maintain aspect ratio */
-  object-fit: cover; /* Optional: to maintain aspect ratio and fill the box */
-  margin: 5px; /* Optional: add some space between images */
+  max-width: 90px; /* Batas lebar gambar */
+  max-height: 90px; /* Batas tinggi gambar */
+  width: auto;
+  height: auto;
+  object-fit: cover; /* Menjaga rasio dan mengisi area */
+  margin: 5px;
+}
+
+.analisa-column {
+  max-width: 150px; /* Sesuaikan lebar maksimum */
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
 }
 </style>

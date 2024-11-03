@@ -161,6 +161,7 @@ export default {
               icon: 'cilSpreadsheet', // Ikonya bisa disesuaikan
               parentId: 'ROOT',
             },
+
             {
               component: 'CNavItem',
               name: 'Problem Report', // Nama menu untuk EAssesment
@@ -168,6 +169,13 @@ export default {
               icon: 'cilWarning', // Ikonya bisa disesuaikan
               parentId: 'ROOT',
             },
+            // {
+            //   component: 'CNavItem',
+            //   name: 'Dummy', // Nama menu untuk EAssesment
+            //   to: '/tool/dummy', // Path yang dituju saat menu EAssesment diklik
+            //   icon: 'cilMap', // Ikonya bisa disesuaikan
+            //   parentId: 'ROOT',
+            // },
             {
               component: 'CNavItem',
               name: 'Pencapaian Regrinding', // Nama menu untuk EAssesment

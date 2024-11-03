@@ -262,47 +262,57 @@
 
   <div class="container-fluid mt-2">
     <div class="card p-2">
-      <div class="d-flex align-items-center">
-        <!-- Pagination -->
-        <nav aria-label="Page navigation" class="ms-auto">
-          <ul class="pagination justify-content-center mb-0">
-            <li class="page-item" :class="{ disabled: currentPage === 1 }">
-              <button class="page-link" @click="goToPage(currentPage - 1)">
-                <span aria-hidden="true">&laquo;</span>
-                <span class="sr-only">Previous</span>
-              </button>
-            </li>
-            <li
-              class="page-item"
-              v-for="page in totalPages"
-              :key="page"
-              :class="{ active: currentPage === page }"
-            >
-              <button class="page-link" @click="goToPage(page)">
-                {{ page }}
-              </button>
-            </li>
-            <li
-              class="page-item"
-              :class="{ disabled: currentPage === totalPages }"
-            >
-              <button class="page-link" @click="goToPage(currentPage + 1)">
-                <span aria-hidden="true">&raquo;</span>
-                <span class="sr-only">Next</span>
-              </button>
-            </li>
-          </ul>
-        </nav>
+      <div class="d-flex align-items-center justify-content-between">
+        <!-- Pagination di tengah -->
+        <div class="flex-grow-1 d-flex justify-content-center">
+          <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center mb-0">
+              <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                <button class="page-link" @click="goToPage(currentPage - 1)">
+                  <span aria-hidden="true">&laquo;</span>
+                  <span class="sr-only">Previous</span>
+                </button>
+              </li>
+              <li
+                class="page-item"
+                v-for="page in totalPages"
+                :key="page"
+                :class="{ active: currentPage === page }"
+              >
+                <button class="page-link" @click="goToPage(page)">
+                  {{ page }}
+                </button>
+              </li>
+              <li
+                class="page-item"
+                :class="{ disabled: currentPage === totalPages }"
+              >
+                <button class="page-link" @click="goToPage(currentPage + 1)">
+                  <span aria-hidden="true">&raquo;</span>
+                  <span class="sr-only">Next</span>
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </div>
 
-        <!-- Search input -->
-        <input
-          class="form-control ms-auto"
-          type="text"
-          v-model="searchInput"
-          placeholder="Cari"
-          @input="filterKaryawan"
-          style="max-width: 150px"
-        />
+        <!-- Search input di kanan -->
+        <div class="input-group" style="width: fit-content">
+          <input
+            class="form-control"
+            type="text"
+            v-model="searchInput"
+            placeholder="Cari"
+            @input="filterKaryawan"
+            style="max-width: 150px"
+          />
+          <span
+            class="input-group-text"
+            style="border-radius: 0 0.25rem 0.25rem 0; background-color: red"
+          >
+            <i class="fas fa-search"></i>
+          </span>
+        </div>
       </div>
 
       <div class="table-responsive">

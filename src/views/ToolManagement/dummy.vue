@@ -10,7 +10,7 @@
             class="btn-close"
             data-bs-dismiss="modal"
             aria-label="Close"
-            @click="resetModal"
+            @click="resetModal()"
           ></button>
         </div>
         <div v-if="modalType === 'category'" class="modal-body">
@@ -63,7 +63,6 @@
           <label for="">Machine</label>
           <div>
             <Treeselect
-              :key="resetKey"
               v-model="selectedMachine"
               :options="machineOptions"
               placeholder="Select Machine"
@@ -71,11 +70,9 @@
               :searchable="true"
             />
           </div>
-
           <label for="">Tool</label>
           <div>
             <Treeselect
-              :key="resetKey"
               v-model="selectedTool"
               :options="toolOptions"
               placeholder="Select Tool"
@@ -84,7 +81,6 @@
               @select="onToolSelect"
             />
           </div>
-
           <label>Counter</label>
           <div class="input-group">
             <input type="number" class="form-control" v-model="counter" />
@@ -108,7 +104,7 @@
             type="button"
             class="btn btn-secondary"
             data-bs-dismiss="modal"
-            @click="resetModal"
+            @click="resetModal()"
           >
             Close
           </button>
@@ -230,6 +226,7 @@
       </div>
     </div>
   </div>
+
   <div class="modal" tabindex="-1" id="deleteProblemModal">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -265,7 +262,14 @@
       </div>
     </div>
   </div>
-  <div class="container-fluid">
+
+  <div
+    :class="[
+      'container-fluid',
+      'card-laporan-harian',
+      isScrolled ? 'scrolled' : '',
+    ]"
+  >
     <div class="card p-2 mb-2">
       <div class="d-flex justify-content-between align-items-center">
         <h4 class="text-center m-0">Laporan Harian</h4>
@@ -277,6 +281,7 @@
       </div>
     </div>
   </div>
+
   <div class="container-fluid">
     <div class="card p-2 mb-2">
       <div class="d-flex justify-content-between align-items-center mb-1">
@@ -323,43 +328,43 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(item, index) in GET_TIME_RANGES" :key="index">
-              <td>{{ item.time_range }}</td>
+            <tr v-for="(row, index) in filteredDataByShift" :key="index">
+              <td>{{ row.jam }}</td>
               <td>
                 <input
                   class="form-control"
                   type="number"
-                  v-model="item.from_clr"
+                  v-model="row.from_clr"
                 />
               </td>
               <td>
                 <input
                   class="form-control"
                   type="number"
-                  v-model="item.penambahan_tool"
+                  v-model="row.penambahan_tool"
                 />
               </td>
               <td>
                 <input
                   class="form-control"
                   type="number"
-                  v-model="item.regrind_setting"
+                  v-model="row.regrind_setting"
                 />
               </td>
               <td>
                 <input
-                  class="form-control"
-                  type="number"
-                  :value="calculateToolDelay(item)"
                   readonly
+                  class="form-control"
+                  type="number"
+                  v-model="row.tool_delay"
                 />
               </td>
               <td>
                 <input
+                  readonly
                   class="form-control"
                   type="text"
-                  :value="`${calculateWaktuDelay(item)}'`"
-                  readonly
+                  v-model="row.waktu_delay"
                 />
               </td>
               <td>
@@ -368,11 +373,7 @@
                   data-bs-toggle="modal"
                   data-bs-target="#addProblemModal"
                   @click="
-                    openModal(
-                      item.time_range,
-                      'Add Problem In Proses',
-                      'category',
-                    )
+                    setModalTitle('Add Problem In Proses', 'category', row.jam)
                   "
                 >
                   <i class="fas fa-edit text-danger"></i>
@@ -383,9 +384,9 @@
                   data-bs-target="#viewProblemModal"
                   @click="
                     handleViewProblem(
-                      item.time_range,
                       'View Problem in Proses',
                       'category',
+                      row.jam,
                     )
                   "
                 >
@@ -398,10 +399,10 @@
                   data-bs-toggle="modal"
                   data-bs-target="#addProblemModal"
                   @click="
-                    openModal(
-                      item.time_range,
+                    setModalTitle(
                       'Add Problem Next Proses',
                       'next proses',
+                      row.jam,
                     )
                   "
                 >
@@ -413,9 +414,9 @@
                   data-bs-target="#viewProblemModal"
                   @click="
                     handleViewProblem(
-                      item.time_range,
                       'View Problem Next Proses',
                       'next proses',
+                      row.jam,
                     )
                   "
                 >
@@ -542,9 +543,10 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import Treeselect from 'vue3-treeselect'
 import 'vue3-treeselect/dist/vue3-treeselect.css'
-import { mapGetters } from 'vuex'
+
 import {
   ACTION_ADD_OEE,
   ACTION_ADD_PROBLEM,
@@ -566,25 +568,22 @@ import {
   GET_PROBLEM_MODAL,
   GET_REPORT,
   GET_STD_COUNTER,
-  GET_TIME_RANGES,
   GET_TOOLS,
 } from '@/store/LaporanHarian.module'
-
-import moment from 'moment'
+import moment from 'moment-timezone'
 
 export default {
-  name: 'dummy',
+  name: 'LaporanHarian',
   components: {
     Treeselect,
   },
 
   data() {
     return {
-      selectedShift: 'Siang',
-      selectedDate: '',
-      selectedTimeRange: '',
+      selectedShift: '',
+      isScrolled: false,
+      now: new Date(),
       modalTitle: '',
-      modalType: '',
       selectedLine: null,
       selectedMachine: null,
       machineOptions: [],
@@ -598,17 +597,95 @@ export default {
       selectedCategory: '',
       problemCategory: [],
       timeCategory: '',
+      selectedDate: '',
       selectedProblemId: null,
-      resetKey: 0,
-      timeoutId: null,
-      reportFlags: {},
-      previousValues: {},
+      tableData: [
+        {
+          jam: '07:30 - 09:30',
+          from_clr: '',
+          penambahan_tool: '',
+          regrind_setting: '',
+          tool_delay: '',
+          waktu_delay: '',
+        },
+        {
+          jam: '09:40 - 11:45',
+          from_clr: '',
+          penambahan_tool: '',
+          regrind_setting: '',
+          tool_delay: '',
+          waktu_delay: '',
+        },
+        {
+          jam: '12:30 - 14:00',
+          from_clr: '',
+          penambahan_tool: '',
+          regrind_setting: '',
+          tool_delay: '',
+          waktu_delay: '',
+        },
+        {
+          jam: '14:10 - 16:00',
+          from_clr: '',
+          penambahan_tool: '',
+          regrind_setting: '',
+          tool_delay: '',
+          waktu_delay: '',
+        },
+        {
+          jam: '16:00 - 20:00',
+          from_clr: '',
+          penambahan_tool: '',
+          regrind_setting: '',
+          tool_delay: '',
+          waktu_delay: '',
+        },
+        {
+          jam: '20:00 - 22:00',
+          from_clr: '',
+          penambahan_tool: '',
+          regrind_setting: '',
+          tool_delay: '',
+          waktu_delay: '',
+        },
+        {
+          jam: '22:10 - 00:00',
+          from_clr: '',
+          penambahan_tool: '',
+          regrind_setting: '',
+          tool_delay: '',
+          waktu_delay: '',
+        },
+        {
+          jam: '00:30 - 02:30',
+          from_clr: '',
+          penambahan_tool: '',
+          regrind_setting: '',
+          tool_delay: '',
+          waktu_delay: '',
+        },
+        {
+          jam: '02:40 - 05:45',
+          from_clr: '',
+          penambahan_tool: '',
+          regrind_setting: '',
+          tool_delay: '',
+          waktu_delay: '',
+        },
+        {
+          jam: '05:45 - 07:00',
+          from_clr: '',
+          penambahan_tool: '',
+          regrind_setting: '',
+          tool_delay: '',
+          waktu_delay: '',
+        },
+      ],
       actMp: '', // Input manual untuk Mp Opr
       jamKerja: '', // Input manual untuk Jam Kerja
       isFetching: false,
       shouldSend: false,
       hasManualInput: false,
-      now: new Date(),
     }
   },
   computed: {
@@ -622,7 +699,6 @@ export default {
       GET_REPORT,
       GET_OEE,
       GET_ABSENSI,
-      GET_TIME_RANGES,
     ]),
     today() {
       // Dapatkan waktu sekarang
@@ -645,36 +721,62 @@ export default {
         day: 'numeric',
       })
     },
-    computedShift() {
-      const currentHour = new Date().getHours()
-      return currentHour >= 7 && currentHour < 20 ? 'Siang' : 'Malam'
-    },
 
+    filteredDataByShift() {
+      if (this.selectedShift === 'Siang') {
+        // Filter jam antara 07:30 sampai 20:00
+        return this.tableData.filter((item) => {
+          const jam = this.convertTo24Hour(item.jam)
+          return jam >= '07:30' && jam <= '20:00'
+        })
+      } else if (this.selectedShift === 'Malam') {
+        // Filter jam antara 20:00 sampai 07:30 di hari berikutnya
+        return this.tableData.filter((item) => {
+          const jam = this.convertTo24Hour(item.jam)
+          return jam < '07:30' || jam >= '20:00'
+        })
+      } else {
+        // Tampilkan semua data jika shift belum dipilih
+        return this.tableData
+      }
+    },
     totalRegSetting() {
-      if (!Array.isArray(this.GET_TIME_RANGES)) {
-        return 0 // Kembalikan 0 jika GET_TIME_RANGES tidak terdefinisi
-      }
-      return this.GET_TIME_RANGES.reduce((total, item) => {
-        return total + (parseFloat(item.regrind_setting) || 0)
+      const total = this.filteredDataByShift.reduce((total, row) => {
+        return total + (parseFloat(row.regrind_setting) || 0)
       }, 0)
+      // console.log('Total Reg Setting:', total) // Debug log
+      return total
     },
-
     totalRequest() {
-      if (!Array.isArray(this.GET_TIME_RANGES)) {
-        return 0 // Kembalikan 0 jika GET_TIME_RANGES tidak terdefinisi
-      }
-      return this.GET_TIME_RANGES.reduce((total, item) => {
-        return total + (parseFloat(item.from_clr) || 0)
+      const totalFromClr = this.filteredDataByShift.reduce((total, row) => {
+        return total + (parseFloat(row.from_clr) || 0)
       }, 0)
-    },
 
+      // Menghitung total request
+      const total = totalFromClr
+
+      // console.log('Total Request:', total) // Debug log
+      return total
+    },
+    // calculatedOEE() {
+    //   // Menghitung OEE berdasarkan formula
+    //   if (this.actMp && this.jamKerja && this.totalRegSetting) {
+    //     return (
+    //       100 -
+    //       ((this.actMp * this.jamKerja) / this.totalRegSetting) * 100
+    //     ).toFixed(2)
+    //   }
+    //   return 0 // Kembalikan 0 jika ada input yang tidak lengkap
+    // },
     calculatedOEE() {
+      // Menghitung OEE berdasarkan formula
       const totalRequestValue = this.totalRequest // Mengambil total request
-      const totalRegSettingValue = this.totalRegSetting // Mengambil total reg setting
+      const totalRegSettingValue = this.totalRegSetting // Pastikan ini ada dalam data Anda
 
       if (totalRequestValue > 0) {
         // Pastikan total request tidak 0
-        return ((totalRegSettingValue / totalRequestValue) * 100).toFixed(2) // Rumus OEE
+        return ((totalRegSettingValue / totalRequestValue) * 100) // Rumus OEE
+          .toFixed(2)
       }
       return 0 // Kembalikan 0 jika total request adalah 0
     },
@@ -695,25 +797,137 @@ export default {
     },
   },
   watch: {
+    tableData: {
+      handler(newValue) {
+        if (
+          !this.selectedDate ||
+          this.selectedDate === moment().format('YYYY-MM-DD')
+        ) {
+          // Gunakan filteredDataByShift untuk memastikan hanya data shift terpilih yang diproses
+          const filteredData = this.filteredDataByShift
+          // console.log('filteredData:', filteredData)
+
+          filteredData.forEach((row) => {
+            // Perhitungan tool_delay
+            if (row.from_clr && row.penambahan_tool && row.regrind_setting) {
+              row.tool_delay =
+                row.from_clr + row.penambahan_tool - row.regrind_setting
+            } else {
+              row.tool_delay = ''
+            }
+
+            // Perhitungan waktu_delay
+            if (row.tool_delay) {
+              row.waktu_delay = `${row.tool_delay * 15}'`
+            } else {
+              row.waktu_delay = ''
+            }
+
+            // Reset reportSent flag jika ada perubahan pada row
+            if (
+              row.from_clr !== row.previousFromClr ||
+              row.penambahan_tool !== row.previousPenambahan ||
+              row.regrind_setting !== row.previousRegrindSetting
+            ) {
+              row.reportSent = false // Reset flag jika ada perubahan
+            }
+
+            // Hanya panggil addReportReg jika waktu_delay terisi dan belum dikirim
+            if (row.waktu_delay && !row.reportSent) {
+              // Gunakan setTimeout untuk memberikan jeda
+              setTimeout(() => {
+                if (!row.reportSent) {
+                  this.addReportReg(row)
+                  row.reportSent = true // Tandai bahwa data ini sudah diproses
+                }
+              }, 4000) // 4000 ms = 4 detik
+
+              // Simpan nilai sebelumnya untuk pengecekan di kemudian hari
+              row.previousFromClr = row.from_clr
+              row.previousPenambahan = row.penambahan_tool
+              row.previousRegrindSetting = row.regrind_setting
+            }
+          })
+        }
+      },
+      deep: true,
+    },
+
+    GET_REPORT(newValue) {
+      if (newValue && newValue.length) {
+        // Pemetaan rentang waktu di tableData
+        const timeRanges = {
+          '07:30 - 09:30': 0,
+          '09:40 - 11:45': 1,
+          '12:30 - 14:00': 2,
+          '14:10 - 16:00': 3,
+          '16:00 - 20:00': 4,
+          '20:00 - 22:00': 5,
+          '22:10 - 00:00': 6,
+          '00:30 - 02:30': 7,
+          '02:40 - 05:45': 8,
+          '05:45 - 07:00': 9,
+        }
+
+        // Reset hanya data yang relevan
+        this.tableData.forEach((row) => {
+          if (!row.jam && !row.isCritical) {
+            // Reset hanya jika 'jam' tidak ada dan bukan critical row
+            row.from_clr = ''
+            row.penambahan_tool = ''
+            row.regrind_setting = ''
+            row.tool_delay = ''
+            row.waktu_delay = ''
+          }
+        })
+
+        // Sinkronisasi data dari GET_REPORT ke tableData
+        newValue.forEach((report) => {
+          const timeRange = report.time_range
+
+          // Cek apakah time_range dari report cocok dengan salah satu rentang waktu di tableData
+          const index = timeRanges[timeRange]
+          if (index !== undefined && this.tableData[index]) {
+            // Langsung ubah nilai dalam tableData
+            const targetRow = this.tableData[index]
+            targetRow.from_clr = report.from_gel || ''
+            targetRow.penambahan_tool = report.penambahan || ''
+            targetRow.regrind_setting = report.reg_set || ''
+            targetRow.tool_delay = report.tool_delay || ''
+            targetRow.waktu_delay = report.time_delay || ''
+            targetRow.isCritical = true // Tandai sebagai critical row
+          }
+        })
+      } else {
+        // Jika tidak ada data dari GET_REPORT, reset tableData secara hati-hati
+        this.tableData.forEach((row) => {
+          row.from_clr = ''
+          row.penambahan_tool = ''
+          row.regrind_setting = ''
+          row.tool_delay = ''
+          row.waktu_delay = ''
+        })
+      }
+    },
+    selectedShift(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.now = new Date() // Update waktu saat shift berubah
+        this.absensiKaryawan()
+
+        // Reset nilai dan flag
+        this.actMp = 0
+        this.jamKerja = 0
+        this.shouldSend = false
+        this.fetchOEE()
+      }
+    },
     selectedDate(newValue, oldValue) {
-      console.log('selectedDate changed from', oldValue, 'to', newValue)
       if (newValue !== oldValue) {
         this.absensiKaryawan()
-        this.getTimeRanges()
         this.actMp = 0
         this.jamKerja = 0
         this.fetchOEE()
       }
-    },
-    selectedShift() {
-      this.absensiKaryawan()
-      // Reset nilai dan flag
-      this.actMp = 0
-      this.jamKerja = 0
-      this.shouldSend = false
-      this.getTimeRanges()
-      this.getReport() // Mengambil data laporan saat shift berubah
-      this.fetchOEE()
     },
     actMp(newValue, oldValue) {
       if (newValue !== oldValue) {
@@ -736,38 +950,17 @@ export default {
   },
 
   mounted() {
-    this.selectedShift = this.computedShift
-    this.getTimeRanges()
     this.$store.dispatch('fetchLines')
     this.$store.dispatch(ACTION_GET_CATEGORIES)
     this.$store.dispatch(ACTION_GET_REPORT_REG_SET, this.selectedDate)
-    this.getReport()
+    window.addEventListener('scroll', this.handleScroll)
+    this.setShiftByCurrentTime()
+    this.isInitialized = true
+  },
+  beforeDestroy() {
+    window.removeEventListener('scroll', this.handleScroll) // Hapus listener ketika component di-destroy
   },
   methods: {
-    openModal(timeRange, title, type) {
-      this.selectedTimeRange = timeRange // Store the selected time_range
-      this.setModalTitle(title, type) // Set the modal title and type
-      console.log('timerange', this.selectedTimeRange)
-    },
-
-    handleViewProblem(timeRange, title, type) {
-      try {
-        // Set modal title and type
-        this.setModalTitle(title, type)
-        this.selectedTimeRange = timeRange
-        // Fetch problem data after setting the title if necessary
-        this.fetchProblemData()
-      } catch (error) {
-        console.log('Error saat handleViewProblem:', error)
-      }
-    },
-
-    setModalTitle(title, type) {
-      this.modalTitle = title
-      this.modalType = type
-      // You can log the title and type for debugging if needed
-      // console.log(`Setting modal title: ${title}, type: ${type}`);
-    },
     async onToolSelect(selectedTool) {
       try {
         // Simpan tool yang dipilih
@@ -797,326 +990,6 @@ export default {
         // Tangani error jika terjadi kesalahan
         console.error('Error saat memilih tool:', error)
       }
-    },
-    async fetchProblemData() {
-      // console.log('fetchProblemData dipanggil') // Log pemanggilan fetchProblemData
-      try {
-        const payload = {
-          modalType: this.modalType, // Mengambil tipe modal dari state
-          time_range: this.selectedTimeRange, // Mengambil jam yang dipilih dari state
-          selectedDate: this.selectedDate, // Mengambil tanggal yang dipilih dari state
-        }
-
-        await this.$store.dispatch(ACTION_GET_PROBLEM_MODAL, payload)
-      } catch (error) {
-        console.log('Error saat fetchProblemData:', error)
-      }
-    },
-    async onLineChange() {
-      try {
-        const selectedLine = this.selectedLine.line_id
-        // console.log(selectedLine)
-        const line_nm = this.selectedLine.line_nm
-        await this.$store.dispatch('fetchMachines', selectedLine)
-
-        this.machineOptions = this.getMachinesNames.map((machine) => ({
-          id: machine.machine_id,
-          label: machine.machine_nm,
-        }))
-        await this.$store.dispatch(ACTION_GET_TOOLS, line_nm)
-        this.toolOptions = this.GET_TOOLS.map((tool) => ({
-          id: tool.tool_id,
-          label: tool.tool_nm,
-        }))
-      } catch (error) {
-        console.log(error)
-      }
-    },
-    async addProblem() {
-      try {
-        let payload
-        if (this.modalType === 'category') {
-          payload = {
-            category_id: this.selectedCategory.category_id,
-            problem_nm: this.problemCategory,
-            waktu: this.timeCategory,
-            time_range: this.selectedTimeRange,
-          }
-        } else if (this.modalType === 'next proses') {
-          payload = {
-            line_id: this.selectedLine.line_id,
-            machine_id: this.selectedMachine,
-            tool_id: this.selectedTool,
-            act_counter: this.counter,
-            problem_nm: this.problemNextProcess,
-            time_range: this.selectedTimeRange,
-          }
-        }
-        // console.log('payload', payload)
-        if (this.modalType === 'category') {
-          let response = await this.$store.dispatch(ACTION_ADD_PROBLEM, payload)
-          if (response.status === 201) {
-            this.$swal({
-              icon: 'success',
-              title: 'Success',
-              text: 'Data added successfully',
-            })
-          }
-        } else if (this.modalType === 'next proses') {
-          let response = await this.$store.dispatch(
-            ACTION_ADD_PROBLEM_NEXT_PROCESS,
-            payload,
-          )
-          if (response.status === 201) {
-            this.$swal({
-              icon: 'success',
-              title: 'Success',
-              text: 'Data added successfully',
-            })
-          }
-        }
-
-        this.resetModal()
-      } catch (error) {
-        console.log(error)
-      }
-    },
-    calculateToolDelay(item) {
-      const fromClr = item.from_clr
-      const penambahanTool = item.penambahan_tool
-      const regrindSetting = item.regrind_setting
-
-      // Calculate tool_delay
-      const toolDelay = fromClr + penambahanTool - regrindSetting
-
-      // Update the item object directly if needed
-      item.tool_delay = toolDelay
-      return toolDelay
-    },
-
-    calculateWaktuDelay(item) {
-      const toolDelay = this.calculateToolDelay(item)
-
-      // Hanya lanjutkan jika ada toolDelay yang valid
-      if (toolDelay > 0) {
-        const newWaktuDelay = toolDelay * 15
-
-        // Cek perubahan pada waktu_delay
-        if (item.waktu_delay !== newWaktuDelay) {
-          item.waktu_delay = newWaktuDelay
-          item.isReported = false
-
-          const isToday =
-            !this.selectedDate ||
-            this.selectedDate === moment().format('YYYY-MM-DD')
-
-          // Periksa perubahan di previousValues sebelum mengirim laporan
-          const prev = this.previousValues[item.time_id] || {}
-          const hasChanged =
-            (item.from_clr !== prev.from_clr && item.from_clr !== 0) ||
-            (item.penambahan_tool !== prev.penambahan_tool &&
-              item.penambahan_tool !== 0) ||
-            (item.regrind_setting !== prev.regrind_setting &&
-              item.regrind_setting !== 0)
-
-          if (hasChanged && isToday) {
-            // Simpan nilai terbaru ke previousValues
-            this.previousValues[item.time_id] = {
-              from_clr: item.from_clr,
-              penambahan_tool: item.penambahan_tool,
-              regrind_setting: item.regrind_setting,
-            }
-
-            // Reset reportFlags untuk memungkinkan pengiriman ulang
-            this.reportFlags[item.time_id] = false
-
-            clearTimeout(this.timeoutId)
-            this.timeoutId = setTimeout(() => {
-              this.addReportReg(item.time_range, item)
-              this.reportFlags[item.time_id] = true // Tandai sebagai sudah dilaporkan
-            }, 3000)
-          }
-        }
-        return newWaktuDelay
-      } else {
-        return item.waktu_delay || 0
-      }
-    },
-
-    async addReportReg(timeRange, item) {
-      // Cek jika item sudah dilaporkan untuk menghindari duplikasi
-      if (this.reportFlags[item.time_id]) return
-
-      // Verifikasi semua field yang dibutuhkan ada
-      if (
-        !item.from_clr ||
-        !item.penambahan_tool ||
-        !item.regrind_setting ||
-        !item.tool_delay ||
-        !item.waktu_delay
-      ) {
-        console.log('Incomplete item data:', item)
-        return
-      }
-
-      try {
-        const payload = {
-          shift: this.selectedShift,
-          time_range: timeRange,
-          from_gel: item.from_clr,
-          penambahan: item.penambahan_tool,
-          reg_set: item.regrind_setting,
-          tool_delay: item.tool_delay,
-          time_delay: item.waktu_delay,
-        }
-
-        const response = await this.$store.dispatch(
-          ACTION_ADD_REPORT_REG_SET,
-          payload,
-        )
-
-        if (response.status === 201) {
-          console.log('Report successfully sent for item:', item)
-          this.reportFlags[item.time_id] = true // Tandai item sebagai sudah dilaporkan
-          await this.getReport() // Refresh report data setelah berhasil submit
-        }
-      } catch (error) {
-        console.error('Error in addReportReg:', error)
-        this.$swal({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'Something went wrong!',
-        })
-      }
-    },
-    async getTimeRanges() {
-      let response = await this.$store.dispatch(
-        ACTION_GET_TIME_RANGES,
-        this.selectedShift,
-      )
-      if (response.status === 200) {
-        this.GET_TIME_RANGES.forEach((item) => {
-          item.tool_delay = item.tool_delay || ''
-          item.waktu_delay = item.waktu_delay || ''
-          item.from_clr = item.from_clr || ''
-          item.penambahan_tool = item.penambahan_tool || ''
-          item.regrind_setting = item.regrind_setting || ''
-        })
-      }
-    },
-    async getReport() {
-      try {
-        const selectedDate = this.selectedDate
-        const response = await this.$store.dispatch(
-          ACTION_GET_REPORT_REG_SET,
-          selectedDate,
-        )
-
-        if (response.data.data.length === 0) {
-          this.$swal({
-            icon: 'error',
-            text: 'NO DATA!',
-          })
-          return
-        }
-
-        // Pembaruan data berdasarkan report yang diterima
-        this.GET_TIME_RANGES.forEach((item) => {
-          const reportData = response.data.data.find(
-            (report) => report.time_range === item.time_range,
-          )
-
-          if (reportData) {
-            Object.assign(item, {
-              from_clr: reportData.from_gel,
-              penambahan_tool: reportData.penambahan,
-              regrind_setting: reportData.reg_set,
-              tool_delay: reportData.tool_delay,
-              waktu_delay: reportData.time_delay,
-            })
-          } else {
-            // Reset nilai jika tidak ada data
-            Object.assign(item, {
-              from_clr: '',
-              penambahan_tool: '',
-              regrind_setting: '',
-              tool_delay: '',
-              waktu_delay: '',
-            })
-          }
-        })
-      } catch (error) {
-        console.error('Error in getReport:', error)
-      } finally {
-        this.isFetching = false // Reset flag setelah selesai
-      }
-    },
-
-    deleteProblem(problemId) {
-      this.selectedProblemId = problemId
-      // console.log('ini problem id', this.selectedProblemId)
-    },
-    async actionDeleteProblem() {
-      try {
-        // Siapkan payload sesuai dengan tipe modal
-        let payload
-        if (this.modalType === 'category') {
-          payload = {
-            modalType: this.modalType,
-            id: this.selectedProblemId,
-          }
-        } else if (this.modalType === 'next proses') {
-          payload = {
-            modalType: this.modalType,
-            id: this.selectedProblemId,
-          }
-        }
-
-        // Panggil API untuk delete
-        let response = await this.$store.dispatch(
-          ACTION_DELETE_PROBLEM,
-          payload,
-        )
-
-        if (response.status === 200) {
-          // Jika delete berhasil, hapus item dari data yang ditampilkan di modal
-          this.updateModalView()
-
-          // Tampilkan pesan sukses
-          this.$swal({
-            icon: 'success',
-            title: 'Deleted!',
-            text: 'Data berhasil dihapus.',
-          })
-        }
-      } catch (error) {
-        console.log(error)
-        this.$swal({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'Gagal menghapus data!',
-        })
-      }
-    },
-    updateModalView() {
-      if (
-        this.modalType === 'category' &&
-        Array.isArray(this.problemCategory)
-      ) {
-        this.problemCategory = this.problemCategory.filter(
-          (problem) => problem.id !== this.selectedProblemId,
-        )
-      } else if (
-        this.modalType === 'next proses' &&
-        Array.isArray(this.problemNextProcess)
-      ) {
-        this.problemNextProcess = this.problemNextProcess.filter(
-          (problem) => problem.id !== this.selectedProblemId,
-        )
-      }
-
-      // Panggil ulang data dari API jika diperlukan
-      this.fetchProblemData()
     },
     async absensiKaryawan() {
       try {
@@ -1236,37 +1109,267 @@ export default {
         })
       }
     },
+
+    setShiftByCurrentTime() {
+      const now = new Date()
+      const currentHour = now.getHours()
+      // console.log(currentHour)
+
+      if (currentHour >= 7 && currentHour < 20) {
+        this.selectedShift = 'Siang'
+      } else {
+        this.selectedShift = 'Malam'
+      }
+    },
+    convertTo24Hour(time) {
+      // Implementasi logika konversi jam ke format 24-jam jika perlu
+      return time
+    },
+    handleScroll() {
+      this.isScrolled = window.scrollY > 0 // Ubah isScrolled jadi true jika scroll lebih dari 0
+    },
+    handleViewProblem(title, type, jam) {
+      try {
+        // Set judul modal dan tipe
+        this.setModalTitle(title, type, jam)
+
+        // Setelah itu, fetch data problem yang sesuai
+        this.fetchProblemData()
+      } catch (error) {
+        console.log('Error saat handleViewProblem:', error)
+      }
+    },
+
+    setModalTitle(title, type, jam) {
+      // console.log(`Setting modal title: ${title}, type: ${type}, jam: ${jam}`) // Cek nilai
+      this.modalTitle = title
+      this.modalType = type
+      this.selectedJam = jam
+    },
+    async fetchProblemData() {
+      // console.log('fetchProblemData dipanggil') // Log pemanggilan fetchProblemData
+      try {
+        const payload = {
+          modalType: this.modalType, // Mengambil tipe modal dari state
+          time_range: this.selectedJam, // Mengambil jam yang dipilih dari state
+          selectedDate: this.selectedDate, // Mengambil tanggal yang dipilih dari state
+        }
+
+        await this.$store.dispatch(ACTION_GET_PROBLEM_MODAL, payload)
+      } catch (error) {
+        console.log('Error saat fetchProblemData:', error)
+      }
+    },
+    async onLineChange() {
+      try {
+        const selectedLine = this.selectedLine.line_id
+        // console.log(selectedLine)
+        const line_nm = this.selectedLine.line_nm
+        await this.$store.dispatch('fetchMachines', selectedLine)
+
+        this.machineOptions = this.getMachinesNames.map((machine) => ({
+          id: machine.machine_id,
+          label: machine.machine_nm,
+        }))
+        await this.$store.dispatch(ACTION_GET_TOOLS, line_nm)
+        this.toolOptions = this.GET_TOOLS.map((tool) => ({
+          id: tool.tool_id,
+          label: tool.tool_nm,
+        }))
+      } catch (error) {
+        console.log(error)
+      }
+    },
+
+    async addProblem() {
+      try {
+        let payload
+        if (this.modalType === 'category') {
+          payload = {
+            category_id: this.selectedCategory.category_id,
+            problem_nm: this.problemCategory,
+            waktu: this.timeCategory,
+            time_range: this.selectedJam,
+          }
+        } else if (this.modalType === 'next proses') {
+          payload = {
+            line_id: this.selectedLine.line_id,
+            machine_id: this.selectedMachine,
+            tool_id: this.selectedTool,
+            act_counter: this.counter,
+            problem_nm: this.problemNextProcess,
+            time_range: this.selectedJam,
+          }
+        }
+        // console.log('payload', payload)
+        if (this.modalType === 'category') {
+          let response = await this.$store.dispatch(ACTION_ADD_PROBLEM, payload)
+          if (response.status === 201) {
+            this.$swal({
+              icon: 'success',
+              title: 'Success',
+              text: 'Data added successfully',
+            })
+          }
+        } else if (this.modalType === 'next proses') {
+          let response = await this.$store.dispatch(
+            ACTION_ADD_PROBLEM_NEXT_PROCESS,
+            payload,
+          )
+          if (response.status === 201) {
+            this.$swal({
+              icon: 'success',
+              title: 'Success',
+              text: 'Data added successfully',
+            })
+          }
+        }
+
+        this.resetModal()
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    async addReportReg(row) {
+      if (this.isFetching) return // Jika sudah ada permintaan yang sedang berlangsung
+      this.isFetching = true
+      try {
+        const payload = {
+          shift: this.selectedShift,
+          time_range: row.jam,
+          from_gel: row.from_clr,
+          penambahan: row.penambahan_tool,
+          reg_set: row.regrind_setting,
+          tool_delay: row.tool_delay,
+          time_delay: row.waktu_delay,
+        }
+        console.log('payload pcs', payload)
+
+        let response = await this.$store.dispatch(
+          ACTION_ADD_REPORT_REG_SET,
+          payload,
+        )
+        if (response.status === 201) {
+          await this.$store.dispatch(
+            ACTION_GET_REPORT_REG_SET,
+            this.selectedDate,
+          )
+        }
+      } catch (error) {
+        console.log(error)
+        this.$swal({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Something went wrong!',
+        })
+      } finally {
+        this.isFetching = false // Reset flag setelah selesai
+      }
+    },
+    async getReport() {
+      if (this.isFetching) return // Jika sudah ada permintaan yang sedang berlangsung
+      this.isFetching = true
+      try {
+        const selectedDate = this.selectedDate
+        // console.log('payload', selectedDate)
+        let response = await this.$store.dispatch(
+          ACTION_GET_REPORT_REG_SET,
+          selectedDate,
+        )
+        if (response.data.data.length === 0) {
+          this.$swal({
+            icon: 'error',
+            text: 'NO DATA!',
+          })
+        }
+      } catch (error) {
+        console.log(error)
+      } finally {
+        this.isFetching = false // Reset flag setelah selesai
+      }
+    },
+    deleteProblem(problemId) {
+      this.selectedProblemId = problemId
+      // console.log('ini problem id', this.selectedProblemId)
+    },
+    async actionDeleteProblem() {
+      try {
+        // Siapkan payload sesuai dengan tipe modal
+        let payload
+        if (this.modalType === 'category') {
+          payload = {
+            modalType: this.modalType,
+            id: this.selectedProblemId,
+          }
+        } else if (this.modalType === 'next proses') {
+          payload = {
+            modalType: this.modalType,
+            id: this.selectedProblemId,
+          }
+        }
+
+        // Panggil API untuk delete
+        let response = await this.$store.dispatch(
+          ACTION_DELETE_PROBLEM,
+          payload,
+        )
+
+        if (response.status === 200) {
+          // Jika delete berhasil, hapus item dari data yang ditampilkan di modal
+          this.updateModalView()
+
+          // Tampilkan pesan sukses
+          this.$swal({
+            icon: 'success',
+            title: 'Deleted!',
+            text: 'Data berhasil dihapus.',
+          })
+        }
+      } catch (error) {
+        console.log(error)
+        this.$swal({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Gagal menghapus data!',
+        })
+      }
+    },
+
+    updateModalView() {
+      if (
+        this.modalType === 'category' &&
+        Array.isArray(this.problemCategory)
+      ) {
+        this.problemCategory = this.problemCategory.filter(
+          (problem) => problem.id !== this.selectedProblemId,
+        )
+      } else if (
+        this.modalType === 'next proses' &&
+        Array.isArray(this.problemNextProcess)
+      ) {
+        this.problemNextProcess = this.problemNextProcess.filter(
+          (problem) => problem.id !== this.selectedProblemId,
+        )
+      }
+
+      // Panggil ulang data dari API jika diperlukan
+      this.fetchProblemData()
+    },
+
     resetModal() {
-      this.problemCategory = ''
-      this.problemNextProcess = ''
-      this.selectedCategory = null
-      this.selectedLine = null
-      this.timeCategory = null
-      this.selectedTimeRange = null
-      this.counter = null
-      this.stdCounter = null
-
-      // Reset Treeselect fields
-      this.selectedMachine = null
-      this.selectedTool = null
-
-      // Gunakan $nextTick untuk memastikan reset selesai
-      this.$nextTick(() => {
-        this.selectedMachine = null
-        this.selectedTool = null
-      })
-      // Tingkatkan resetKey untuk re-render Treeselect
-      this.resetKey += 1
-      console.log(
-        'Resetting fields:',
-        this.selectedMachine,
-        this.selectedTool,
-        this.stdCounter,
-      )
+      ;(this.selectedCategory = null),
+        (this.problemCategory = null),
+        (this.timeCategory = null),
+        (this.selectedLine = null),
+        (this.selectedMachine = null),
+        (this.selectedTool = null),
+        (this.counter = null),
+        (this.problemNextProcess = null)
     },
   },
 }
 </script>
+
 <style scoped>
 .container-fluid {
   max-width: 1200px;
