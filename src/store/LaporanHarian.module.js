@@ -261,7 +261,8 @@ const actions = {
     try {
       const response = await axios.get(`${API_URL}/tools/get`, {
         params: {
-          selectedDate: payload,
+          selectedDate: payload.selectedDate,
+          shift: payload.shift,
         },
       })
       // console.log(response.data.data)

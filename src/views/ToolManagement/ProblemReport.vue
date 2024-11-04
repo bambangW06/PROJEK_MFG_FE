@@ -191,7 +191,7 @@
       >
         <thead>
           <tr>
-            <th style="width: 5%">No</th>
+            <th style="width: 8%">No</th>
             <th style="width: 10%">Tanggal</th>
             <th style="width: 10%">Line</th>
             <th style="width: 10%">Mesin</th>

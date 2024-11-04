@@ -645,10 +645,6 @@ export default {
         day: 'numeric',
       })
     },
-    computedShift() {
-      const currentHour = new Date().getHours()
-      return currentHour >= 7 && currentHour < 20 ? 'Siang' : 'Malam'
-    },
 
     totalRegSetting() {
       if (!Array.isArray(this.GET_TIME_RANGES)) {
@@ -705,15 +701,17 @@ export default {
         this.fetchOEE()
       }
     },
-    selectedShift() {
-      this.absensiKaryawan()
-      // Reset nilai dan flag
-      this.actMp = 0
-      this.jamKerja = 0
-      this.shouldSend = false
-      this.getTimeRanges()
-      this.getReport() // Mengambil data laporan saat shift berubah
-      this.fetchOEE()
+    selectedShift(oldValue, newValue) {
+      if (newValue !== oldValue) {
+        this.absensiKaryawan()
+        // Reset nilai dan flag
+        this.actMp = 0
+        this.jamKerja = 0
+        this.shouldSend = false
+        this.getTimeRanges()
+        this.getReport() // Mengambil data laporan saat shift berubah
+        this.fetchOEE()
+      }
     },
     actMp(newValue, oldValue) {
       if (newValue !== oldValue) {
@@ -736,14 +734,28 @@ export default {
   },
 
   mounted() {
-    this.selectedShift = this.computedShift
+    this.setSelectedShift()
     this.getTimeRanges()
+    this.getReport()
     this.$store.dispatch('fetchLines')
     this.$store.dispatch(ACTION_GET_CATEGORIES)
-    this.$store.dispatch(ACTION_GET_REPORT_REG_SET, this.selectedDate)
-    this.getReport()
+    this.$store.dispatch(ACTION_GET_REPORT_REG_SET, {
+      selectedDate: this.selectedDate,
+      shift: this.selectedShift,
+    })
   },
   methods: {
+    setSelectedShift() {
+      const now = new Date()
+      const currentHour = now.getHours()
+      // console.log(currentHour)
+
+      if (currentHour >= 7 && currentHour < 20) {
+        this.selectedShift = 'Siang'
+      } else {
+        this.selectedShift = 'Malam'
+      }
+    },
     openModal(timeRange, title, type) {
       this.selectedTimeRange = timeRange // Store the selected time_range
       this.setModalTitle(title, type) // Set the modal title and type
@@ -1006,13 +1018,30 @@ export default {
     },
     async getReport() {
       try {
-        const selectedDate = this.selectedDate
+        const payload = {
+          selectedDate: this.selectedDate,
+          shift: this.selectedShift,
+        }
+
         const response = await this.$store.dispatch(
           ACTION_GET_REPORT_REG_SET,
-          selectedDate,
+          payload,
         )
 
-        if (response.data.data.length === 0) {
+        // Pastikan selectedDate memiliki format yang benar jika ada nilai
+        if (this.selectedDate) {
+          this.selectedDate = moment(this.selectedDate).format('YYYY-MM-DD')
+        }
+
+        // Kondisi untuk menampilkan alert jika data kosong dan tanggal dipilih bukan hari ini
+        const isToday = this.selectedDate === moment().format('YYYY-MM-DD')
+
+        console.log('Tanggal terpilih:', this.selectedDate)
+        console.log('isToday:', isToday)
+        console.log('Data Response:', response.data.data)
+
+        // Tampilkan alert "NO DATA!" hanya jika data kosong, ada `selectedDate`, dan tanggal bukan hari ini
+        if (response.data.data.length === 0 && this.selectedDate && !isToday) {
           this.$swal({
             icon: 'error',
             text: 'NO DATA!',
