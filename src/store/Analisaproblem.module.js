@@ -6,6 +6,10 @@ export const ACTION_GET_PROBLEM_ANALISA = 'ACTION_GET_PROBLEM_ANALISA'
 export const GET_PROBLEM_ANALISA = 'GET_PROBLEM_ANALISA'
 export const SET_PROBLEM_ANALISA = 'SET_PROBLEM_ANALISA'
 
+export const ACTION_EDIT_ANALISA_PROBLEM = 'ACTION_EDIT_ANALISA_PROBLEM'
+
+export const ACTION_DELETE_ANALISA_PROBLEM = 'ACTION_DELETE_ANALISA_PROBLEM'
+
 const state = {
   ANALISA: [],
 }
@@ -63,6 +67,46 @@ const actions = {
       console.error('Error fetching tools:', error)
     }
   },
+  async ACTION_EDIT_ANALISA_PROBLEM({ commit }, payload) {
+    try {
+      const problem_id = payload.problem_id
+      const formData = new FormData()
+      formData.append('problem_nm', payload.problem_nm)
+      formData.append('analisa', payload.analisa)
+
+      // Menambahkan semua file ke FormData
+      if (Array.isArray(payload.foto) && payload.foto.length > 0) {
+        payload.foto.forEach((file) => {
+          formData.append('foto', file) // Menambahkan file foto
+        })
+      }
+
+      console.log([...formData]) // Log isi FormData
+
+      const response = await axios.put(
+        `${API_URL}/analisa/edit/${problem_id}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        },
+      )
+      return response
+    } catch (error) {
+      console.error('Error fetching tools:', error)
+    }
+  },
+  async ACTION_DELETE_ANALISA_PROBLEM({ commit }, payload) {
+    try {
+      const response = await axios.delete(
+        `${API_URL}/analisa/delete/${payload}`,
+      )
+      return response
+    } catch (error) {
+      console.error('Error fetching tools:', error)
+    }
+  },
   async ACTION_GET_PROBLEM_ANALISA({ commit }, payload) {
     try {
       const response = await axios.get(`${API_URL}/analisa/get/`, {
@@ -71,7 +115,15 @@ const actions = {
           date: payload.date,
         },
       })
-      commit('SET_PROBLEM_ANALISA', response.data.data)
+      // Modifikasi `line_nm` sesuai dengan singkatan yang diinginkan
+      const modifiedData = response.data.data.map((item) => {
+        if (item.line_nm === 'Cylinder Block') item.line_nm = 'C/B'
+        else if (item.line_nm === 'Cylinder Head') item.line_nm = 'C/H'
+        else if (item.line_nm === 'Crank Shaft') item.line_nm = 'C/S'
+        else if (item.line_nm === 'Cam Shaft') item.line_nm = 'Cam'
+        return item
+      })
+      commit('SET_PROBLEM_ANALISA', modifiedData)
       return response
     } catch (error) {
       console.error('Error fetching tools:', error)

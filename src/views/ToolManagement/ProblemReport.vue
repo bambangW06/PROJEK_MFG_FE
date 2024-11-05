@@ -37,7 +37,7 @@
               name="foto"
               ref="fileInput"
               multiple
-              @change="onFileImageChange"
+              @change="FileImageChange($event, 'add')"
             />
           </div>
         </div>
@@ -56,6 +56,99 @@
             data-bs-dismiss="modal"
           >
             Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal" tabindex="-1" id="editProblemAnalisa">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Problem</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <label>Problem</label>
+          <div>
+            <input type="text" class="form-control" v-model="editProblem" />
+          </div>
+          <label for="">Analisa</label>
+          <div>
+            <textarea
+              type="text"
+              class="form-control"
+              v-model="editAnalisa"
+            ></textarea>
+          </div>
+          <label for="">Foto</label>
+          <div>
+            <input
+              type="file"
+              class="form-control"
+              id="toolImage"
+              name="foto"
+              ref="fileInput"
+              multiple
+              @change="FileImageChange($event, 'edit')"
+            />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Close
+          </button>
+          <button
+            type="button"
+            class="btn btn-danger"
+            @click="actionEditProblem"
+            data-bs-dismiss="modal"
+          >
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal" tabindex="-1" id="deleteProblemAnalisa">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Delete Problem</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure want to delete this problem?</p>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Close
+          </button>
+          <button
+            type="button"
+            class="btn btn-danger"
+            @click="actionDeleteProblem"
+            data-bs-dismiss="modal"
+          >
+            Delete
           </button>
         </div>
       </div>
@@ -175,65 +268,101 @@
     </div>
   </div>
 
-  <div class="container-fluid">
+  <!-- <div class="container-fluid">
     <div class="card p-2 mt-1">
       <div class="d-flex justify-content-between align-items-center">
         <h4 class="text-center m-0">Analisa Problem Next Proses</h4>
       </div>
     </div>
-  </div>
+  </div> -->
 
   <div class="container-fluid mt-1">
     <div class="card p-2">
-      <table
-        class="table table-bordered table-problem table-hover"
-        style="table-layout: fixed; width: 100%"
-      >
-        <thead>
-          <tr>
-            <th style="width: 8%">No</th>
-            <th style="width: 10%">Tanggal</th>
-            <th style="width: 10%">Line</th>
-            <th style="width: 10%">Mesin</th>
-            <th style="width: 10%">Tool</th>
-            <th style="width: 10%">Proses</th>
-            <th style="width: 10%">Counter</th>
-            <th style="width: 15%">Problem</th>
-            <th style="width: 35%" class="analisa-column">Analisa</th>
-            <th style="width: 15%" class="foto-column">Foto</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(problem, index) in GET_PROBLEM_ANALISA" :key="index">
-            <td>{{ index + 1 }}</td>
-            <td>{{ problem.created_dt }}</td>
-            <td>{{ problem.line_nm }}</td>
-            <td>{{ problem.machine_nm }}</td>
-            <td>{{ problem.tool_nm }}</td>
-            <td>{{ problem.process_nm }}</td>
-            <td>{{ problem.act_counter }}/{{ problem.std_counter }}</td>
-            <td>{{ problem.problem_nm }}</td>
-            <td class="analisa-column">{{ problem.analisa }}</td>
-            <td class="foto-column">
-              <div v-if="Array.isArray(problem.foto)">
-                <img
-                  v-for="(foto, fotoIndex) in problem.foto"
-                  :key="fotoIndex"
-                  :src="foto"
-                  alt=""
-                  class="thumbnail"
-                />
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="card">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h4 class="text-center m-0">Analisa Problem Next Proses</h4>
+        </div>
+        <div class="table-responsive">
+          <table
+            class="table table-bordered table-problem table-hover"
+            style="table-layout: fixed; width: 100%"
+          >
+            <thead>
+              <tr>
+                <th style="width: 8%">No</th>
+                <th style="width: 15%">Tanggal</th>
+                <th style="width: 8%">Line</th>
+                <th style="width: 10%">Mesin</th>
+                <th style="width: 10%">Tool</th>
+                <th style="width: 15%">Proses</th>
+                <th style="width: 12%">Counter</th>
+                <th style="width: 20%">Problem</th>
+                <th style="width: 30%" class="analisa-column">Analisa</th>
+                <th style="width: 15%" class="foto-column">Foto</th>
+                <th style="width: 10%">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(problem, index) in GET_PROBLEM_ANALISA" :key="index">
+                <td>{{ index + 1 }}</td>
+                <td>{{ problem.created_dt }}</td>
+                <td>{{ problem.line_nm }}</td>
+                <td>{{ problem.machine_nm }}</td>
+                <td>{{ problem.tool_nm }}</td>
+                <td>{{ problem.process_nm }}</td>
+                <td>{{ problem.act_counter }}/{{ problem.std_counter }}</td>
+                <td>{{ problem.problem_nm }}</td>
+                <td class="analisa-column">{{ problem.analisa }}</td>
+                <td class="foto-column">
+                  <div v-if="Array.isArray(problem.foto)">
+                    <img
+                      v-for="(foto, fotoIndex) in problem.foto"
+                      :key="fotoIndex"
+                      :src="foto"
+                      alt=""
+                      class="thumbnail"
+                    />
+                  </div>
+                </td>
+                <td>
+                  <div class="action-buttons">
+                    <button
+                      class="btn btn-sm"
+                      data-bs-toggle="modal"
+                      data-bs-target="#editProblemAnalisa"
+                      @click="prepareEdit(problem.problem_id)"
+                    >
+                      <i
+                        class="fas fa-edit text-primary"
+                        aria-hidden="true"
+                      ></i>
+                    </button>
+                    <button
+                      class="btn btn-sm"
+                      data-bs-toggle="modal"
+                      data-bs-target="#deleteProblemAnalisa"
+                      @click="prepareDelete(problem.problem_id)"
+                    >
+                      <i
+                        class="fas fa-trash text-danger"
+                        aria-hidden="true"
+                      ></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 <script>
 import {
   ACTION_ADD_ANALISA_PROBLEM,
+  ACTION_DELETE_ANALISA_PROBLEM,
+  ACTION_EDIT_ANALISA_PROBLEM,
   ACTION_GET_PROBLEM_ANALISA,
   GET_PROBLEM_ANALISA,
 } from '@/store/Analisaproblem.module'
@@ -259,6 +388,11 @@ export default {
       problem_id: null,
       created_dt: '',
       machine_id: null,
+      editProblem: '', // Untuk modal edit
+      editAnalisa: '', // Untuk modal edit
+      editFoto: [], // Untuk modal edi
+      selectedProblemId: null, // Menyimpan problem_id yang dipilih
+      selectedDeleteProblemId: null, // Menyimpan problem_id untuk delete
     }
   },
   computed: {
@@ -327,6 +461,71 @@ export default {
     this.getAnlisaProblem()
   },
   methods: {
+    prepareEdit(problemId) {
+      const selectedProblem = this.GET_PROBLEM_ANALISA.find(
+        (problem) => problem.problem_id === problemId,
+      )
+      if (selectedProblem) {
+        this.selectedProblemId = problemId
+        this.editProblem = selectedProblem.problem_nm
+        this.editAnalisa = selectedProblem.analisa
+        this.editFoto = selectedProblem.foto || [] // Jika ada foto, isi array dengan link gambar
+      }
+    },
+    async actionEditProblem() {
+      try {
+        const payload = {
+          problem_id: this.selectedProblemId,
+          problem_nm: this.editProblem,
+          analisa: this.editAnalisa,
+          foto: this.editFoto,
+        }
+        let response = await this.$store.dispatch(
+          ACTION_EDIT_ANALISA_PROBLEM,
+          payload,
+        )
+        if (response.status === 200) {
+          console.log('Berhasil edit')
+          this.getAnlisaProblem()
+          this.editProblem = ''
+          this.editAnalisa = ''
+          this.editFoto = []
+          this.$refs.fileInput.value = null // Reset elemen input file
+        }
+      } catch (error) {
+        console.log(error)
+        this.$swal({
+          icon: 'error',
+          text: 'Gagal',
+        })
+      }
+    },
+    prepareDelete(problemId) {
+      // Simpan problem_id yang akan dihapus
+      this.selectedDeleteProblemId = problemId
+    },
+    async actionDeleteProblem() {
+      try {
+        const problem_id = this.selectedDeleteProblemId
+        let response = await this.$store.dispatch(
+          ACTION_DELETE_ANALISA_PROBLEM,
+          problem_id,
+        )
+        if (response.status === 200) {
+          this.$swal({
+            icon: 'success',
+            text: 'Berhasil',
+          })
+          this.getAnlisaProblem()
+        }
+      } catch (error) {
+        console.log(error)
+        this.$swal({
+          icon: 'error',
+          text: 'Gagal',
+        })
+      }
+    },
     analisaProblem(seletedProblem) {
       try {
         this.machine_id = seletedProblem.machine_id
@@ -341,13 +540,18 @@ export default {
         console.log(error)
       }
     },
-    onFileImageChange(event) {
+    FileImageChange(event, mode) {
       const files = Array.from(event.target.files)
-      this.foto = [] // Reset daftar foto sebelumnya
+      const maxSize = 500 * 1024 // 500 KB
+
+      // Reset daftar foto sebelumnya berdasarkan mode
+      if (mode === 'add') {
+        this.foto = []
+      } else if (mode === 'edit') {
+        this.editFoto = []
+      }
 
       files.forEach((file) => {
-        const maxSize = 500 * 1024 // 500 KB
-
         if (!file.type.startsWith('image/')) {
           alert('Pilih file gambar yang valid.')
           return
@@ -358,9 +562,18 @@ export default {
           return
         }
 
-        this.foto.push(file) // Simpan file asli ke dalam foto
+        // Simpan file asli ke dalam foto atau editFoto sesuai dengan mode
+        if (mode === 'add') {
+          this.foto.push(file)
+        } else if (mode === 'edit') {
+          this.editFoto.push(file)
+        }
+
         console.log('File berhasil diunggah:', file)
-        console.log('Daftar file yang diunggah:', this.foto)
+        console.log(
+          'Daftar file yang diunggah:',
+          mode === 'add' ? this.foto : this.editFoto,
+        )
       })
     },
 
@@ -461,12 +674,22 @@ export default {
   border: 1px solid black;
 }
 .thumbnail {
-  max-width: 90px; /* Batas lebar gambar */
-  max-height: 90px; /* Batas tinggi gambar */
-  width: auto;
+  max-width: 100%; /* Batasi lebar gambar agar tidak melebihi kolom */
   height: auto;
-  object-fit: cover; /* Menjaga rasio dan mengisi area */
-  margin: 5px;
+  object-fit: cover;
+}
+
+/* Responsif untuk layar kecil */
+@media (max-width: 768px) {
+  .foto-column {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .thumbnail {
+    max-width: 80px; /* Batasi ukuran gambar lebih kecil untuk layar kecil */
+  }
 }
 
 .analisa-column {
@@ -474,5 +697,28 @@ export default {
   overflow-wrap: break-word;
   word-break: break-word;
   white-space: normal;
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: center;
+}
+
+.action-buttons > * {
+  font-size: 0.9em; /* Perkecil ukuran teks */
+  padding: 8px 12px; /* Perkecil padding */
+  width: 80%; /* Sesuaikan lebar tombol */
+  max-width: 200px; /* Batasi lebar maksimal jika perlu */
+}
+
+/* Untuk layar kecil */
+@media (max-width: 768px) {
+  .action-buttons > * {
+    font-size: 0.8em; /* Sesuaikan ukuran teks lebih kecil */
+    padding: 6px 10px; /* Perkecil padding lebih jauh */
+    width: 100%; /* Buat tombol mengisi lebar container */
+  }
 }
 </style>

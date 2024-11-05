@@ -117,6 +117,7 @@
             data-bs-dismiss="modal"
             class="btn btn-primary"
             @click="addProblem"
+            :disabled="!isFormValid"
           >
             Save
           </button>
@@ -624,6 +625,22 @@ export default {
       GET_ABSENSI,
       GET_TIME_RANGES,
     ]),
+    isFormValid() {
+      if (this.modalType === 'category') {
+        return (
+          this.selectedCategory && this.problemCategory && this.timeCategory > 0
+        )
+      } else if (this.modalType === 'next proses') {
+        return (
+          this.selectedLine &&
+          this.selectedMachine &&
+          this.selectedTool &&
+          this.counter > 0 &&
+          this.problemNextProcess
+        )
+      }
+      return false // Default to false if modalType is not recognized
+    },
     today() {
       // Dapatkan waktu sekarang
       let currentDate = new Date(this.now)
@@ -742,6 +759,12 @@ export default {
     this.$store.dispatch(ACTION_GET_REPORT_REG_SET, {
       selectedDate: this.selectedDate,
       shift: this.selectedShift,
+    })
+    const tooltipTriggerList = [].slice.call(
+      document.querySelectorAll('[data-bs-toggle="tooltip"]'),
+    )
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
     })
   },
   methods: {
