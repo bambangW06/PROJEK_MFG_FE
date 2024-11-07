@@ -582,13 +582,18 @@ export default {
           payload,
         )
         if (response.status === 200) {
-          console.log('Berhasil edit')
+          console.log('status', response.status)
           this.getAnlisaProblem()
           this.editProblem = ''
           this.editAnalisa = ''
           this.editFoto = []
-          this.$refs.fileInputadd.value = null // Reset elemen input file
-          this.$refs.fileInputedit.value = null // Reset elemen input file
+          // Reset file input using DOM manipulation
+
+          const fileInputEdit = this.$refs.fileInputedit
+
+          // Direct DOM manipulation to reset the file input
+
+          fileInputEdit.value = ''
         }
       } catch (error) {
         console.log(error)
@@ -776,7 +781,8 @@ export default {
         //Reset input setelah berhasil menyimpan
         this.analisa = ''
         this.foto = []
-        this.$refs.fileInput.value = null // Reset elemen input file
+        const fileInputAdd = this.$refs.fileInputadd
+        fileInputAdd.value = ''
       } catch (error) {
         console.error('Error:', error)
       }
