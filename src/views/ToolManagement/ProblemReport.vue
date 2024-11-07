@@ -631,7 +631,6 @@ export default {
         }
 
         console.log('Payload to delete:', payload)
-        return
         // Hapus `return` agar dapat melanjutkan proses
         let response = await this.$store.dispatch(
           ACTION_DELETE_ANALISA_PROBLEM,
