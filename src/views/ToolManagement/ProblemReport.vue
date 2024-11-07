@@ -380,9 +380,10 @@
                   {{ problem.process_nm || problem.category_nm || '-' }}
                 </td>
                 <td>{{ problem.problem_nm }}</td>
-                <td class="analisa-column">
-                  {{ problem.analisa || 'No analysis provided' }}
-                </td>
+                <td
+                  class="analisa-column"
+                  v-html="problem.analisa || 'No analysis provided'"
+                ></td>
                 <td class="foto-column">
                   <div
                     v-if="Array.isArray(problem.foto) && problem.foto.length"
@@ -551,6 +552,8 @@ export default {
         this.selectedProblemId = problemId
         this.editProblem = selectedProblem.problem_nm
         this.editAnalisa = selectedProblem.analisa
+          ? selectedProblem.analisa.replace(/<br\s*\/?>/gi, '\n')
+          : ''
         this.editFoto = selectedProblem.foto || [] // Jika ada foto, isi array dengan link gambar
         this.analisa_id = selectedProblem.analisa_id
       }
@@ -797,7 +800,13 @@ export default {
         })
 
         if (response.status === 200 && this.GET_PROBLEM_ANALISA.length > 0) {
-          console.log('Data Berhasil di Dapat', this.GET_PROBLEM_ANALISA)
+          // Format the analisa field with line breaks for each item in the response data
+          this.GET_PROBLEM_ANALISA = this.GET_PROBLEM_ANALISA.map((item) => {
+            if (item.analisa) {
+              item.analisa = item.analisa.replace(/\r\n/g, '<br>')
+            }
+            return item
+          })
         } else {
           this.GET_PROBLEM_ANALISA = []
         }
