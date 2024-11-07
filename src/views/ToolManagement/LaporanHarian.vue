@@ -125,8 +125,6 @@
       </div>
     </div>
   </div>
-
-  <!-- Modal lain tetap sama -->
   <div class="modal" tabindex="-1" id="viewProblemModal">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -682,14 +680,26 @@ export default {
     },
 
     calculatedOEE() {
-      const totalRequestValue = this.totalRequest // Mengambil total request
-      const totalRegSettingValue = this.totalRegSetting // Mengambil total reg setting
+      const totalRequestValue = this.totalRequest // Retrieve total request
+      const totalRegSettingValue = this.totalRegSetting // Retrieve total regrind setting
 
       if (totalRequestValue > 0) {
-        // Pastikan total request tidak 0
-        return ((totalRegSettingValue / totalRequestValue) * 100).toFixed(2) // Rumus OEE
+        let oeeValue = (totalRegSettingValue / totalRequestValue) * 100
+
+        if (oeeValue > 100) {
+          setTimeout(() => {
+            this.$swal({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'OEE MELEBIHI 100% (OEE = Total Regrinding / Total Request Clean Room * 100%)',
+            })
+          }, 2000) // Delay alert by 2 seconds
+          oeeValue = 100 // Set OEE to 100 if it exceeds 100%
+        }
+
+        return oeeValue.toFixed(2)
       }
-      return 0 // Kembalikan 0 jika total request adalah 0
+      return 0 // Return 0 if total request is 0
     },
 
     formattedOEE() {
@@ -737,7 +747,14 @@ export default {
       }
     },
     jamKerja(newValue, oldValue) {
-      if (newValue !== oldValue) {
+      if (newValue > 10) {
+        this.jamKerja = '' // Reset jamKerja to 0
+        this.$swal({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'JAM KERJA MELEBIHI 10 JAM',
+        })
+      } else if (newValue !== oldValue) {
         this.shouldSend = true
         this.checkAndSend()
       }
@@ -760,12 +777,7 @@ export default {
       selectedDate: this.selectedDate,
       shift: this.selectedShift,
     })
-    const tooltipTriggerList = [].slice.call(
-      document.querySelectorAll('[data-bs-toggle="tooltip"]'),
-    )
-    tooltipTriggerList.map(function (tooltipTriggerEl) {
-      return new bootstrap.Tooltip(tooltipTriggerEl)
-    })
+    this.fetchOEE()
   },
   methods: {
     setSelectedShift() {

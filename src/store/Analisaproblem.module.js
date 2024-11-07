@@ -27,7 +27,7 @@ const mutations = {
         // Map each path in the foto array, prepending the API_URL
         problem.foto = problem.foto.map((fotoPath) => `${API_URL}${fotoPath}`)
       }
-      console.log('Problem:', problem)
+      // console.log('Problem:', problem)
 
       return problem
     })
@@ -42,12 +42,22 @@ const actions = {
       formData.append('shift', payload.shift)
       formData.append('problem_id', payload.problem_id)
       formData.append('problem_nm', payload.problem_nm)
-      formData.append('machine_id', payload.machine_id)
-      formData.append('tool_id', payload.tool_id)
-      formData.append('tool_nm', payload.tool_nm)
-      formData.append('created_dt', payload.created_dt)
       formData.append('analisa', payload.analisa)
+      formData.append('created_dt', payload.created_dt)
 
+      // Menambahkan data sesuai dengan kondisi "Problem Next Proses" atau "Problem In Proses"
+      if (payload.tool_id && payload.machine_id) {
+        // Data untuk "Problem Next Proses"
+        formData.append('tool_id', payload.tool_id)
+        formData.append('tool_nm', payload.tool_nm)
+        formData.append('machine_id', payload.machine_id)
+        formData.append('line_nm', payload.line_nm)
+      } else {
+        // Data untuk "Problem In Proses"
+        formData.append('category_id', payload.category_id)
+        formData.append('category_nm', payload.category_nm)
+        formData.append('waktu', payload.waktu)
+      }
       // Menambahkan semua file ke FormData
       if (Array.isArray(payload.foto) && payload.foto.length > 0) {
         payload.foto.forEach((file) => {
@@ -73,7 +83,10 @@ const actions = {
       const formData = new FormData()
       formData.append('problem_nm', payload.problem_nm)
       formData.append('analisa', payload.analisa)
-
+      // Tambahkan category_id jika ada di payload
+      if (payload.category_id) {
+        formData.append('category_id', payload.category_id)
+      }
       // Menambahkan semua file ke FormData
       if (Array.isArray(payload.foto) && payload.foto.length > 0) {
         payload.foto.forEach((file) => {
@@ -100,13 +113,19 @@ const actions = {
   async ACTION_DELETE_ANALISA_PROBLEM({ commit }, payload) {
     try {
       const response = await axios.delete(
-        `${API_URL}/analisa/delete/${payload}`,
+        `${API_URL}/analisa/delete/${payload.problem_id}`,
+        {
+          params: {
+            category_id: payload.category_id || null, // Kirimkan category_id jika ada, jika tidak kirim null
+          },
+        },
       )
       return response
     } catch (error) {
-      console.error('Error fetching tools:', error)
+      console.error('Error deleting data:', error)
     }
   },
+
   async ACTION_GET_PROBLEM_ANALISA({ commit }, payload) {
     try {
       const response = await axios.get(`${API_URL}/analisa/get/`, {

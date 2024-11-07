@@ -12,29 +12,85 @@
           ></button>
         </div>
         <div class="modal-body">
-          <label>Tool</label>
-          <div>
-            <input type="text" class="form-control" v-model="tool" />
+          <div v-if="tool_nm">
+            <label>Tool</label>
+            <div>
+              <input type="text" class="form-control" v-model="tool" />
+            </div>
           </div>
-          <label for="">Problem</label>
-          <div>
-            <input type="text" class="form-control" v-model="problem" />
-          </div>
-          <label for="">Analisa</label>
-          <div>
-            <textarea
+
+          <!-- Tampilkan Line untuk "Problem Next Proses" -->
+          <div v-if="line_nm">
+            <label>Line</label>
+            <input
               type="text"
               class="form-control"
-              v-model="analisa"
-            ></textarea>
+              v-model="line_nm"
+              readonly
+            />
           </div>
-          <label for="">Foto</label>
+
+          <!-- Tampilkan Category untuk "Problem In Proses" -->
+          <div v-if="category_nm">
+            <label>Category</label>
+            <input
+              type="text"
+              class="form-control"
+              v-model="category_nm"
+              readonly
+            />
+          </div>
+
+          <label>Problem</label>
+          <div>
+            <input
+              type="text"
+              class="form-control"
+              v-model="problem"
+              readonly
+            />
+          </div>
+          <div v-if="waktu">
+            <label>Waktu</label>
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control"
+                v-model="waktu"
+                readonly
+              />
+              <span class="input-group-text">menit</span>
+            </div>
+          </div>
+
+          <!-- Tampilkan Act Counter dan Std Counter jika ada -->
+          <div v-if="act_counter && std_counter">
+            <label>Act Counter</label>
+            <input
+              type="text"
+              class="form-control"
+              v-model="act_counter"
+              readonly
+            />
+            <label>Std Counter</label>
+            <input
+              type="text"
+              class="form-control"
+              v-model="std_counter"
+              readonly
+            />
+          </div>
+
+          <label>Analisa</label>
+          <div>
+            <textarea class="form-control" v-model="analisa"></textarea>
+          </div>
+
+          <label>Foto</label>
           <div>
             <input
               type="file"
               class="form-control"
-              id="toolImage"
-              name="foto"
               ref="fileInput"
               multiple
               @change="FileImageChange($event, 'add')"
@@ -47,7 +103,7 @@
             class="btn btn-secondary"
             data-bs-dismiss="modal"
           >
-            Close
+            Tutup
           </button>
           <button
             type="button"
@@ -55,12 +111,13 @@
             @click="actionAddAnalisaProblem"
             data-bs-dismiss="modal"
           >
-            Save
+            Simpan
           </button>
         </div>
       </div>
     </div>
   </div>
+
   <div class="modal" tabindex="-1" id="editProblemAnalisa">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -206,6 +263,7 @@
                 <th>Category</th>
                 <th>Problem</th>
                 <th>Waktu</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -216,6 +274,16 @@
                 <td>{{ problem.category_nm }}</td>
                 <td>{{ problem.problem_nm }}</td>
                 <td>{{ problem.waktu }}'</td>
+                <td>
+                  <button
+                    class="btn p-0"
+                    data-bs-toggle="modal"
+                    data-bs-target="#analisaProblemModal"
+                    @click="analisaProblem(problem)"
+                  >
+                    <i class="fas fa-edit text-primary" aria-hidden="true"></i>
+                  </button>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -252,12 +320,12 @@
                 <td>{{ problem.problem_nm }}</td>
                 <td>
                   <button
-                    class="btn btn-danger btn-sm"
+                    class="btn p-0"
                     data-bs-toggle="modal"
                     data-bs-target="#analisaProblemModal"
                     @click="analisaProblem(problem)"
                   >
-                    <i class="fas fa-edit" aria-hidden="true"></i>
+                    <i class="fas fa-edit text-primary" aria-hidden="true"></i>
                   </button>
                 </td>
               </tr>
@@ -267,14 +335,6 @@
       </div>
     </div>
   </div>
-
-  <!-- <div class="container-fluid">
-    <div class="card p-2 mt-1">
-      <div class="d-flex justify-content-between align-items-center">
-        <h4 class="text-center m-0">Analisa Problem Next Proses</h4>
-      </div>
-    </div>
-  </div> -->
 
   <div class="container-fluid mt-1">
     <div class="card p-2">
@@ -294,8 +354,8 @@
                 <th style="width: 8%">Line</th>
                 <th style="width: 10%">Mesin</th>
                 <th style="width: 10%">Tool</th>
-                <th style="width: 15%">Proses</th>
                 <th style="width: 12%">Counter</th>
+                <th style="width: 15%">Proses</th>
                 <th style="width: 20%">Problem</th>
                 <th style="width: 30%" class="analisa-column">Analisa</th>
                 <th style="width: 15%" class="foto-column">Foto</th>
@@ -306,22 +366,37 @@
               <tr v-for="(problem, index) in GET_PROBLEM_ANALISA" :key="index">
                 <td>{{ index + 1 }}</td>
                 <td>{{ problem.created_dt }}</td>
-                <td>{{ problem.line_nm }}</td>
-                <td>{{ problem.machine_nm }}</td>
-                <td>{{ problem.tool_nm }}</td>
-                <td>{{ problem.process_nm }}</td>
-                <td>{{ problem.act_counter }}/{{ problem.std_counter }}</td>
+                <td>{{ problem.line_nm || '-' }}</td>
+                <td>{{ problem.machine_nm || '-' }}</td>
+                <td>{{ problem.tool_nm || '-' }}</td>
+
+                <td>
+                  {{ problem.act_counter || '-' }}/{{
+                    problem.std_counter || '-'
+                  }}
+                </td>
+                <td>
+                  <!-- Menampilkan category_nm jika process_nm kosong -->
+                  {{ problem.process_nm || problem.category_nm || '-' }}
+                </td>
                 <td>{{ problem.problem_nm }}</td>
-                <td class="analisa-column">{{ problem.analisa }}</td>
+                <td class="analisa-column">
+                  {{ problem.analisa || 'No analysis provided' }}
+                </td>
                 <td class="foto-column">
-                  <div v-if="Array.isArray(problem.foto)">
+                  <div
+                    v-if="Array.isArray(problem.foto) && problem.foto.length"
+                  >
                     <img
                       v-for="(foto, fotoIndex) in problem.foto"
                       :key="fotoIndex"
                       :src="foto"
-                      alt=""
+                      alt="foto"
                       class="thumbnail"
                     />
+                  </div>
+                  <div v-else>
+                    <span>No photo</span>
                   </div>
                 </td>
                 <td>
@@ -388,11 +463,18 @@ export default {
       problem_id: null,
       created_dt: '',
       machine_id: null,
+      category_id: null,
+      category_nm: '',
+      waktu: '',
       editProblem: '', // Untuk modal edit
       editAnalisa: '', // Untuk modal edit
+      editCategoryId: null,
+      analisa_id: null,
       editFoto: [], // Untuk modal edi
       selectedProblemId: null, // Menyimpan problem_id yang dipilih
       selectedDeleteProblemId: null, // Menyimpan problem_id untuk delete
+      deletedCategoryId: null,
+      problemCategory: '',
     }
   },
   computed: {
@@ -470,16 +552,31 @@ export default {
         this.editProblem = selectedProblem.problem_nm
         this.editAnalisa = selectedProblem.analisa
         this.editFoto = selectedProblem.foto || [] // Jika ada foto, isi array dengan link gambar
+        this.analisa_id = selectedProblem.analisa_id
       }
+      if (selectedProblem.category_id) {
+        this.editCategoryId = selectedProblem.category_id
+      }
+      console.log('ini analisa id', selectedProblem)
     },
     async actionEditProblem() {
       try {
+        // Buat payload awal
         const payload = {
+          analisa_id: this.analisa_id,
           problem_id: this.selectedProblemId,
           problem_nm: this.editProblem,
           analisa: this.editAnalisa,
           foto: this.editFoto,
         }
+
+        // Tambahkan category_id jika ada
+        if (this.editCategoryId) {
+          payload.category_id = this.editCategoryId
+        }
+
+        console.log('payload vue', payload)
+
         let response = await this.$store.dispatch(
           ACTION_EDIT_ANALISA_PROBLEM,
           payload,
@@ -501,45 +598,106 @@ export default {
       }
     },
     prepareDelete(problemId) {
+      const selectedProblem = this.GET_PROBLEM_ANALISA.find(
+        (problem) => problem.problem_id === problemId,
+      )
+      if (selectedProblem) {
+        this.selectedDeleteProblemId = problemId
+      }
       // Simpan problem_id yang akan dihapus
-      this.selectedDeleteProblemId = problemId
+
+      // Jika ada category_id, simpan ke deletedCategoryId
+      if (selectedProblem.category_id) {
+        this.deletedCategoryId = selectedProblem.category_id
+      }
+      console.log(
+        'Problem ID:',
+        this.selectedDeleteProblemId,
+        'Category ID:',
+        this.deletedCategoryId,
+      )
     },
+
     async actionDeleteProblem() {
       try {
-        const problem_id = this.selectedDeleteProblemId
+        const payload = {
+          problem_id: this.selectedDeleteProblemId,
+        }
+
+        // Tambahkan category_id ke payload jika ada
+        if (this.deletedCategoryId) {
+          payload.category_id = this.deletedCategoryId
+        }
+
+        // console.log('Payload to delete:', payload)
+
+        // Hapus `return` agar dapat melanjutkan proses
         let response = await this.$store.dispatch(
           ACTION_DELETE_ANALISA_PROBLEM,
-          problem_id,
+          payload,
         )
+
+        // Tampilkan pesan berhasil atau gagal
         if (response.status === 200) {
           this.$swal({
             icon: 'success',
             text: 'Berhasil',
           })
-          this.getAnlisaProblem()
+          this.getAnlisaProblem() // Refresh data
         }
       } catch (error) {
-        console.log(error)
+        console.error('Error:', error)
         this.$swal({
           icon: 'error',
           text: 'Gagal',
         })
       }
     },
-    analisaProblem(seletedProblem) {
+
+    analisaProblem(selectedProblem) {
       try {
-        this.machine_id = seletedProblem.machine_id
-        this.problem_id = seletedProblem.problem_id
-        this.tool_id = seletedProblem.tool_id
-        this.created_dt = seletedProblem.created_dt
-        this.tool = seletedProblem.tool_nm
-        this.problem = seletedProblem.problem_nm
-        this.anlisa = ''
+        // Reset variabel modal
+        this.tool = ''
+        this.problem = ''
+        this.analisa = ''
         this.foto = []
+        this.problem_id = ''
+        this.created_dt = ''
+        this.machine_id = ''
+        this.tool_id = ''
+        this.act_counter = ''
+        this.std_counter = ''
+        this.category_id = ''
+        this.category_nm = ''
+        this.line_nm = ''
+        this.waktu = ''
+
+        // Cek apakah data berasal dari "Problem In Proses" atau "Problem Next Proses"
+        if ('tool_id' in selectedProblem) {
+          // Data dari Problem Next Proses
+          this.machine_id = selectedProblem.machine_id
+          this.problem_id = selectedProblem.problem_id
+          this.tool_id = selectedProblem.tool_id
+          this.created_dt = selectedProblem.created_dt
+          this.tool = selectedProblem.tool_nm
+          this.problem = selectedProblem.problem_nm
+          this.line_nm = selectedProblem.line_nm // Misalnya untuk menampilkan nama line
+          this.act_counter = selectedProblem.act_counter
+          this.std_counter = selectedProblem.std_counter
+        } else {
+          // Data dari Problem In Proses
+          this.problem_id = selectedProblem.problem_id
+          this.created_dt = selectedProblem.created_dt
+          this.category_id = selectedProblem.category_id
+          this.category_nm = selectedProblem.category_nm
+          this.problem = selectedProblem.problem_nm
+          this.waktu = selectedProblem.waktu // Waktu penyelesaian
+        }
       } catch (error) {
         console.log(error)
       }
     },
+
     FileImageChange(event, mode) {
       const files = Array.from(event.target.files)
       const maxSize = 500 * 1024 // 500 KB
@@ -579,18 +737,30 @@ export default {
 
     async actionAddAnalisaProblem() {
       try {
-        // Membuat objek payload
+        // Membuat objek payload dengan data dari analisaProblem
         const payload = {
-          shift: this.selectedShift,
+          shift: this.selectedShift, // Pastikan shift dipilih sebelumnya
           problem_id: this.problem_id,
           problem_nm: this.problem,
-          tool_id: this.tool_id,
-          tool_nm: this.tool,
-          machine_id: this.machine_id,
-          created_dt: this.created_dt,
           analisa: this.analisa,
-          foto: this.foto, // Menyimpan array file foto
+          foto: this.foto, // Menyertakan foto yang diupload
+          created_dt: this.created_dt,
         }
+
+        // Cek apakah data berasal dari "Problem Next Proses"
+        if (this.tool_id && this.machine_id) {
+          // Jika "Problem Next Proses", kirim data terkait tool dan machine
+          payload.tool_id = this.tool_id
+          payload.tool_nm = this.tool
+          payload.machine_id = this.machine_id
+          payload.line_nm = this.line_nm // Line name hanya untuk Next Proses
+        } else {
+          // Jika "Problem In Proses", kirim data kategori dan waktu
+          payload.category_id = this.category_id
+          payload.category_nm = this.category_nm
+          payload.waktu = this.waktu // Waktu penyelesaian hanya untuk In Proses
+        }
+        console.log('ini payload', payload)
 
         // Mengirimkan payload ke store
         const response = await this.$store.dispatch(
@@ -599,18 +769,19 @@ export default {
         )
 
         if (response.status === 201) {
-          console.log('Data Berhasil')
+          console.log('Data Berhasil Ditambahkan')
           this.getAnlisaProblem()
         }
 
-        // Reset input
+        //Reset input setelah berhasil menyimpan
         this.analisa = ''
         this.foto = []
         this.$refs.fileInput.value = null // Reset elemen input file
       } catch (error) {
-        console.error(error)
+        console.error('Error:', error)
       }
     },
+
     async getAnlisaProblem() {
       try {
         // Mengambil data analisa problem setelah penambahan berhasil
