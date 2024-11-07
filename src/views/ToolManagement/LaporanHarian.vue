@@ -374,7 +374,7 @@
                     )
                   "
                 >
-                  <i class="fas fa-edit text-danger"></i>
+                  <i class="fas fa-edit text-primary"></i>
                 </button>
                 <button
                   class="btn"
@@ -388,7 +388,7 @@
                     )
                   "
                 >
-                  <i class="fas fa-eye text-dark"></i>
+                  <i class="fas fa-eye text-danger"></i>
                 </button>
               </td>
               <td>
@@ -404,7 +404,7 @@
                     )
                   "
                 >
-                  <i class="fas fa-edit text-danger"></i>
+                  <i class="fas fa-edit text-primary"></i>
                 </button>
                 <button
                   class="btn"
@@ -418,7 +418,7 @@
                     )
                   "
                 >
-                  <i class="fas fa-eye text-dark"></i>
+                  <i class="fas fa-eye text-danger"></i>
                 </button>
               </td>
             </tr>
