@@ -263,7 +263,7 @@
                 <th>Category</th>
                 <th>Problem</th>
                 <th>Waktu</th>
-                <th>Action</th>
+                <th>Add Analysis</th>
               </tr>
             </thead>
             <tbody>
@@ -304,7 +304,7 @@
                 <th>Act Counter</th>
                 <th>Std Counter</th>
                 <th>Problem</th>
-                <th>Action</th>
+                <th>Add Analysis</th>
               </tr>
             </thead>
             <tbody>
