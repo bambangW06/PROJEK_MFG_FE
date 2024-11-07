@@ -91,7 +91,7 @@
             <input
               type="file"
               class="form-control"
-              ref="fileInput"
+              ref="fileInputadd"
               multiple
               @change="FileImageChange($event, 'add')"
             />
@@ -150,7 +150,7 @@
               class="form-control"
               id="toolImage"
               name="foto"
-              ref="fileInput"
+              ref="fileInputedit"
               multiple
               @change="FileImageChange($event, 'edit')"
             />
@@ -587,7 +587,8 @@ export default {
           this.editProblem = ''
           this.editAnalisa = ''
           this.editFoto = []
-          this.$refs.fileInput.value = null // Reset elemen input file
+          this.$refs.fileInputadd.value = null // Reset elemen input file
+          this.$refs.fileInputedit.value = null // Reset elemen input file
         }
       } catch (error) {
         console.log(error)
@@ -629,8 +630,8 @@ export default {
           payload.category_id = this.deletedCategoryId
         }
 
-        // console.log('Payload to delete:', payload)
-
+        console.log('Payload to delete:', payload)
+        return
         // Hapus `return` agar dapat melanjutkan proses
         let response = await this.$store.dispatch(
           ACTION_DELETE_ANALISA_PROBLEM,
