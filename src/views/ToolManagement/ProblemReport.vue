@@ -800,7 +800,8 @@ export default {
         })
 
         if (response.status === 200 && this.GET_PROBLEM_ANALISA.length > 0) {
-          // Format the analisa field with line breaks for each item in the response data
+          console.log('GET', this.GET_PROBLEM_ANALISA)
+
           this.GET_PROBLEM_ANALISA = this.GET_PROBLEM_ANALISA.map((item) => {
             if (item.analisa) {
               item.analisa = item.analisa.replace(/\r\n/g, '<br>')
@@ -875,6 +876,7 @@ export default {
 
   .thumbnail {
     max-width: 80px; /* Batasi ukuran gambar lebih kecil untuk layar kecil */
+    margin-bottom: 8px;
   }
 }
 
