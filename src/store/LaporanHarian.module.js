@@ -208,6 +208,7 @@ const actions = {
 
       // console.log(response.data.data)
       commit(SET_PROBLEM_MODAL, response.data.data)
+      return response
     } catch (error) {
       console.error('Error fetching problem data:', error)
     }

@@ -1,4 +1,128 @@
 <template>
+  <div class="modal" tabindex="-1" id="viewProblemModal">
+    <div class="modal-dialog">
+      <div
+        class="modal-content"
+        :class="{
+          'modal-extra-wide': modalType === 'next proses',
+          'modal-xl': modalType !== 'next proses',
+        }"
+      >
+        <div class="modal-header">
+          <h5 class="modal-title">{{ modalTitle }}</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div v-if="modalType === 'category'" class="modal-body">
+          <table class="table custom-modal table-bordered custom-table">
+            <thead>
+              <tr>
+                <th style="width: 5%">No</th>
+                <th style="width: 15%">Category</th>
+                <th class="problem-column" style="width: 30%">Problem</th>
+                <th style="width: 8%">Waktu</th>
+                <th style="width: 8%">Action</th>
+              </tr>
+            </thead>
+            <tbody v-if="GET_PROBLEM_MODAL.length > 0">
+              <tr v-for="(problem, index) in GET_PROBLEM_MODAL" :key="index">
+                <td>{{ index + 1 }}</td>
+                <td>{{ problem.category_nm }}</td>
+                <td>{{ problem.problem_nm }}</td>
+                <td>{{ problem.waktu }}'</td>
+                <td>
+                  <button
+                    class="btn p-0 me-2"
+                    data-bs-toggle="modal"
+                    data-bs-target="#addProblemModal"
+                    @click="editProblem(problem)"
+                  >
+                    <i class="fas fa-edit text-primary"></i>
+                  </button>
+                  <button
+                    class="btn p-0"
+                    data-bs-toggle="modal"
+                    data-bs-target="#deleteProblemModal"
+                    @click="deleteProblem(problem.problem_id)"
+                  >
+                    <i class="fas fa-trash text-danger" aria-hidden="true"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+            <tbody v-else>
+              <tr>
+                <td colspan="5" class="text-center">No Data</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div v-if="modalType === 'next proses'" class="modal-body">
+          <table class="table custom-modal table-bordered custom-table">
+            <thead>
+              <tr>
+                <th style="width: 7%">No</th>
+                <th style="width: 8%">Line</th>
+                <th style="width: 12%">Mesin</th>
+                <th style="width: 20%">Tool</th>
+                <th style="width: 13%">Counter</th>
+                <th class="problem-column" style="width: 25%">Problem</th>
+                <th style="width: 12%">Action</th>
+              </tr>
+            </thead>
+            <tbody v-if="GET_PROBLEM_MODAL.length > 0">
+              <tr v-for="(problem, index) in GET_PROBLEM_MODAL" :key="index">
+                <td>{{ index + 1 }}</td>
+                <td>{{ problem.line_nm }}</td>
+                <td>{{ problem.machine_nm }}</td>
+                <td>{{ problem.tool_nm }}</td>
+                <td>{{ problem.act_counter }}/{{ problem.std_counter }}</td>
+                <td>{{ problem.problem_nm }}</td>
+                <td>
+                  <button
+                    class="btn p-0 me-2"
+                    data-bs-toggle="modal"
+                    data-bs-target="#addProblemModal"
+                    @click="editProblem(problem)"
+                  >
+                    <i class="fas fa-edit text-primary"></i>
+                  </button>
+                  <button
+                    class="btn p-0"
+                    data-bs-toggle="modal"
+                    data-bs-target="#deleteProblemModal"
+                    @click="deleteProblem(problem.problem_id)"
+                  >
+                    <i class="fas fa-trash text-danger" aria-hidden="true"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+            <tbody v-else>
+              <tr>
+                <td colspan="8" class="text-center">No Data</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="modal" tabindex="-1" id="addProblemModal">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -125,110 +249,7 @@
       </div>
     </div>
   </div>
-  <div class="modal" tabindex="-1" id="viewProblemModal">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">{{ modalTitle }}</h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
-        </div>
-        <div v-if="modalType === 'category'" class="modal-body">
-          <table class="table table-bordered custom-table">
-            <thead>
-              <tr>
-                <th>No</th>
-                <th>Category</th>
-                <th>Problem</th>
-                <th>Waktu</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody v-if="GET_PROBLEM_MODAL.length > 0">
-              <tr v-for="(problem, index) in GET_PROBLEM_MODAL" :key="index">
-                <td>{{ index + 1 }}</td>
-                <td>{{ problem.category_nm }}</td>
-                <td>{{ problem.problem_nm }}</td>
-                <td>{{ problem.waktu }}'</td>
-                <td>
-                  <button
-                    class="btn p-0"
-                    data-bs-toggle="modal"
-                    data-bs-target="#deleteProblemModal"
-                    @click="deleteProblem(problem.problem_id)"
-                  >
-                    <i class="fas fa-trash text-danger" aria-hidden="true"></i>
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-            <tbody v-else>
-              <tr>
-                <td colspan="5" class="text-center">No Data</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
 
-        <div v-if="modalType === 'next proses'">
-          <table class="table table-bordered custom-table">
-            <thead>
-              <tr>
-                <th>No</th>
-                <th>Line</th>
-                <th>Machine</th>
-                <th>Tool</th>
-                <th>Aktual Counter</th>
-                <th>Std Counter</th>
-                <th>Problem</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody v-if="GET_PROBLEM_MODAL.length > 0">
-              <tr v-for="(problem, index) in GET_PROBLEM_MODAL" :key="index">
-                <td>{{ index + 1 }}</td>
-                <td>{{ problem.line_nm }}</td>
-                <td>{{ problem.machine_nm }}</td>
-                <td>{{ problem.tool_nm }}</td>
-                <td>{{ problem.act_counter }}</td>
-                <td>{{ problem.std_counter }}</td>
-                <td>{{ problem.problem_nm }}</td>
-                <td>
-                  <button
-                    class="btn btn-danger btn-sm"
-                    data-bs-toggle="modal"
-                    data-bs-target="#deleteProblemModal"
-                    @click="deleteProblem(problem.problem_id)"
-                  >
-                    <i class="fas fa-trash" aria-hidden="true"></i>
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-            <tbody v-else>
-              <tr>
-                <td colspan="8" class="text-center">No Data</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
   <div class="modal" tabindex="-1" id="deleteProblemModal">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -579,6 +600,8 @@ export default {
 
   data() {
     return {
+      problem_id: null,
+      isEditMode: false,
       selectedShift: 'Siang',
       selectedDate: '',
       selectedTimeRange: '',
@@ -765,6 +788,16 @@ export default {
         this.checkAndSend()
       }
     },
+    selectedLine(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.onLineChange()
+      }
+    },
+    selectedTool(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.onToolSelect()
+      }
+    },
   },
 
   mounted() {
@@ -778,6 +811,7 @@ export default {
       shift: this.selectedShift,
     })
     this.fetchOEE()
+    this.absensiKaryawan()
   },
   methods: {
     setSelectedShift() {
@@ -799,11 +833,10 @@ export default {
 
     handleViewProblem(timeRange, title, type) {
       try {
-        // Set modal title and type
         this.setModalTitle(title, type)
         this.selectedTimeRange = timeRange
-        // Fetch problem data after setting the title if necessary
         this.fetchProblemData()
+        this.isEditMode = false // Set to add mode by default
       } catch (error) {
         console.log('Error saat handleViewProblem:', error)
       }
@@ -812,9 +845,54 @@ export default {
     setModalTitle(title, type) {
       this.modalTitle = title
       this.modalType = type
-      // You can log the title and type for debugging if needed
-      // console.log(`Setting modal title: ${title}, type: ${type}`);
     },
+
+    // New method for opening modal in edit mode
+    editProblem(problem) {
+      console.log('edit problem', problem)
+
+      this.setModalTitle('Edit Problem', this.modalType) // Update title
+      this.isEditMode = true // Switch to edit mode
+      this.selectedProblem = problem // Store the selected problem for editing
+      this.populateModalFields(problem) // Populate fields with problem dat
+    },
+    populateModalFields(problem) {
+      if (this.modalType === 'category') {
+        this.problem_id = problem.problem_id
+        this.selectedCategory = this.GET_CATEGORIES.find(
+          (category) => category.category_id === problem.category_id,
+        )
+        this.problemCategory = problem.problem_nm
+        this.timeCategory = problem.waktu
+      } else if (this.modalType === 'next proses') {
+        // Debugging: pastikan data problem
+        console.log('Problem data:', problem)
+
+        // Log untuk memeriksa apakah machineOptions dan toolOptions sudah terisi
+        console.log('Machine Options:', this.machineOptions)
+        console.log('Tool Options:', this.toolOptions)
+
+        // Line data
+        this.problem_id = problem.problem_id
+        this.selectedLine = this.getLineNames.find(
+          (line) => line.line_id === problem.line_id,
+        )
+
+        // Machine data dengan debugging
+        this.selectedMachine = problem.machine_id
+
+        console.log('Selected Machine:', this.selectedMachine)
+
+        // Tool data dengan debugging
+        this.selectedTool = problem.tool_id
+        console.log('Selected Tool:', this.selectedTool)
+
+        this.counter = problem.act_counter
+        this.stdCounter = problem.std_counter
+        this.problemNextProcess = problem.problem_nm
+      }
+    },
+
     async onToolSelect(selectedTool) {
       try {
         // Simpan tool yang dipilih
@@ -854,12 +932,35 @@ export default {
           selectedDate: this.selectedDate, // Mengambil tanggal yang dipilih dari state
         }
 
-        await this.$store.dispatch(ACTION_GET_PROBLEM_MODAL, payload)
+        let response = await this.$store.dispatch(
+          ACTION_GET_PROBLEM_MODAL,
+          payload,
+        )
+        if (response.status === 200 && response.data.data.length > 0) {
+          this.GET_PROBLEM_MODAL = response.data.data
+          console.log('GET_PROBLEM_MODAL:', this.GET_PROBLEM_MODAL)
+
+          this.GET_PROBLEM_MODAL.forEach((item) => {
+            // Pemetaan singkatan langsung di sini
+            item.line_nm =
+              item.line_nm === 'Cylinder Head'
+                ? 'C/H'
+                : item.line_nm === 'Cylinder Block'
+                ? 'C/B'
+                : item.line_nm === 'Crank Shaft'
+                ? 'C/S'
+                : item.line_nm === 'Cam Shaft'
+                ? 'C/M'
+                : item.line_nm // Tetap sama jika tidak ada dalam pemetaan
+          })
+        }
       } catch (error) {
         console.log('Error saat fetchProblemData:', error)
       }
     },
     async onLineChange() {
+      console.log('kepanggil')
+
       try {
         const selectedLine = this.selectedLine.line_id
         // console.log(selectedLine)
@@ -870,6 +971,7 @@ export default {
           id: machine.machine_id,
           label: machine.machine_nm,
         }))
+
         await this.$store.dispatch(ACTION_GET_TOOLS, line_nm)
         this.toolOptions = this.GET_TOOLS.map((tool) => ({
           id: tool.tool_id,
@@ -882,12 +984,16 @@ export default {
     async addProblem() {
       try {
         let payload
+
+        // Tentukan apakah mode adalah 'edit' atau 'add'
+        const mode = this.isEditMode ? 'edit' : 'add' // Misalnya `this.isEditMode` adalah flag yang menentukan apakah ini mode edit atau tambah
         if (this.modalType === 'category') {
           payload = {
             category_id: this.selectedCategory.category_id,
             problem_nm: this.problemCategory,
             waktu: this.timeCategory,
             time_range: this.selectedTimeRange,
+            mode: mode,
           }
         } else if (this.modalType === 'next proses') {
           payload = {
@@ -897,29 +1003,35 @@ export default {
             act_counter: this.counter,
             problem_nm: this.problemNextProcess,
             time_range: this.selectedTimeRange,
+            mode: mode,
           }
         }
-        // console.log('payload', payload)
+        // Jika dalam mode edit, tambahkan problem_id ke payload
+        if (this.isEditMode) {
+          payload.problem_id = this.problem_id // Gantilah `selectedProblemId` dengan properti yang sesuai yang menyimpan ID masalah yang sedang diedit
+        }
+        console.log('payload', payload)
+        let response
         if (this.modalType === 'category') {
-          let response = await this.$store.dispatch(ACTION_ADD_PROBLEM, payload)
-          if (response.status === 201) {
-            this.$swal({
-              icon: 'success',
-              title: 'Success',
-              text: 'Data added successfully',
-            })
-          }
+          response = await this.$store.dispatch(ACTION_ADD_PROBLEM, payload)
         } else if (this.modalType === 'next proses') {
-          let response = await this.$store.dispatch(
+          response = await this.$store.dispatch(
             ACTION_ADD_PROBLEM_NEXT_PROCESS,
             payload,
           )
-          if (response.status === 201) {
-            this.$swal({
-              icon: 'success',
-              title: 'Success',
-              text: 'Data added successfully',
-            })
+        }
+
+        // Jika response status 201 (berhasil)
+        if (response.status === 201) {
+          this.$swal({
+            icon: 'success',
+            title: 'Success',
+            text: 'Data added successfully',
+          })
+
+          // Jika mode edit, panggil ACTION_GET_PROBLEM_MODAL
+          if (this.isEditMode) {
+            this.fetchProblemData()
           }
         }
 
@@ -1152,6 +1264,7 @@ export default {
             title: 'Deleted!',
             text: 'Data berhasil dihapus.',
           })
+          this.fetchProblemData()
         }
       } catch (error) {
         console.log(error)
@@ -1301,6 +1414,7 @@ export default {
       }
     },
     resetModal() {
+      this.isEditMode = false
       this.problemCategory = ''
       this.problemNextProcess = ''
       this.selectedCategory = null
@@ -1393,5 +1507,25 @@ input {
 .table-oee td,
 .table-oee th {
   padding: 5px; /* Mengurangi padding agar lebih kompak */
+}
+
+.custom-modal {
+  table-layout: fixed;
+}
+
+.custom-table th,
+.custom-table td {
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
+}
+
+.problem-column {
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: normal; /* Membuat teks dalam kolom ini terbungkus */
+}
+.modal-extra-wide {
+  width: 130%;
 }
 </style>
