@@ -105,7 +105,7 @@
             </tbody>
             <tbody v-else>
               <tr>
-                <td colspan="8" class="text-center">No Data</td>
+                <td colspan="7" class="text-center">No Data</td>
               </tr>
             </tbody>
           </table>
