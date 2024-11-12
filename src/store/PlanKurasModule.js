@@ -151,7 +151,10 @@ const actions = {
         payload,
       )
       if (response.status === 201) {
-        alert('Berhasil Menyimpan Jadwal')
+        this.$swal({
+          icon: 'success',
+          title: 'Berhasil Menyimpan Jadwal',
+        })
       }
       await dispatch('fetchSchedules')
     } catch (error) {
