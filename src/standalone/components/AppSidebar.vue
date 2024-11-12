@@ -185,6 +185,13 @@ export default {
             },
             // {
             //   component: 'CNavItem',
+            //   name: 'History Problem', // Nama menu untuk EAssesment
+            //   to: '/tool/historyProblem', // Path yang dituju saat menu EAssesment diklik
+            //   icon: 'cilHistory', // Ikonya bisa disesuaikan
+            //   parentId: 'ROOT',
+            // },
+            // {
+            //   component: 'CNavItem',
             //   name: 'Reservasi & Regrinding',
             //   to: '/tool',
             //   icon: 'cilSettings',

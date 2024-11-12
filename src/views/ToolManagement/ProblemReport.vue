@@ -538,6 +538,18 @@ export default {
       })
     },
   },
+  watch: {
+    selectedDate(oldValue, newValue) {
+      if (newValue !== oldValue) {
+        this.getAnlisaProblem()
+      }
+    },
+    selectedShift(oldValue, newValue) {
+      if (newValue !== oldValue) {
+        this.getAnlisaProblem()
+      }
+    },
+  },
   mounted() {
     this.$store.dispatch(ACTION_GET_PROBLEM_TABLE, this.selectedDate)
     this.setShiftByCurrentTime()

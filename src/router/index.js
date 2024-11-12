@@ -72,6 +72,11 @@ const routes = [
         name: 'PencapaianOEE',
         component: () => import('@/views/ToolManagement/PencapaianOEE.vue'),
       },
+      // {
+      //   path: '/tool/historyProblem',
+      //   name: 'HistoryProblem',
+      //   component: () => import('@/views/ToolManagement/HistoryProblem.vue'),
+      // },
 
       // {
       //   path: '/tool',
