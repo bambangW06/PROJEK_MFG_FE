@@ -365,21 +365,15 @@ export default {
       }
 
       // Ambil data supervisor dari store
-      const supervisorData = this.GET_SUPERVISOR[0] // Pastikan GET_SUPERVISOR mengembalikan array dengan data supervisor
+      const supervisorData = this.GET_SUPERVISOR[0]
+      const currentHour = moment().tz('Asia/Jakarta').hour()
 
-      if (supervisorData) {
-        // // Pastikan photourl menggunakan API_URL
-        // if (
-        //   supervisorData.photourl &&
-        //   !supervisorData.photourl.startsWith(API_URL)
-        // ) {
-        //   supervisorData.photourl = `${API_URL}${supervisorData.photourl}`
-        // }
-
-        // Tambahkan supervisor ke employees jika belum ada
+      // Tampilkan supervisor hanya antara jam 7 dan 20
+      if (supervisorData && currentHour >= 7 && currentHour < 20) {
         const existingEmployee = this.employees.find(
           (emp) => emp.employee_id === supervisorData.employee_id,
         )
+
         if (!existingEmployee) {
           this.employees.push({
             ...supervisorData,
@@ -387,11 +381,13 @@ export default {
           })
         }
 
-        // Atur supervisor ke posisi Supervisor
         this.selectedEmployees['Supervisor'] = {
           ...supervisorData,
           jabatan: 'Supervisor', // Atur jabatan supervisor
         }
+      } else {
+        // Hapus card Supervisor jika di luar jam 7-20
+        this.selectedEmployees['Supervisor'] = null
       }
 
       // Log final state of selectedEmployees

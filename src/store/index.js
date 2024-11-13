@@ -12,6 +12,7 @@ import METAModule from './META.module'
 import KanbanFromGel from './KanbanFromGel.module'
 import LaporanHarian from './LaporanHarian.module'
 import Analisaproblem from './Analisaproblem.module'
+import HistoryProblem from './HistoryProblem.module'
 
 export default createStore({
   state: {
@@ -44,5 +45,6 @@ export default createStore({
     KanbanFromGel,
     LaporanHarian,
     Analisaproblem,
+    HistoryProblem,
   },
 })
