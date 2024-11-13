@@ -449,14 +449,14 @@
       <div class="row">
         <div class="col text-center">
           <div class="card">
-            <h4>OEE</h4>
+            <h4>Result Regrinding</h4>
             <table class="table table-bordered custom-table table-oee">
               <thead>
                 <tr>
                   <th>Man Power</th>
                   <th>Working Hours</th>
                   <th>Total Regrind</th>
-                  <th>OEE</th>
+                  <th>Result</th>
                 </tr>
               </thead>
               <tbody>

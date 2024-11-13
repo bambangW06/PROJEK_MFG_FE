@@ -319,12 +319,28 @@ export default {
 
       try {
         // Ambil nilai indikator atau set ke 0 jika tidak ada data
-        const oeeValue = this.GET_OEE.length > 0 ? this.oee || 0 : 0
+        // Hitung nilai OEE berdasarkan formula yang diinginkan dan batasi ke 4 angka
+
         const peValue = this.GET_OEE.length > 0 ? this.pePercentage || 0 : 0
         const availabilityValue =
           this.GET_OEE.length > 0 ? this.availabilityPercentage || 0 : 0
         const rateQualityValue =
           this.GET_OEE.length > 0 ? this.rqPercentage || 0 : 0
+        // Hitung nilai OEE dengan menggunakan this.oee dan persentase lainnya, dalam bentuk skala 0-100
+        const oeeValue =
+          this.GET_OEE.length > 0
+            ? Math.round(
+                (this.oee / 100) *
+                  (peValue / 100) *
+                  (availabilityValue / 100) *
+                  (rateQualityValue / 100) *
+                  10000,
+              ) / 100
+            : 0
+        console.log('rateQualityValue', rateQualityValue)
+        console.log('peValue', peValue)
+        console.log('availabilityValue', availabilityValue)
+        console.log('oeeValue', oeeValue)
 
         // Update grafik dengan satu series yang berisi semua data
         this.oeeSeries = [
