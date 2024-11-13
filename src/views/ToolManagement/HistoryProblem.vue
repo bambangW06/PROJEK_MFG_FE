@@ -274,6 +274,8 @@ export default {
       this.getProblem()
     },
     selectedProblem() {
+      this.selectedLine = null
+      this.selectedCategory = null
       this.getProblem()
     },
     selectedCategory() {
