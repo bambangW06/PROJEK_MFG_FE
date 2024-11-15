@@ -446,7 +446,7 @@ export default {
 
   watch: {
     getResponse(response) {
-      console.log(response)
+      // console.log(response)
       if (response && response.status === 201) {
         alert('Data karyawan berhasil ditambahkan')
       } else if (response && response.message) {
@@ -636,10 +636,8 @@ export default {
               selectedFile: null,
               previewUrl: '',
               profile: '',
-              defaultPos: '',
+              default_position: '',
             }
-
-            console.log('Response dari server:', response) // Tambahkan logging untuk response dari server
           })
           .catch((error) => {
             console.error(

@@ -73,7 +73,7 @@ const actions = {
       formData.append('shift', payload.shift)
       formData.append('jabatan', payload.jabatan)
       formData.append('foto', payload.selectedFile) // Tambahkan file foto ke FormData
-      formData.append('default_position', payload.default_position)
+      formData.append('default_position', payload.defaultPos)
       console.log([...formData])
 
       const result = await axios.post(API_URL + '/employees/add', formData, {
@@ -112,7 +112,8 @@ const actions = {
       formData.append('shift', editedData.shift)
       formData.append('jabatan', editedData.jabatan)
       formData.append('foto', editedData.selectedFile) // Tambahkan file foto jika perlu diubah
-      formData.append('default_position', payload.defaultPos)
+      formData.append('default_position', editedData.default_position)
+      console.log([...formData])
 
       // Kirim permintaan PUT untuk mengedit karyawan
       const response = await axios.put(
