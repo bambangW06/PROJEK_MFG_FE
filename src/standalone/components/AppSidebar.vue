@@ -190,13 +190,18 @@ export default {
               icon: 'cilHistory', // Ikonya bisa disesuaikan
               parentId: 'ROOT',
             },
-            // {
-            //   component: 'CNavItem',
-            //   name: 'Reservasi & Regrinding',
-            //   to: '/tool',
-            //   icon: 'cilSettings',
-            //   parentId: Lap'ROOT',
-            // },
+            {
+              component: 'CNavGroup',
+              name: 'Master Data',
+              icon: 'cilFolder',
+             items  : [
+               {component: 'CNavItem',
+               name: 'Master Time Report',
+               to: '/tool/masterTimeReport',
+               icon: 'cilClock',
+               parentId: 'ROOT',}
+             ]
+            },
           ],
         },
 

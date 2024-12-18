@@ -57,11 +57,6 @@ const routes = [
         name: 'LaporanHarian',
         component: () => import('@/views/ToolManagement/LaporanHarian.vue'),
       },
-      // {
-      //   path: '/tool/dummy',
-      //   name: 'dummy',
-      //   component: () => import('@/views/ToolManagement/dummy.vue'),
-      // },
       {
         path: '/tool/nextProses',
         name: 'ProblemReport',
@@ -76,6 +71,11 @@ const routes = [
         path: '/tool/historyProblem',
         name: 'HistoryProblem',
         component: () => import('@/views/ToolManagement/HistoryProblem.vue'),
+      },
+      {
+        path: '/tool/masterTimeReport',
+        name: 'MasterTimeReport',
+        component: () => import('@/views/ToolManagement/MasterTime.vue'),
       },
 
       // {

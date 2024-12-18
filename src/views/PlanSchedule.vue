@@ -103,8 +103,23 @@
     <!--modal dialog-->
   </div>
   <div class="card">
-    <h3 class="text-center">Schedule Kuras Bulan : {{ currenthMonth }}</h3>
+  <div class="d-flex justify-content-between align-items-center">
+    <h3>Schedule Kuras Bulan : {{ currenthMonth }}</h3>
+    <div class="form-group d-flex justify-content-end align-items-center">
+      <span class="year-label" style="font-size: 1.5rem; line-height: 2.5rem;">Tahun: </span>
+      <input 
+        type="number" 
+        v-model="selectedYear" 
+        class="form-control" 
+        min="1900" 
+        max="2100" 
+        step="1" 
+        @change="getScheduleForSelectedYear"
+        style="font-size: 1.5rem; height: 2.5rem; width: 150px;">
+    </div>
   </div>
+</div>
+
   <div class="card mt-2">
     <div class="card-body">
       <div class="table-responsive">
@@ -335,21 +350,23 @@ export default {
       return 12
     },
     paginatedData() {
-      const data = this.mergedPlanKuras
-      // console.log('data', data)
+  const data = this.mergedPlanKuras;
+  
+  // Get the current year
+  const currentYear = new Date().getFullYear();
 
-      // Get the current year
-      const currentYear = new Date().getFullYear()
+  // Use selectedYear if available, otherwise fall back to currentYear
+  const yearToUse = this.selectedYear || currentYear;
 
-      return data.filter((kuras) => {
-        // Parse the date in DD-MM-YYYY format to extract the month and year
-        const [day, month, year] = kuras.plan_dt.split('-').map(Number)
-        // console.log('Parsed date', { day, month, year })
+  return data.filter((kuras) => {
+    // Parse the date in DD-MM-YYYY format to extract the month and year
+    const [day, month, year] = kuras.plan_dt.split('-').map(Number);
 
-        // Check if the month and year match the selected month and current year
-        return month === this.selectedMonth && year === currentYear
-      })
-    },
+    // Check if the month and year match the selected month and selected year (or current year if no selectedYear)
+    return month === this.selectedMonth && year === yearToUse;
+  });
+},
+
     filteredData() {
       if (!this.searchQuery) {
         return this.paginatedData
@@ -416,12 +433,15 @@ export default {
     selectedMonth(newMonth) {
       this.updateCurrentMonthWithYear()
     },
+    selectedYear(newYear) {
+      this.updateCurrentMonthWithYear()
+    },
   },
   mounted() {
     // Fetch all required data
     Promise.all([
       this.$store.dispatch('ActionGetHistorySchedules'),
-      this.$store.dispatch('fetchPlanKuras'),
+      this.$store.dispatch('fetchPlanKuras',this.selectedyear),
       this.$store.dispatch('fetchLines'),
       this.$store.dispatch('fetchGeneratePlanKuras'),
     ]).then(() => {
@@ -430,6 +450,20 @@ export default {
   },
 
   methods: {
+    async getScheduleForSelectedYear() {
+      try {
+      
+      const  year = this.selectedYear
+       
+        console.log('payload', year);
+        let response = await this.$store.dispatch(
+          'fetchPlanKuras', year
+        )
+      } catch (error) {
+        console.error('Error fetching schedules:', error);
+        
+      }
+    },
     updateCurrentMonthWithYear() {
       this.currenthMonth = `${
         this.months.find((m) => m.value === this.selectedMonth).text
@@ -490,7 +524,8 @@ export default {
       // console.log(payload)
     },
     async saveSchedule(index) {
-      if (
+      try {
+        if (
         !this.actualDates[index] &&
         !this.statusKuras[index] &&
         !this.paginatedData[index].reason_plan
@@ -511,17 +546,24 @@ export default {
         status: this.statusKuras[index],
       }
       // console.log('payload:', payload)
-      await this.$store.dispatch('ActionSaveSchedules', payload).then(() => {
-        this.$store
-          .dispatch('ActionGetHistorySchedules')
-          .then(() => {
+     let response = await this.$store.dispatch('ActionSaveSchedules', payload)
+
+     if (response.status === 201 && response.data.message === 'Success to Add History Schedule and Create New Master Schedule') {
+      this.$store.dispatch('ActionGetHistorySchedules')
+         
             this.initializeData()
             this.isSaved.splice(index, 1, true) // Mark the row as saved
-          })
-          .then(() => {
+          
             this.$store.dispatch('fetchGeneratePlanKuras')
-          })
-      })
+            this.$swal.fire('Success', 'Data berhasil disimpan', 'success')
+     }
+      } catch (error) {
+        console.log(error)
+        this.$swal.fire('Error', 'Terjadi kesalahan saat menyimpan data', 'error')
+        
+      }
+      
+       
     },
     goToPage(month) {
       if (month < 1) {
@@ -757,6 +799,8 @@ export default {
   justify-content: center;
   background-color: red;
 }
-
+.year-label {
+ font-size: 20px;
+}
 /* Pastikan penyesuaian CSS diterapkan dengan benar */
 </style>

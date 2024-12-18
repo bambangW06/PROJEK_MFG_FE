@@ -98,11 +98,13 @@ const actions = {
       console.error('Error fetching plan kuras:', error)
     }
   },
-  async fetchPlanKuras({ commit }) {
+  async fetchPlanKuras({ commit }, payload) {
+    
     try {
-      const response = await axios.get(`${API_URL}/planMonth/get`)
+      const response = await axios.get(`${API_URL}/planMonth/get/${payload}`)
       commit('setPlanKuras', response.data.data)
       // console.log('setPlanKuras', response.data.data)
+      return response
     } catch (error) {
       console.error('Error fetching plan kuras:', error)
     }
@@ -149,19 +151,16 @@ const actions = {
       const response = await axios.post(
         `${API_URL}/historySchedule/add`,
         payload,
-      )
-      if (response.status === 201) {
-        this.$swal({
-          icon: 'success',
-          title: 'Berhasil Menyimpan Jadwal',
-        })
-      }
-      await dispatch('fetchSchedules')
+      );
+      console.log('response', response);
+  return response
+     
     } catch (error) {
-      console.error('Error adding schedule:', error)
-      alert('Gagal Menyimpan Jadwal')
+      console.error('Error adding schedule:', error);
+    
     }
   },
+  
   async ActionGetHistorySchedules({ commit }, payload) {
     try {
       const response = await axios.get(`${API_URL}/historySchedule/get`, {

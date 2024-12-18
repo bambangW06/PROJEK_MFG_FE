@@ -13,6 +13,7 @@ import KanbanFromGel from './KanbanFromGel.module'
 import LaporanHarian from './LaporanHarian.module'
 import Analisaproblem from './Analisaproblem.module'
 import HistoryProblem from './HistoryProblem.module'
+import MasterTime from '@/store/MasterTime.module'
 
 export default createStore({
   state: {
@@ -46,5 +47,6 @@ export default createStore({
     LaporanHarian,
     Analisaproblem,
     HistoryProblem,
+    MasterTime,
   },
 })

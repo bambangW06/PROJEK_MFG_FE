@@ -710,13 +710,6 @@ export default {
         let oeeValue = (totalRegSettingValue / totalRequestValue) * 100
 
         if (oeeValue > 100) {
-          setTimeout(() => {
-            this.$swal({
-              icon: 'error',
-              title: 'Oops...',
-              text: 'OEE MELEBIHI 100% (OEE = Total Regrinding / Total Request Clean Room * 100%)',
-            })
-          }, 2000) // Delay alert by 2 seconds
           oeeValue = 100 // Set OEE to 100 if it exceeds 100%
         }
 
