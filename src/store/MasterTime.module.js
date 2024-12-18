@@ -5,6 +5,8 @@ export const ACTION_GET_MASTER_TIME_RANGE = 'ACTION_GET_MASTER_TIME_RANGE'
 export const GET_MASTER_TIME_RANGE = 'GET_MASTER_TIME_RANGE'
 export const SET_MASTER_TIME_RANGE = 'SET_MASTER_TIME_RANGE'
 
+export const ACTION_ADD_MASTER_TIME_RANGE = 'ACTION_ADD_MASTER_TIME_RANGE'
+
 const state = {
     DATA_TIME_RANGE: [],
 }
@@ -36,6 +38,7 @@ const actions = {
     async ACTION_ADD_MASTER_TIME_RANGE({ commit }, payload) {
         try {
             const response = await axios.post(`${API_URL}/masterTimerange/add`, payload)
+            return response
         } catch (error) {
             console.error('Error adding time range:', error)
             alert('Gagal Menambahkan Time range')

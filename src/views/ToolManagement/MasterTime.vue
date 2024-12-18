@@ -1,57 +1,59 @@
 <template>
-    <div class="modal" tabindex="-1" id="modalMasterTime">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">{{ isEditMode ? 'Edit Master Time' : 'Add Master Time' }}</h5>
-                    <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                    ></button>
+   <div class="modal" tabindex="-1" id="modalMasterTime">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ isEditMode ? 'Edit Master Time' : 'Add Master Time' }}</h5>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                ></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Shift</label>
+                    <select class="form-select" v-model="shift">
+                        <option value="Siang">Siang</option>
+                        <option value="Malam">Malam</option>
+                    </select>
                 </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Shift</label>
-                        <input
-                            type="text"
-                            class="form-control"
-                            v-model="shift"
-                        />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Time Range</label>
-                        <input
-                            type="text"
-                            class="form-control"
-                            v-model="time_range"
-                        />
+                <div class="mb-3">
+                    <label class="form-label">Time Range</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        v-model="time_range"
+                    />
+                    <!-- Display warning message if time range format is incorrect -->
+                    <div v-if="warningMessage" class="text-danger mt-2">
+                        {{ warningMessage }}
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button
+            </div>
+            <div class="modal-footer">
+                <button
                     type="button"
                     class="btn btn-secondary"
                     data-bs-dismiss="modal"
-                    >
-                        close
-                    </button>
-                    <button
-                        type="button"
-                        class="btn btn-primary"
-                        data-bs-dismiss="modal"
-                        @click="saveMasterTime()"
-                    >
-                        Save
-                    </button>
-                </div>
+                >
+                    Close
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    data-bs-dismiss="modal"
+                    :disabled="isSaveButtonDisabled"
+                    @click="saveMasterTime"
+                >
+                    Save
+                </button>
             </div>
-
-
         </div>
-
     </div>
+    </div>
+
 
  <div class="container-fluid">
     <div class="card p-2 mb-2">
@@ -115,7 +117,7 @@
   </div>
 </template>
 <script>
-import { ACTION_GET_MASTER_TIME_RANGE, GET_MASTER_TIME_RANGE } from '@/store/MasterTime.module';
+import { ACTION_ADD_MASTER_TIME_RANGE, ACTION_GET_MASTER_TIME_RANGE, GET_MASTER_TIME_RANGE } from '@/store/MasterTime.module';
 import moment from 'moment';
 import { mapGetters } from 'vuex';
 
@@ -128,10 +130,30 @@ import { mapGetters } from 'vuex';
                 time_range: '',
                 isEditMode: false, // Menandakan apakah modal dalam mode edit
                 currentItem: null, // Untuk menyimpan item yang sedang diedit
+                warningMessage: '',
             }
         },
         computed: {
             ...mapGetters([GET_MASTER_TIME_RANGE]),
+            // Computed property to disable the Save button
+            isSaveButtonDisabled() {
+                // The Save button is disabled if:
+                // 1. `time_range` is empty or invalid format
+                const timeRangePattern = /^\d{2}:\d{2} - \d{2}:\d{2}$/;
+                return !this.time_range || !timeRangePattern.test(this.time_range);
+            },
+        },
+        watch: {
+            // Watch for changes in the time_range field
+            time_range(newValue) {
+                // Validate the new value of time_range as the user types
+                const timeRangePattern = /^\d{2}:\d{2} - \d{2}:\d{2}$/;
+                if (!timeRangePattern.test(newValue)) {
+                    this.warningMessage = 'Pastikan format time_range adalah "HH:mm - HH:mm". Contoh: "06:30 - 07:30".';
+                } else {
+                    this.warningMessage = '';  // Clear warning if format is correct
+                }
+            }
         },
         mounted(){
             this.$store.dispatch(ACTION_GET_MASTER_TIME_RANGE)
@@ -161,33 +183,34 @@ import { mapGetters } from 'vuex';
             },
 
             // Fungsi untuk menambah data
-        async addMasterTime() {
-            try {
-                const payload = {
-                    shift: this.shift,
-                    time_range: this.time_range,
-                }
-                let response = await this.$store.dispatch( payload)
-                if (response.status === 201) {
+            async addMasterTime() {
+                try {
+                    const payload = {
+                        shift: this.shift,
+                        time_range: this.time_range,
+                    };
+                    console.log('payload', payload);
+                    let response = await this.$store.dispatch(ACTION_ADD_MASTER_TIME_RANGE, payload);
+                    
+                    if (response.status === 201) {
+                        this.$swal({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Data added successfully',
+                        });
+                        this.$store.dispatch(ACTION_GET_MASTER_TIME_RANGE);
+                        this.resetModal();
+                    }
+
+                } catch (error) {
                     this.$swal({
-                        icon: 'success',
-                        title: 'Success',
-                        text: 'Data added successfully',
-                    })
-                    this.$store.dispatch(ACTION_GET_MASTER_TIME_RANGE)
-                    this.resetModal();
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: 'Gagal menambahkan Master Time',
+                    });
                 }
- 
-            } catch (error) {
-                this.$swal({
-                    icon: 'error',
-                    title: 'Gagal',
-                    text: 'Gagal menambahkan Master Time',
-                })
-                
-            }
-          
             },
+
 
             // Fungsi untuk mengupdate data
             updateMasterTime() {
