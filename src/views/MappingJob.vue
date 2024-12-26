@@ -152,9 +152,9 @@ export default {
         },
         {
           key: 'GL',
-          top: '12%',
+          top: '10%',
           left: '30%',
-          popoverTop: '12%',
+          popoverTop: '10%',
           popoverLeft: '37%',
           label: 'GL',
         },
@@ -175,10 +175,10 @@ export default {
         },
         {
           key: 'NC',
-          top: '25%',
+          top: '22%',
           left: '68%',
-          popoverTop: '25%',
-          popoverLeft: '37%',
+          popoverTop: '22%',
+          popoverLeft: '43%',
           label: 'POS NC',
           content: [
             '1. Proses rough drill, tap, reamer, endmill dll.',
@@ -206,7 +206,7 @@ export default {
           top: '45%',
           left: '88%',
           popoverTop: '45%',
-          popoverLeft: '45%',
+          popoverLeft: '55%',
           label: 'DELIVERY & SETTING',
           content: [
             '1. Mengelompokan tool yang akan diregrinding.',
