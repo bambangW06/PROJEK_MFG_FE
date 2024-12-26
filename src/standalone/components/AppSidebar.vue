@@ -194,13 +194,22 @@ export default {
               component: 'CNavGroup',
               name: 'Master Data',
               icon: 'cilFolder',
-             items  : [
-               {component: 'CNavItem',
-               name: 'Master Time Report',
-               to: '/tool/masterTimeReport',
-               icon: 'cilClock',
-               parentId: 'ROOT',}
-             ]
+              items: [
+                {
+                  component: 'CNavItem',
+                  name: 'Master Time Report',
+                  to: '/tool/masterTimeReport',
+                  icon: 'cilClock',
+                  parentId: 'ROOT',
+                },
+                {
+                  component: 'CNavItem',
+                  name: 'Master Tools',
+                  to: '/tool/masterTools',
+                  icon: 'cilSettings',
+                  parentId: 'ROOT',
+                },
+              ],
             },
           ],
         },

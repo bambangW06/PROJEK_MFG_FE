@@ -33,7 +33,7 @@
       <div class="card-body" style="position: relative">
         <img
           class="card-img-top"
-          src="../assets/images/Mapping Assessment Board card.jpg"
+          src="../assets/images/New Layout Tool_page-0001 (1).jpg"
           alt="Mapping Assessment Board"
           height="600px"
         />
@@ -106,36 +106,36 @@ export default {
         {
           key: 'CB',
           top: '80%',
-          left: '30%',
+          left: '20%',
           popoverTop: '80%',
-          popoverLeft: '36%',
+          popoverLeft: '26%',
           label: 'C/B & Crank',
           content: ['1. Manage Kiriko Line Cylinder Block Dan Crank Shaft.'],
         },
         {
           key: 'CH',
           top: '80%',
-          left: '36%',
+          left: '30%',
           popoverTop: '80%',
-          popoverLeft: '42%',
+          popoverLeft: '36%',
           label: 'C/H & CAM',
           content: ['1. Manage Kiriko Line Cylinder Head Dan Cam Shaft.'],
         },
         {
           key: 'CoolantSupply',
           top: '80%',
-          left: '42%',
+          left: '62%',
           popoverTop: '80%',
-          popoverLeft: '48%',
+          popoverLeft: '68%',
           label: 'Manage Coolant',
           content: ['1. Supply Coolant to Line Cylinder Head Dan Cam Shaft'],
         },
         {
           key: 'ConsentrasiCheck',
           top: '80%',
-          left: '48%',
+          left: '68%',
           popoverTop: '80%',
-          popoverLeft: '54%',
+          popoverLeft: '74%',
           label: ' Manage Coolant',
           content: [
             '1. Check Konsentrasi dan Ph Coolant.',
@@ -144,25 +144,25 @@ export default {
         },
         {
           key: 'Supervisor',
-          top: '20%',
-          left: '25%',
-          popoverTop: '20%',
-          popoverLeft: '32%',
+          top: '5%',
+          left: '15%',
+          popoverTop: '5%',
+          popoverLeft: '22%',
           label: 'SPV',
         },
         {
           key: 'GL',
-          top: '7%',
-          left: '5%',
-          popoverTop: '7%',
-          popoverLeft: '11%',
+          top: '12%',
+          left: '30%',
+          popoverTop: '12%',
+          popoverLeft: '37%',
           label: 'GL',
         },
         {
           key: 'TL',
-          top: '50%',
+          top: '38%',
           left: '10%',
-          popoverTop: '50%',
+          popoverTop: '38%',
           popoverLeft: '16%',
           label: 'QC GATE',
           content: [
@@ -175,10 +175,10 @@ export default {
         },
         {
           key: 'NC',
-          top: '35%',
-          left: '67%',
-          popoverTop: '11%',
-          popoverLeft: '55%',
+          top: '25%',
+          left: '68%',
+          popoverTop: '25%',
+          popoverLeft: '37%',
           label: 'POS NC',
           content: [
             '1. Proses rough drill, tap, reamer, endmill dll.',
@@ -191,9 +191,9 @@ export default {
         },
         {
           key: 'OilSupply',
-          top: '75%',
+          top: '80%',
           left: '10%',
-          popoverTop: '75%',
+          popoverTop: '80%',
           popoverLeft: '16%',
           label: 'SUPPLY OLI',
           content: [
@@ -203,10 +203,10 @@ export default {
         },
         {
           key: 'SettingDelivery',
-          top: '55%',
-          left: '52%',
-          popoverTop: '55%',
-          popoverLeft: '58%',
+          top: '45%',
+          left: '88%',
+          popoverTop: '45%',
+          popoverLeft: '45%',
           label: 'DELIVERY & SETTING',
           content: [
             '1. Mengelompokan tool yang akan diregrinding.',

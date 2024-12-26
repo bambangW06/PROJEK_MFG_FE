@@ -37,6 +37,7 @@ const actions = {
       const response = await axios.get(`${API_URL}/lines/get`)
       // console.log(response.data.data)
       commit('setLineNames', response.data.data)
+      return response
     } catch (error) {
       console.error('Error fetching lines:', error)
     }
@@ -53,6 +54,7 @@ const actions = {
         }))
       }
       commit('setMachinesNames', response.data.data)
+      return response
     } catch (error) {
       console.error('Error fetching machines:', error)
     }

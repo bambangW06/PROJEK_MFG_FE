@@ -645,27 +645,4 @@ input-group .flex-grow-1 {
 .table-bordered {
   border: 1px solid black;
 }
-.pagination {
-  display: flex;
-  flex-wrap: wrap; /* Membungkus elemen saat melebihi lebar */
-  justify-content: center; /* Menjaga pagination di tengah */
-}
-
-.page-item {
-  margin: 0 5px; /* Jarak antara item pagination */
-}
-
-.page-link {
-  padding: 0.5rem 0.75rem;
-  font-size: 1rem;
-}
-
-@media (max-width: 768px) {
-  .pagination {
-    font-size: 0.85rem; /* Ukuran font lebih kecil di layar sempit */
-  }
-  .page-link {
-    padding: 0.25rem 0.5rem; /* Mengurangi padding untuk layar kecil */
-  }
-}
 </style>

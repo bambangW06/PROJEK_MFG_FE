@@ -3,7 +3,10 @@ import { createRouter, createWebHashHistory, Route } from 'vue-router'
 
 import DefaultLayout from '@/layouts/DefaultLayout'
 import DefaultLayoutStandAlone from '@/standalone/layouts/DefaultLayoutStandAlone'
-
+import modalToken from '@/standalone/components/modalToken.vue'
+import { createApp, h } from 'vue'
+// Declare tokenModalInstance outside of the router to ensure it is in the same scope
+let tokenModalInstance = null
 /*define const other in here*/
 
 console.log(process.env.VUE_APP_STANDALONE_SINGLE_SPA)
@@ -36,6 +39,7 @@ const routes = [
         path: '/employeesData',
         name: 'Data Karyawan',
         component: () => import('@/views/AddEmployees.vue'),
+        meta: { requiresSpecialToken: true },
       },
       {
         path: '/grafikAbsensi',
@@ -75,7 +79,16 @@ const routes = [
       {
         path: '/tool/masterTimeReport',
         name: 'MasterTimeReport',
-        component: () => import('@/views/ToolManagement/MasterTime.vue'),
+        component: () =>
+          import('@/views/ToolManagement/MasterData/MasterTime.vue'),
+        meta: { requiresSpecialToken: true },
+      },
+      {
+        path: '/tool/masterTools',
+        name: 'MasterTools',
+        component: () =>
+          import('@/views/ToolManagement/MasterData/MasterTools.vue'),
+        meta: { requiresSpecialToken: true },
       },
 
       // {
@@ -142,6 +155,64 @@ const router = createRouter({
     // always scroll to top
     return { top: 0 }
   },
+})
+
+router.beforeEach((to, from, next) => {
+  const validToken = 'Master#Token'
+
+  // Menghapus token jika tidak diperlukan
+  if (from.meta.requiresSpecialToken && !to.meta.requiresSpecialToken) {
+    localStorage.removeItem('special_token')
+  }
+
+  if (to.meta.requiresSpecialToken) {
+    const specialToken = localStorage.getItem('special_token')
+
+    if (!specialToken) {
+      if (!tokenModalInstance) {
+        const container = document.createElement('div')
+        document.body.appendChild(container)
+        console.log('Container untuk modal telah dibuat.')
+
+        // Modal wrapper yang mengembalikan Promise
+        const modalPromise = new Promise((resolve, reject) => {
+          const modalApp = createApp({
+            render: () =>
+              h(modalToken, {
+                onTokenValidated: (isValid) => {
+                  if (isValid) {
+                    localStorage.setItem('special_token', validToken)
+                    resolve() // Token valid, lanjutkan navigasi
+                  } else {
+                    reject() // Token tidak valid, batalkan navigasi
+                  }
+
+                  // Cleanup modal setelah validasi
+                  tokenModalInstance.unmount()
+                  document.body.removeChild(container)
+                  tokenModalInstance = null
+                },
+              }),
+          })
+
+          console.log('Aplikasi modal sedang dimount.')
+          tokenModalInstance = modalApp
+          modalApp.mount(container)
+        })
+
+        // Tangani Promise dan panggil next() setelah modal selesai
+        modalPromise
+          .then(() => next()) // Jika token valid, lanjutkan
+          .catch(() => next(false)) // Jika token tidak valid, batalkan
+      } else {
+        console.log('Modal sudah ada, tidak perlu membuat modal baru.')
+      }
+    } else {
+      next() // Jika token sudah ada, lanjutkan navigasi
+    }
+  } else {
+    next() // Jika tidak memerlukan token khusus, lanjutkan navigasi
+  }
 })
 
 export default router

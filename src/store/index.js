@@ -14,6 +14,7 @@ import LaporanHarian from './LaporanHarian.module'
 import Analisaproblem from './Analisaproblem.module'
 import HistoryProblem from './HistoryProblem.module'
 import MasterTime from '@/store/MasterTime.module'
+import MasterTools from './MasterTools.module'
 
 export default createStore({
   state: {
@@ -48,5 +49,6 @@ export default createStore({
     Analisaproblem,
     HistoryProblem,
     MasterTime,
+    MasterTools,
   },
 })

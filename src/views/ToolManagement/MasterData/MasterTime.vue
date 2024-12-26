@@ -59,12 +59,10 @@
           <h5 class="modal-title">Konfirmasi Hapus</h5>
           <button
             type="button"
-            class="close"
+            class="btn-close"
             data-bs-dismiss="modal"
             aria-label="Close"
-          >
-            <span aria-hidden="true">&times;</span>
-          </button>
+          ></button>
         </div>
         <div class="modal-body">
           Apakah Anda yakin ingin menghapus data ini?
