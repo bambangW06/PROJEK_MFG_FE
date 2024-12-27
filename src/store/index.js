@@ -6,7 +6,7 @@ import AbsensiModule from './AbsensiModule'
 import PlanKurasModule from './PlanKurasModule'
 import DashBoardToolModule from './DashBoardToolModule'
 import DeliveryModule from './Delivery.Module'
-import MasterLineModule from './MasterLine.module'
+import MasterLineDelivery from './MasterLineDelivery.module'
 import KanbanToToolReg from './KanbanToToolReg.module'
 import METAModule from './META.module'
 import KanbanFromGel from './KanbanFromGel.module'
@@ -15,6 +15,8 @@ import Analisaproblem from './Analisaproblem.module'
 import HistoryProblem from './HistoryProblem.module'
 import MasterTime from '@/store/MasterTime.module'
 import MasterTools from './MasterTools.module'
+import MasterLines from './MasterLines.module'
+import MasterMachines from './MasterMachines.module'
 
 export default createStore({
   state: {
@@ -41,7 +43,7 @@ export default createStore({
     PlanKurasModule,
     DashBoardToolModule,
     DeliveryModule,
-    MasterLineModule,
+    MasterLineDelivery,
     KanbanToToolReg,
     METAModule,
     KanbanFromGel,
@@ -50,5 +52,7 @@ export default createStore({
     HistoryProblem,
     MasterTime,
     MasterTools,
+    MasterLines,
+    MasterMachines,
   },
 })

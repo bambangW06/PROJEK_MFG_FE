@@ -8,13 +8,12 @@
             type="button"
             class="btn-close"
             data-bs-dismiss="modal"
-            aria-label="Close"
+            @click="resetModal"
           ></button>
         </div>
-        <!-- Modal Header -->
         <div class="modal-body">
-          <label>Line</label>
-          <div class="input-group">
+          <div class="form-group mb-3">
+            <label for="line">Line</label>
             <select
               class="form-select"
               v-model="selectedLine"
@@ -29,68 +28,69 @@
               </option>
             </select>
           </div>
-          <label>Mesin</label>
-          <div class="input-group">
-            <Multiselect
-              class="sz-dw"
+          <div class="form-group mb-3">
+            <label for="machine">Mesin</label>
+            <v-select
+              id="machine"
               v-model="selectedMachines"
               :options="getMachinesNames"
-              :multiple="true"
-              :disabled="!selectedLine"
-              track-by="machine_id"
               label="machine_nm"
-              placeholder="Pilih mesin..."
-              :taggable="true"
-            >
-            </Multiselect>
-          </div>
-          <label class="form-label" for="selectedDate">Tanggal Kuras</label>
-          <div class="input-group">
-            <input
-              class="form-control"
-              type="text"
-              ref="datePicker"
-              v-model="selectedDate"
-              placeholder="Pilih tanggal..."
+              :disabled="!selectedLine"
             />
-            <div class="input-group-append">
+          </div>
+          <div class="form-group mb-3">
+            <label for="date">Tanggal Kuras</label>
+            <div class="input-group">
+              <input
+                id="date"
+                class="form-control"
+                type="text"
+                ref="datePicker"
+                v-model="selectedDate"
+                placeholder="Pilih tanggal..."
+              />
               <button
-                class="btn btn-outline-secondary sz-up"
+                class="btn btn-outline-secondary"
                 type="button"
                 @click="showDatePicker('datePicker')"
               >
-                <span class="fa fa-calendar"></span>
+                <i class="fa fa-calendar"></i>
               </button>
             </div>
           </div>
-          <label for="">Periodik</label>
-          <input
-            v-model="selectedPeriodic"
-            class="form-control"
-            type="text"
-            placeholder=""
-          />
-          <label for="">Waktu</label>
-          <select v-model="selectedTime" class="form-control">
-            <option disable selected></option>
-            <option>Day</option>
-            <option>Month</option>
-            <option>Year</option>
-          </select>
-          <label>Shift</label>
-          <select v-model="selectedShift" class="form-control">
-            <option disable selected></option>
-            <option>Red</option>
-            <option>White</option>
-          </select>
+          <div class="form-group mb-3">
+            <label for="periodic">Periodik</label>
+            <input
+              id="periodic"
+              type="text"
+              class="form-control"
+              v-model="selectedPeriodic"
+            />
+          </div>
+          <div class="form-group mb-3">
+            <label for="time">Waktu</label>
+            <select id="time" v-model="selectedTime" class="form-control">
+              <option value="" disabled selected>Pilih waktu</option>
+              <option value="Day">Day</option>
+              <option value="Month">Month</option>
+              <option value="Year">Year</option>
+            </select>
+          </div>
+          <div class="form-group mb-3">
+            <label for="shift">Shift</label>
+            <select id="shift" v-model="selectedShift" class="form-control">
+              <option value="" disabled selected>Pilih shift</option>
+              <option value="Red">Red</option>
+              <option value="White">White</option>
+            </select>
+          </div>
         </div>
-        <!-- Modal Body -->
-
         <div class="modal-footer">
           <button
             type="button"
             class="btn btn-secondary"
             data-bs-dismiss="modal"
+            @click="resetModal"
           >
             Close
           </button>
@@ -103,11 +103,10 @@
             Save
           </button>
         </div>
-        <!-- Modal Footer -->
       </div>
     </div>
-    <!--modal dialog-->
   </div>
+
   <!-- Modal Edit Schedule Kuras -->
   <div class="modal" tabindex="-1" id="modalEditScheduleKuras">
     <div class="modal-dialog">
@@ -191,12 +190,10 @@
           <h5 class="modal-title">Konfirmasi Hapus Data Kuras</h5>
           <button
             type="button"
-            class="close"
+            class="btn-close"
             data-bs-dismiss="modal"
             aria-label="Close"
-          >
-            <span aria-hidden="true">&times;</span>
-          </button>
+          ></button>
         </div>
         <div class="modal-body">
           Apakah Anda yakin ingin menghapus data ini?
@@ -232,10 +229,10 @@
         <div class="col-6">
           <div class="row">
             <div class="col">
-              <h5 class="text-start">Line</h5>
-              <div class="input-group mb-2">
-                <select
-                  class="form-select sz-hst"
+              <div class="form-group mb-2">
+                <h5 class="text-start">Line</h5>
+                <!-- <select
+                  class="form-control"
                   v-model="selectedHistoryLine"
                   @change="onLineChange('selectedHistoryLine')"
                 >
@@ -246,30 +243,32 @@
                   >
                     {{ line.line_nm }}
                   </option>
-                </select>
+                </select> -->
+                <v-select
+                  :options="getLineNames"
+                  v-model="selectedHistoryLine"
+                  label="line_nm"
+                  placeholder="Pilih line..."
+                  @update:modelValue="onLineChange('selectedHistoryLine')"
+                >
+                </v-select>
               </div>
             </div>
             <div class="col">
-              <h5 class="text-start">Mesin</h5>
-              <div class="input-group" style="display: flex">
-                <div style="flex: 1">
-                  <Multiselect
-                    class="sz-dw search-placeholder"
-                    v-model="selectedMachineHistory"
-                    :options="getMachinesNames"
-                    :multiple="true"
-                    :disabled="!selectedHistoryLine"
-                    track-by="machine_id"
-                    label="machine_nm"
-                    placeholder="Pilih mesin..."
-                    :taggable="true"
-                    @select="onMachineChange"
-                  >
-                  </Multiselect>
-                </div>
+              <div class="form-group mb-2">
+                <h5 class="text-start">Mesin</h5>
+                <v-select
+                  :options="getMachinesNames"
+                  v-model="selectedMachineHistory"
+                  label="machine_nm"
+                  placeholder="Pilih mesin..."
+                  :disabled="!selectedHistoryLine"
+                  @update:modelValue="onMachineChange"
+                />
               </div>
             </div>
           </div>
+
           <!--row-->
         </div>
         <!--card-->
@@ -320,7 +319,7 @@
               <th>Line</th>
               <th>Mesin</th>
               <th>Shift</th>
-              <th>Tanggal Kuras</th>
+              <th>Terakhir Kuras</th>
               <th>Periodik</th>
               <th>Waktu</th>
               <th>Action</th>
@@ -368,8 +367,6 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import Multiselect from 'vue-multiselect'
-import 'vue-multiselect/dist/vue-multiselect.css'
 import UnderDevelopment from '@/standalone/components/underDevelopment.vue'
 import flatpickr from 'flatpickr'
 import 'flatpickr/dist/flatpickr.css'
@@ -378,20 +375,19 @@ import moment from 'moment-timezone'
 export default {
   name: 'ScheduleKuras',
   components: {
-    Multiselect,
     UnderDevelopment,
   },
   data() {
     return {
       selectedLine: null,
-      selectedMachines: [],
+      selectedMachines: null,
       selectedDate: '',
       selectedShift: null,
       datepickerInstances: null,
       selectedPeriodic: '',
       selectedTime: null,
       selectedHistoryLine: null,
-      selectedMachineHistory: [],
+      selectedMachineHistory: null,
       selectedDataIndex: -1,
       editedSchedule: {
         line_id: null,
@@ -421,6 +417,11 @@ export default {
       const startIndex = (this.currentPage - 1) * this.pageSize
       const endIndex = this.currentPage * this.pageSize
       return data.slice(startIndex, endIndex)
+    },
+  },
+  watch: {
+    selectedHistoryLine() {
+      this.selectedMachineHistory = null
     },
   },
   methods: {
@@ -475,7 +476,7 @@ export default {
       try {
         if (
           !this.selectedLine ||
-          !this.selectedMachines.length ||
+          !this.selectedMachines ||
           !this.selectedDate ||
           !this.selectedShift
         ) {
@@ -484,11 +485,10 @@ export default {
 
         const lineId = this.selectedLine.line_id
         const lineNm = this.selectedLine.line_nm
-
-        const machines = this.selectedMachines.map((machine) => ({
-          machine_id: machine.machine_id,
-          machine_nm: machine.machine_nm,
-        }))
+        const machines = {
+          machine_id: this.selectedMachines.machine_id,
+          machine_nm: this.selectedMachines.machine_nm,
+        }
 
         const planingDate = this.selectedDate
         const shift = this.selectedShift
@@ -501,6 +501,7 @@ export default {
           periodVal: this.selectedPeriodic,
           periodNm: this.selectedTime,
         }
+        console.log('payload', payload)
         this.$store.dispatch('addSchedule', payload)
         this.selectedLine = null
         this.selectedMachines = []
@@ -561,9 +562,7 @@ export default {
       if (!this.selectedMachineHistory) {
         return alert('Pilih line terlebih dahulu')
       }
-      const machineNm = this.selectedMachineHistory
-        .map((machine) => machine.machine_nm)
-        .join(',')
+      const machineNm = this.selectedMachineHistory.machine_nm
       await this.$store.dispatch('fetchSchedules', machineNm)
     },
 
@@ -612,32 +611,6 @@ export default {
 </script>
 
 <style>
-.sz-dw {
-  height: 50%;
-}
-.z-ind {
-  z-index: 2;
-  position: relative;
-}
-.sz-hst {
-  height: 40px !important;
-}
-input-group .flex-grow-1 {
-  display: flex;
-  align-items: center;
-}
-
-.multiselect {
-  width: 100%;
-}
-.search-placeholder .multiselect__placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* Untuk memastikan teks dan ikon memiliki jarak di antara mereka */
-  font-weight: bold;
-  color: #f54453;
-  font-size: 14px;
-}
 .tb-emp th {
   background-color: rgb(198, 240, 240);
   height: 50px !important;

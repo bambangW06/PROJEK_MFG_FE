@@ -90,6 +90,20 @@ const routes = [
           import('@/views/ToolManagement/MasterData/MasterTools.vue'),
         meta: { requiresSpecialToken: true },
       },
+      {
+        path: '/tool/masterLines',
+        name: 'MasterLines',
+        component: () =>
+          import('@/views/ToolManagement/MasterData/MasterLines.vue'),
+        meta: { requiresSpecialToken: true },
+      },
+      {
+        path: '/tool/masterMachines',
+        name: 'MasterMachines',
+        component: () =>
+          import('@/views/ToolManagement/MasterData/MasterMachines.vue'),
+        meta: { requiresSpecialToken: true },
+      },
 
       // {
       //   path: '/tool',
