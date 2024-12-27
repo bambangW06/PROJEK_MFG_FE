@@ -131,6 +131,7 @@ const routes = [
         path: '/ScheduleKuras',
         name: 'ScheduleKuras',
         component: () => import('@/views/Coolant/MasterSchedule.vue'),
+        meta: { requiresSpecialToken: true },
       },
       {
         path: '/delivery/kanban',

@@ -40,10 +40,10 @@
     </div>
   </div>
 
-  <div class="container-fluid">
+  <div v-if="GET_HISTORY_KURAS.length > 0" class="container-fluid">
     <div class="card p-2">
       <table class="table table-bordered table-striped text-center">
-        <thead class="table-primary">
+        <thead>
           <tr>
             <th>No</th>
             <th>Machine</th>
@@ -62,6 +62,11 @@
           </tr>
         </tbody>
       </table>
+    </div>
+  </div>
+  <div v-else class="container-fluid">
+    <div class="card p-2">
+      <h4 class="text-center m-0">No Data</h4>
     </div>
   </div>
 </template>
@@ -108,11 +113,20 @@ export default {
           ACTION_GET_HISTORY_KURAS,
           machine_id,
         )
-        if (response.status === 200) {
+        if (response.status === 200 && this.GET_HISTORY_KURAS.length > 0) {
           this.$swal({
             icon: 'success',
             title: 'Success',
             text: 'Data saved successfully!',
+          })
+        } else if (
+          response.status === 200 &&
+          this.GET_HISTORY_KURAS.length === 0
+        ) {
+          this.$swal({
+            icon: 'warning',
+            title: 'Warning',
+            text: 'Data not found!',
           })
         }
       } catch (error) {
@@ -137,11 +151,10 @@ export default {
 </script>
 
 <style>
-.table {
-  margin-bottom: 0;
+.table-bordered th {
+  background-color: rgb(198, 240, 240);
 }
-.table th,
-.table td {
-  vertical-align: middle;
+.table-bordered {
+  border: 1px solid black;
 }
 </style>
