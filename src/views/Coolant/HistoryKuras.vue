@@ -42,8 +42,8 @@
 
   <div class="container-fluid">
     <div class="card p-2">
-      <table class="table table-bordered table-striped">
-        <thead class="table-primary text-center">
+      <table class="table table-bordered table-striped text-center">
+        <thead class="table-primary">
           <tr>
             <th>No</th>
             <th>Machine</th>
@@ -54,7 +54,7 @@
         </thead>
         <tbody>
           <tr v-for="(history, index) in GET_HISTORY_KURAS" :key="index">
-            <td class="text-center">{{ index + 1 }}</td>
+            <td>{{ index + 1 }}</td>
             <td>{{ history.machine_nm }}</td>
             <td>{{ formatDate(history.actual_dt) }}</td>
             <td class="text-center">{{ history.shift }}</td>
