@@ -569,7 +569,7 @@ import {
   GET_REPORT,
   GET_STD_COUNTER,
   GET_TOOLS,
-} from '@/store/LaporanHarian.module'
+} from '@/store/Tool/LaporanHarian.module'
 import moment from 'moment-timezone'
 
 export default {

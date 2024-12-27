@@ -7,40 +7,40 @@ export const SET_META = 'SET_META'
 export const ACTION_META = 'ACTION_META'
 
 const state = {
-    META_DATA: {
-        totalData: 0,
-        currentPage: 1,
-        itemsPerPage: 10,
-        totalPages: 1,
-    },
+  META_DATA: {
+    totalData: 0,
+    currentPage: 1,
+    itemsPerPage: 10,
+    totalPages: 1,
+  },
 }
 
 const getters = {
-    GET_META(state) {
-        return state.META_DATA
-    },
+  GET_META(state) {
+    return state.META_DATA
+  },
 }
 
 const mutations = {
-    SET_META(state, payload) {
-        state.META_DATA = payload
-    },
+  SET_META(state, payload) {
+    state.META_DATA = payload
+  },
 }
 
 const actions = {
-    async ACTION_META({ commit }, metaData) {
-        try {
-            commit(SET_META, metaData)
-        } catch (error) {
-            console.error(error)
-            return error
-        }
-    },
+  async ACTION_META({ commit }, metaData) {
+    try {
+      commit(SET_META, metaData)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  },
 }
 
 export default {
-    state,
-    getters,
-    mutations,
-    actions,
+  state,
+  getters,
+  mutations,
+  actions,
 }

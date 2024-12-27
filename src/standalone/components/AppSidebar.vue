@@ -220,7 +220,7 @@ export default {
                   component: 'CNavItem',
                   name: 'Master Machines',
                   to: '/tool/masterMachines',
-                  icon: 'cilGroup',
+                  icon: 'cilFactory',
                   parentId: 'ROOT',
                 },
               ],
@@ -241,8 +241,14 @@ export default {
             },
             {
               component: 'CNavItem',
-              name: 'History Coolant', // Nama menu untuk EAssesment
-              to: '/historyCoolant', // Path yang dituju saat menu EAssesment diklik
+              name: 'History Conc & pH', // Nama menu untuk EAssesment
+              to: '/historyConc', // Path yang dituju saat menu EAssesment diklik
+              icon: 'cilHistory', // Ikonya bisa disesuaikan
+            },
+            {
+              component: 'CNavItem',
+              name: 'History Kuras', // Nama menu untuk EAssesment
+              to: '/historyKuras', // Path yang dituju saat menu EAssesment diklik
               icon: 'cilHistory', // Ikonya bisa disesuaikan
             },
             {

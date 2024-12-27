@@ -169,7 +169,7 @@
 import {
   ACTION_GET_HISTORY_PROBLEM,
   GET_HISTORY_PROBLEM,
-} from '@/store/HistoryProblem.module'
+} from '@/store/Tool/HistoryProblem.module'
 import { mapGetters } from 'vuex'
 import VueApexCharts from 'vue3-apexcharts'
 import moment from 'moment-timezone'
@@ -178,7 +178,7 @@ import {
   ACTION_GET_TOOLS,
   GET_CATEGORIES,
   GET_TOOLS,
-} from '@/store/LaporanHarian.module'
+} from '@/store/Tool/LaporanHarian.module'
 import Treeselect from 'vue3-treeselect'
 import 'vue3-treeselect/dist/vue3-treeselect.css'
 
@@ -472,7 +472,7 @@ export default {
         },
         yaxis: {
           title: {
-            text: 'Problem Count',
+            text: 'Jumlah Problem',
             style: {
               color: '#333',
               fontSize: '16px',

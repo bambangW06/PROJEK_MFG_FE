@@ -58,7 +58,7 @@ import {
   ACTION_GET_KANBAN_FROM_GEL,
   ACTION_PREPARED,
   GET_KANBAN_FROM_GEL,
-} from '@/store/KanbanFromGel.module'
+} from '@/store/Tool/KanbanFromGel.module'
 
 import { mapGetters } from 'vuex'
 

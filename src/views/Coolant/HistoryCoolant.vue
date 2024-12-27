@@ -6,7 +6,7 @@
 import CMS from '@/standalone/components/CMS.vue'
 
 export default {
-  name: 'HistoryCoolant',
+  name: 'HistoryConc',
   components: {
     CMS,
   },

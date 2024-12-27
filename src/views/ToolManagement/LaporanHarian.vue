@@ -588,7 +588,7 @@ import {
   GET_STD_COUNTER,
   GET_TIME_RANGES,
   GET_TOOLS,
-} from '@/store/LaporanHarian.module'
+} from '@/store/Tool/LaporanHarian.module'
 
 import moment from 'moment'
 

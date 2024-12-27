@@ -51,7 +51,7 @@ import {
   ACTION_GET_PROBLEM_TABLE,
   GET_OEE,
   GET_PROBLEM_IN_PROCESS,
-} from '@/store/LaporanHarian.module'
+} from '@/store/Tool/LaporanHarian.module'
 import { mapGetters } from 'vuex'
 import Apexchart from 'vue3-apexcharts'
 

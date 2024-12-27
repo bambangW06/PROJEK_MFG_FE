@@ -441,12 +441,12 @@ import {
   ACTION_EDIT_ANALISA_PROBLEM,
   ACTION_GET_PROBLEM_ANALISA,
   GET_PROBLEM_ANALISA,
-} from '@/store/Analisaproblem.module'
+} from '@/store/Tool/Analisaproblem.module'
 import {
   ACTION_GET_PROBLEM_TABLE,
   GET_PROBLEM_IN_PROCESS,
   GET_PROBLEM_NEXT_PROCESS,
-} from '@/store/LaporanHarian.module'
+} from '@/store/Tool/LaporanHarian.module'
 import { mapGetters } from 'vuex'
 
 export default {

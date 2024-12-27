@@ -1,6 +1,8 @@
 <template>
   <div class="card">
-    <h3 class="card-title text-center"><strong>History Coolant</strong></h3>
+    <h3 class="card-title text-center">
+      <strong>History Konsentrasi & pH</strong>
+    </h3>
   </div>
   <div class="card mt-2" style="z-index: 1" ref="cardRef">
     <div class="card-body">

@@ -33,7 +33,7 @@
       <div class="card-body" style="position: relative">
         <img
           class="card-img-top"
-          src="../assets/images/New Layout Tool_page-0001 (1).jpg"
+          src="../../assets/images/New Layout Tool_page-0001 (1).jpg"
           alt="Mapping Assessment Board"
           height="600px"
         />
@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import Struktur from '../standalone/components/Struktur.vue'
+import Struktur from '../../standalone/components/Struktur.vue'
 import PositionCard from './PositionCard.vue'
 import Popover from './Popover.vue'
 import { mapGetters } from 'vuex'
@@ -74,7 +74,7 @@ import {
   ACTION_GET_OTHERS,
   ACTION_GET_SUPERVISOR,
   GET_SUPERVISOR,
-} from '@/store/EmployeeModule'
+} from '@/store/Employee/EmployeeModule'
 
 export default {
   name: 'MappingJob',

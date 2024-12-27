@@ -258,8 +258,8 @@ import {
   ACTION_EDIT_MASTER_MACHINE,
   ACTION_GET_MASTER_MACHINES,
   GET_MASTER_MACHINES,
-} from '@/store/MasterMachines.module'
-import { ACTION_GET_LINES, GET_LINES } from '@/store/MasterLines.module'
+} from '@/store/Tool/MasterMachines.module'
+import { ACTION_GET_LINES, GET_LINES } from '@/store/Tool/MasterLines.module'
 export default {
   name: 'MasterMachines',
   data() {

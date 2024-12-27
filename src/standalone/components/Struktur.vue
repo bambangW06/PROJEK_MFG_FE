@@ -461,7 +461,10 @@
 </template>
 
 <script>
-import { ACTION_GET_SUPERVISOR, GET_SUPERVISOR } from '@/store/EmployeeModule'
+import {
+  ACTION_GET_SUPERVISOR,
+  GET_SUPERVISOR,
+} from '@/store/Employee/EmployeeModule'
 import { mapGetters } from 'vuex'
 
 export default {

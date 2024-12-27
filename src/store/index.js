@@ -1,22 +1,23 @@
 import { createStore } from 'vuex'
-import mappingModule from './mappingModule'
-import CoolantModule from './CoolantModule'
-import EmployeeModule from './EmployeeModule'
-import AbsensiModule from './AbsensiModule'
-import PlanKurasModule from './PlanKurasModule'
-import DashBoardToolModule from './DashBoardToolModule'
-import DeliveryModule from './Delivery.Module'
-import MasterLineDelivery from './MasterLineDelivery.module'
-import KanbanToToolReg from './KanbanToToolReg.module'
+import mappingModule from './Employee/mappingModule'
+import CoolantModule from './Coolant/CoolantModule'
+import EmployeeModule from './Employee/EmployeeModule'
+import AbsensiModule from './Employee/AbsensiModule'
+import PlanKurasModule from './Coolant/PlanKurasModule'
+import DashBoardToolModule from './Tool/DashBoardToolModule'
+import DeliveryModule from './Tool/Delivery.Module'
+import MasterLineDelivery from './Tool/MasterLineDelivery.module'
+import KanbanToToolReg from './Tool/KanbanToToolReg.module'
 import METAModule from './META.module'
-import KanbanFromGel from './KanbanFromGel.module'
-import LaporanHarian from './LaporanHarian.module'
-import Analisaproblem from './Analisaproblem.module'
-import HistoryProblem from './HistoryProblem.module'
-import MasterTime from '@/store/MasterTime.module'
-import MasterTools from './MasterTools.module'
-import MasterLines from './MasterLines.module'
-import MasterMachines from './MasterMachines.module'
+import KanbanFromGel from './Tool/KanbanFromGel.module'
+import LaporanHarian from './Tool/LaporanHarian.module'
+import Analisaproblem from './Tool/Analisaproblem.module'
+import HistoryProblem from './Tool/HistoryProblem.module'
+import MasterTime from '@/store/Tool/MasterTime.module'
+import MasterTools from './Tool/MasterTools.module'
+import MasterLines from './Tool/MasterLines.module'
+import MasterMachines from './Tool/MasterMachines.module'
+import HistoryKurasModule from './Coolant/HistoryKuras.module'
 
 export default createStore({
   state: {
@@ -54,5 +55,6 @@ export default createStore({
     MasterTools,
     MasterLines,
     MasterMachines,
+    HistoryKurasModule,
   },
 })

@@ -155,7 +155,7 @@ import {
   ACTION_EDIT_MASTER_TIME_RANGE,
   ACTION_GET_MASTER_TIME_RANGE,
   GET_MASTER_TIME_RANGE,
-} from '@/store/MasterTime.module'
+} from '@/store/Tool/MasterTime.module'
 import { mapGetters } from 'vuex'
 
 export default {

@@ -33,23 +33,23 @@ const routes = [
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () => import('@/views/EAssignment.vue'),
+        component: () => import('@/views/Employee/EAssignment.vue'),
       },
       {
         path: '/employeesData',
         name: 'Data Karyawan',
-        component: () => import('@/views/AddEmployees.vue'),
+        component: () => import('@/views/Employee/AddEmployees.vue'),
         meta: { requiresSpecialToken: true },
       },
       {
         path: '/grafikAbsensi',
         name: 'Absensi Karyawan',
-        component: () => import('@/views/EAbsensi.vue'),
+        component: () => import('@/views/Employee/EAbsensi.vue'),
       },
       {
         path: '/MappingJob',
         name: 'Mapping Job',
-        component: () => import('@/views/MappingJob.vue'),
+        component: () => import('@/views/Employee/MappingJob.vue'),
       },
       // {
       //   path: '/tool/kanbanFromGel',
@@ -114,19 +114,23 @@ const routes = [
       {
         path: '/planSchedule',
         name: 'PlanSchedule',
-        component: () => import('@/views/PlanSchedule.vue'),
+        component: () => import('@/views/Coolant/PlanSchedule.vue'),
       },
 
       {
-        path: '/historyCoolant',
-        name: 'HistoryCoolant',
-        component: () => import('@/views/HistoryCoolant.vue'),
+        path: '/historyConc',
+        name: 'HistoryConc',
+        component: () => import('@/views/Coolant/HistoryCoolant.vue'),
       },
-
+      {
+        path: '/historyKuras',
+        name: 'HistoryKuras',
+        component: () => import('@/views/Coolant/HistoryKuras.vue'),
+      },
       {
         path: '/ScheduleKuras',
         name: 'ScheduleKuras',
-        component: () => import('@/views/MasterSchedule.vue'),
+        component: () => import('@/views/Coolant/MasterSchedule.vue'),
       },
       {
         path: '/delivery/kanban',
@@ -186,7 +190,7 @@ router.beforeEach((to, from, next) => {
       if (!tokenModalInstance) {
         const container = document.createElement('div')
         document.body.appendChild(container)
-        console.log('Container untuk modal telah dibuat.')
+        // console.log('Container untuk modal telah dibuat.')
 
         // Modal wrapper yang mengembalikan Promise
         const modalPromise = new Promise((resolve, reject) => {
@@ -209,7 +213,7 @@ router.beforeEach((to, from, next) => {
               }),
           })
 
-          console.log('Aplikasi modal sedang dimount.')
+          // console.log('Aplikasi modal sedang dimount.')
           tokenModalInstance = modalApp
           modalApp.mount(container)
         })

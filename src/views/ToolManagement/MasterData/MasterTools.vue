@@ -261,7 +261,7 @@ import {
   GET_DATA_MACHINES,
   GET_MASTER_LINES,
   GET_MASTER_TOOLS,
-} from '@/store/MasterTools.module'
+} from '@/store/Tool/MasterTools.module'
 export default {
   name: 'MasterTools',
   components: {
