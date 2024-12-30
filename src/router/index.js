@@ -33,7 +33,7 @@ const routes = [
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () => import('@/views/Employee/EAssignment.vue'),
+        component: () => import('@/views/Employee/AbsensiDashboard.vue'),
       },
       {
         path: '/employeesData',
@@ -44,7 +44,7 @@ const routes = [
       {
         path: '/grafikAbsensi',
         name: 'Absensi Karyawan',
-        component: () => import('@/views/Employee/EAbsensi.vue'),
+        component: () => import('@/views/Employee/HistoryGraphAbsensi.vue'),
       },
       {
         path: '/MappingJob',
