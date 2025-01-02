@@ -340,7 +340,7 @@
     <div class="card p-2">
       <div class="card">
         <div class="d-flex justify-content-between align-items-center mb-2">
-          <h4 class="text-center m-0">Analisa Problem Next Proses</h4>
+          <h4 class="text-center m-0">Analisa Problem</h4>
         </div>
         <div class="table-responsive">
           <table

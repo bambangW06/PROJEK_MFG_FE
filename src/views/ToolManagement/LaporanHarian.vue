@@ -219,10 +219,17 @@
 
           <label> Problem</label>
           <div>
-            <input
-              type="text"
-              class="form-control"
+            <v-select
+              id="problemNextProcess"
+              :options="GET_MASTER_PROBLEMS"
               v-model="problemNextProcess"
+              label="problem_nm"
+            />
+            <textarea
+              v-if="problemNextProcess.problem_nm === 'Other'"
+              v-model="problemNextProcessDescription"
+              class="form-control"
+              placeholder="Deskripsikan problemnya"
             />
           </div>
         </div>
@@ -591,6 +598,10 @@ import {
 } from '@/store/Tool/LaporanHarian.module'
 
 import moment from 'moment'
+import {
+  ACTION_GET_MASTER_PROBLEMS,
+  GET_MASTER_PROBLEMS,
+} from '@/store/Tool/MasterProblems.module'
 
 export default {
   name: 'dummy',
@@ -614,7 +625,8 @@ export default {
       toolOptions: [],
       counter: '',
       stdCounter: '',
-      problemNextProcess: [],
+      problemNextProcess: '',
+      problemNextProcessDescription: '',
       modalType: '',
       selectedJam: '',
       selectedCategory: '',
@@ -645,6 +657,7 @@ export default {
       GET_OEE,
       GET_ABSENSI,
       GET_TIME_RANGES,
+      GET_MASTER_PROBLEMS,
     ]),
     isFormValid() {
       if (this.modalType === 'category') {
@@ -658,6 +671,18 @@ export default {
           this.selectedTool &&
           this.counter > 0 &&
           this.problemNextProcess
+        )
+      } else if (
+        this.modalType === 'next proses' &&
+        this.problemNextProcessDescription
+      ) {
+        return (
+          this.selectedLine &&
+          this.selectedMachine &&
+          this.selectedTool &&
+          this.counter > 0 &&
+          this.problemNextProcess &&
+          this.problemNextProcessDescription
         )
       }
       return false // Default to false if modalType is not recognized
@@ -791,6 +816,9 @@ export default {
         this.onToolSelect()
       }
     },
+    problemNextProcess() {
+      console.log('problemNextProcess', this.problemNextProcess)
+    },
   },
 
   mounted() {
@@ -805,6 +833,7 @@ export default {
     })
     this.fetchOEE()
     this.absensiKaryawan()
+    this.$store.dispatch(ACTION_GET_MASTER_PROBLEMS)
   },
   methods: {
     setSelectedShift() {
@@ -994,9 +1023,13 @@ export default {
             machine_id: this.selectedMachine,
             tool_id: this.selectedTool,
             act_counter: this.counter,
-            problem_nm: this.problemNextProcess,
             time_range: this.selectedTimeRange,
             mode: mode,
+          }
+          if (this.problemNextProcessDescription) {
+            payload.problem_nm = `${this.problemNextProcess.problem_nm}: ${this.problemNextProcessDescription}`
+          } else {
+            payload.problem_nm = this.problemNextProcess.problem_nm
           }
         }
         // Jika dalam mode edit, tambahkan problem_id ke payload

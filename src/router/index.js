@@ -104,6 +104,13 @@ const routes = [
           import('@/views/ToolManagement/MasterData/MasterMachines.vue'),
         meta: { requiresSpecialToken: true },
       },
+      {
+        path: '/tool/masterProblems',
+        name: 'MasterProblems',
+        component: () =>
+          import('@/views/ToolManagement/MasterData/MasterProblem.vue'),
+        meta: { requiresSpecialToken: true },
+      },
 
       // {
       //   path: '/tool',

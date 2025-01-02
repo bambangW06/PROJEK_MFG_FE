@@ -223,6 +223,13 @@ export default {
                   icon: 'cilFactory',
                   parentId: 'ROOT',
                 },
+                {
+                  component: 'CNavItem',
+                  name: 'Master Problems',
+                  to: '/tool/masterProblems',
+                  icon: 'cilWarning',
+                  parentId: 'ROOT',
+                },
               ],
             },
           ],
