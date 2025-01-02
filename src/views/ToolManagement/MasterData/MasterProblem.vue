@@ -150,8 +150,8 @@
                 }}
               </td>
               <td>{{ item.problem_nm }}</td>
-              <td>{{ item.created_by }}</td>
               <td>{{ item.updated_by ? item.updated_by : item.created_by }}</td>
+              <td>{{ item.created_dt }}</td>
               <td>
                 <button
                   class="btn btn-primary me-2"
