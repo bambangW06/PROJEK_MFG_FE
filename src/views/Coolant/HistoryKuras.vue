@@ -107,6 +107,9 @@ export default {
     },
     async onMachineChange() {
       try {
+        if (this.selectedMachine === null) {
+          return
+        }
         const machine_id = this.selectedMachine.machine_id
         console.log('machine_id', machine_id)
         let response = await this.$store.dispatch(

@@ -914,6 +914,9 @@ export default {
 
     async onToolSelect() {
       try {
+        if (!this.selectedTool) {
+          return
+        }
         // Simpan tool yang dipilih
         this.tool_id = this.selectedTool.tool_id
         console.log('Selected Tool:', this.tool_id)
