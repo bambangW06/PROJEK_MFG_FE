@@ -317,7 +317,13 @@
                 <td>{{ problem.tool_nm }}</td>
                 <td>{{ problem.act_counter }}</td>
                 <td>{{ problem.std_counter }}</td>
-                <td>{{ problem.problem_nm }}</td>
+                <td>
+                  {{
+                    problem.other_nm
+                      ? `${problem.problem_nm} : ${problem.other_nm}`
+                      : problem.problem_nm
+                  }}
+                </td>
                 <td>
                   <button
                     class="btn p-0"

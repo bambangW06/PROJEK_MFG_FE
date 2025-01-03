@@ -82,7 +82,14 @@
                 <td>{{ problem.machine_nm }}</td>
                 <td>{{ problem.tool_nm }}</td>
                 <td>{{ problem.act_counter }}/{{ problem.std_counter }}</td>
-                <td>{{ problem.problem_nm }}</td>
+                <td>
+                  {{
+                    problem.other_nm
+                      ? `${problem.problem_nm} : ${problem.other_nm}`
+                      : problem.problem_nm
+                  }}
+                </td>
+
                 <td>
                   <button
                     class="btn p-0 me-2"
@@ -225,7 +232,9 @@
             />
             <textarea
               v-if="
-                problemNextProcess && problemNextProcess.problem_nm === 'Other'
+                (problemNextProcess &&
+                  problemNextProcess.problem_nm === 'Other') ||
+                problemNextProcessDescription
               "
               v-model="problemNextProcessDescription"
               class="form-control"
@@ -819,9 +828,6 @@ export default {
         this.onToolSelect()
       }
     },
-    problemNextProcess() {
-      console.log('problemNextProcess', this.problemNextProcess)
-    },
   },
 
   mounted() {
@@ -895,7 +901,7 @@ export default {
         this.selectedLine = this.getLineNames.find(
           (line) => line.line_id === problem.line_id,
         )
-
+        this.selectedTimeRange = problem.time_range
         // Machine data dengan debugging
         this.selectedMachine = problem.machine_nm
         this.machine_id = problem.machine_id
@@ -909,6 +915,8 @@ export default {
         this.counter = problem.act_counter
         this.stdCounter = problem.std_counter
         this.problemNextProcess = problem.problem_nm
+        // Jika problem_nm bernilai "Other", tambahkan problemNextProcessDescription
+        this.problemNextProcessDescription = problem.other_nm
       }
     },
 
@@ -1022,7 +1030,8 @@ export default {
             mode: mode,
           }
           if (this.problemNextProcessDescription) {
-            payload.problem_nm = `${this.problemNextProcess.problem_nm}: ${this.problemNextProcessDescription}`
+            payload.problem_nm = this.problemNextProcess.problem_nm
+            payload.other_nm = this.problemNextProcessDescription
           } else {
             payload.problem_nm = this.problemNextProcess.problem_nm
           }
@@ -1031,6 +1040,7 @@ export default {
         if (this.isEditMode) {
           payload.problem_id = this.problem_id // Gantilah `selectedProblemId` dengan properti yang sesuai yang menyimpan ID masalah yang sedang diedit
         }
+        console.log('payload', payload)
 
         let response
         if (this.modalType === 'category') {
@@ -1448,7 +1458,7 @@ export default {
       // Reset Treeselect fields
       this.selectedMachine = null
       this.selectedTool = null
-
+      this.problemNextProcessDescription = ''
       // Gunakan $nextTick untuk memastikan reset selesai
       this.$nextTick(() => {
         this.selectedMachine = null
