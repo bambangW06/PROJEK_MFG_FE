@@ -186,27 +186,25 @@
           </div>
           <label for="">Machine</label>
           <div>
-            <Treeselect
+            <v-select
               :key="resetKey"
               v-model="selectedMachine"
+              label="machine_nm"
               :options="machineOptions"
-              placeholder="Select Machine"
-              :clearable="true"
-              :searchable="true"
-            />
+            >
+            </v-select>
           </div>
 
           <label for="">Tool</label>
           <div>
-            <Treeselect
+            <v-select
               :key="resetKey"
               v-model="selectedTool"
               :options="toolOptions"
-              placeholder="Select Tool"
-              :clearable="true"
-              :searchable="true"
-              @select="onToolSelect"
-            />
+              label="tool_nm"
+              @update:modelValue="onToolSelect"
+            >
+            </v-select>
           </div>
 
           <label>Counter</label>
@@ -226,7 +224,9 @@
               label="problem_nm"
             />
             <textarea
-              v-if="problemNextProcess.problem_nm === 'Other'"
+              v-if="
+                problemNextProcess && problemNextProcess.problem_nm === 'Other'
+              "
               v-model="problemNextProcessDescription"
               class="form-control"
               placeholder="Deskripsikan problemnya"
@@ -620,12 +620,15 @@ export default {
       modalType: '',
       selectedLine: null,
       selectedMachine: null,
+      machine_id: null,
       machineOptions: [],
+      tool_id: null,
       selectedTool: null,
       toolOptions: [],
       counter: '',
       stdCounter: '',
       problemNextProcess: '',
+      problemNextProcessName: '',
       problemNextProcessDescription: '',
       modalType: '',
       selectedJam: '',
@@ -760,7 +763,7 @@ export default {
   },
   watch: {
     selectedDate(newValue, oldValue) {
-      console.log('selectedDate changed from', oldValue, 'to', newValue)
+      // console.log('selectedDate changed from', oldValue, 'to', newValue)
       if (newValue !== oldValue) {
         this.absensiKaryawan()
         this.getTimeRanges()
@@ -850,7 +853,7 @@ export default {
     openModal(timeRange, title, type) {
       this.selectedTimeRange = timeRange // Store the selected time_range
       this.setModalTitle(title, type) // Set the modal title and type
-      console.log('timerange', this.selectedTimeRange)
+      // console.log('timerange', this.selectedTimeRange)
     },
 
     handleViewProblem(timeRange, title, type) {
@@ -887,13 +890,6 @@ export default {
         this.problemCategory = problem.problem_nm
         this.timeCategory = problem.waktu
       } else if (this.modalType === 'next proses') {
-        // Debugging: pastikan data problem
-        console.log('Problem data:', problem)
-
-        // Log untuk memeriksa apakah machineOptions dan toolOptions sudah terisi
-        console.log('Machine Options:', this.machineOptions)
-        console.log('Tool Options:', this.toolOptions)
-
         // Line data
         this.problem_id = problem.problem_id
         this.selectedLine = this.getLineNames.find(
@@ -901,12 +897,13 @@ export default {
         )
 
         // Machine data dengan debugging
-        this.selectedMachine = problem.machine_id
-
+        this.selectedMachine = problem.machine_nm
+        this.machine_id = problem.machine_id
         console.log('Selected Machine:', this.selectedMachine)
 
         // Tool data dengan debugging
-        this.selectedTool = problem.tool_id
+        this.selectedTool = problem.tool_nm
+        this.tool_id = problem.tool_id
         console.log('Selected Tool:', this.selectedTool)
 
         this.counter = problem.act_counter
@@ -915,16 +912,16 @@ export default {
       }
     },
 
-    async onToolSelect(selectedTool) {
+    async onToolSelect() {
       try {
         // Simpan tool yang dipilih
-        this.selectedTool = selectedTool.id
-        // console.log('Selected Tool:', this.selectedTool)
+        this.tool_id = this.selectedTool.tool_id
+        console.log('Selected Tool:', this.tool_id)
 
         // Dispatch action untuk mendapatkan counter berdasarkan tool yang dipilih
         let response = await this.$store.dispatch(
           ACTION_STD_COUNTER,
-          this.selectedTool,
+          this.tool_id,
         )
         // console.log('Response dari ACTION_STD_COUNTER:', response)
 
@@ -934,9 +931,9 @@ export default {
           this.stdCounter = this.GET_STD_COUNTER[0].std_counter
         } else {
           // Handle jika respons tidak sesuai atau data kosong
-          console.log(
-            'Tidak ada data counter yang ditemukan atau respons tidak berhasil.',
-          )
+          // console.log(
+          //   'Tidak ada data counter yang ditemukan atau respons tidak berhasil.',
+          // )
         }
 
         // console.log('stdCounter:', this.stdCounter)
@@ -953,6 +950,7 @@ export default {
           time_range: this.selectedTimeRange, // Mengambil jam yang dipilih dari state
           selectedDate: this.selectedDate, // Mengambil tanggal yang dipilih dari state
         }
+        console.log('payload fetchProblemData', payload)
 
         let response = await this.$store.dispatch(
           ACTION_GET_PROBLEM_MODAL,
@@ -960,7 +958,7 @@ export default {
         )
         if (response.status === 200 && response.data.data.length > 0) {
           this.GET_PROBLEM_MODAL = response.data.data
-          console.log('GET_PROBLEM_MODAL:', this.GET_PROBLEM_MODAL)
+          // console.log('GET_PROBLEM_MODAL:', this.GET_PROBLEM_MODAL)
 
           this.GET_PROBLEM_MODAL.forEach((item) => {
             // Pemetaan singkatan langsung di sini
@@ -981,7 +979,7 @@ export default {
       }
     },
     async onLineChange() {
-      console.log('kepanggil')
+      // console.log('kepanggil')
 
       try {
         const selectedLine = this.selectedLine.line_id
@@ -989,16 +987,10 @@ export default {
         const line_nm = this.selectedLine.line_nm
         await this.$store.dispatch('fetchMachines', selectedLine)
 
-        this.machineOptions = this.getMachinesNames.map((machine) => ({
-          id: machine.machine_id,
-          label: machine.machine_nm,
-        }))
+        this.machineOptions = this.getMachinesNames
 
         await this.$store.dispatch(ACTION_GET_TOOLS, line_nm)
-        this.toolOptions = this.GET_TOOLS.map((tool) => ({
-          id: tool.tool_id,
-          label: tool.tool_nm,
-        }))
+        this.toolOptions = this.GET_TOOLS
       } catch (error) {
         console.log(error)
       }
@@ -1020,8 +1012,8 @@ export default {
         } else if (this.modalType === 'next proses') {
           payload = {
             line_id: this.selectedLine.line_id,
-            machine_id: this.selectedMachine,
-            tool_id: this.selectedTool,
+            machine_id: this.selectedMachine.machine_id,
+            tool_id: this.tool_id,
             act_counter: this.counter,
             time_range: this.selectedTimeRange,
             mode: mode,
@@ -1036,7 +1028,7 @@ export default {
         if (this.isEditMode) {
           payload.problem_id = this.problem_id // Gantilah `selectedProblemId` dengan properti yang sesuai yang menyimpan ID masalah yang sedang diedit
         }
-        console.log('payload', payload)
+
         let response
         if (this.modalType === 'category') {
           response = await this.$store.dispatch(ACTION_ADD_PROBLEM, payload)
@@ -1140,7 +1132,7 @@ export default {
         !item.tool_delay ||
         !item.waktu_delay
       ) {
-        console.log('Incomplete item data:', item)
+        // console.log('Incomplete item data:', item)
         return
       }
 
@@ -1161,7 +1153,7 @@ export default {
         )
 
         if (response.status === 201) {
-          console.log('Report successfully sent for item:', item)
+          // console.log('Report successfully sent for item:', item)
           this.reportFlags[item.time_id] = true // Tandai item sebagai sudah dilaporkan
           await this.getReport() // Refresh report data setelah berhasil submit
         }
@@ -1209,9 +1201,9 @@ export default {
         // Kondisi untuk menampilkan alert jika data kosong dan tanggal dipilih bukan hari ini
         const isToday = this.selectedDate === moment().format('YYYY-MM-DD')
 
-        console.log('Tanggal terpilih:', this.selectedDate)
-        console.log('isToday:', isToday)
-        console.log('Data Response:', response.data.data)
+        // console.log('Tanggal terpilih:', this.selectedDate)
+        // console.log('isToday:', isToday)
+        // console.log('Data Response:', response.data.data)
 
         // Tampilkan alert "NO DATA!" hanya jika data kosong, ada `selectedDate`, dan tanggal bukan hari ini
         if (response.data.data.length === 0 && this.selectedDate && !isToday) {
@@ -1331,7 +1323,7 @@ export default {
         let response = await this.$store.dispatch(ACTION_GET_ABSENSI, payload)
         if (response.status === 200) {
           if (this.GET_ABSENSI?.length > 0) {
-            console.log('mangtabsss')
+            // console.log('mangtabsss')
           }
         }
       } catch (error) {
@@ -1427,7 +1419,7 @@ export default {
         let response = await this.$store.dispatch(ACTION_ADD_OEE, payload)
 
         if (response.status === 201) {
-          console.log('OEE added successfully')
+          // console.log('OEE added successfully')
           this.fetchOEE() // Ambil ulang data OEE setelah berhasil
         }
       } catch (error) {
@@ -1459,14 +1451,16 @@ export default {
         this.selectedMachine = null
         this.selectedTool = null
       })
+      this.machine_id = null
+      this.tool_id = null
       // Tingkatkan resetKey untuk re-render Treeselect
       this.resetKey += 1
-      console.log(
-        'Resetting fields:',
-        this.selectedMachine,
-        this.selectedTool,
-        this.stdCounter,
-      )
+      // console.log(
+      //   'Resetting fields:',
+      //   this.selectedMachine,
+      //   this.selectedTool,
+      //   this.stdCounter,
+      // )
     },
   },
 }
