@@ -15,6 +15,7 @@
     "serve:standalone": "vue-cli-service serve --mode standalone"
   },
   "dependencies": {
+    "@canvasjs/charts": "^3.11.0",
     "@coreui/chartjs": "^3.0.0",
     "@coreui/coreui": "^4.1.0",
     "@coreui/icons": "^2.1.0",

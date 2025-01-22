@@ -163,6 +163,11 @@
       </table>
     </div>
   </div>
+  <Paretografik
+    class="mt-2"
+    :selectedMonth="selectedMonth"
+    :selectedProblem="selectedProblem"
+  />
 </template>
 
 <script>
@@ -181,12 +186,14 @@ import {
 } from '@/store/Tool/LaporanHarian.module'
 import Treeselect from 'vue3-treeselect'
 import 'vue3-treeselect/dist/vue3-treeselect.css'
+import Paretografik from '@/standalone/components/Paretografik.vue'
 
 export default {
   name: 'HistoryProblem',
   components: {
     apexchart: VueApexCharts,
     Treeselect,
+    Paretografik,
   },
   data() {
     return {
@@ -304,7 +311,7 @@ export default {
   },
   methods: {
     async onLineChange() {
-      console.log('kepanggil')
+      // console.log('kepanggil')
 
       try {
         const selectedLine = this.selectedLine.line_id
@@ -347,7 +354,7 @@ export default {
         }
 
         // Log payload to check its contents
-        console.log('Payload before dispatch:', payload)
+        // console.log('Payload before dispatch:', payload)
 
         // Tambahkan kondisi jika selectedProblem adalah 'nextprocess'
         if (this.selectedProblem === 'nextprocess') {
@@ -377,16 +384,13 @@ export default {
           payload.selectedCategory = this.selectedCategory.category_id
         }
         // Log the updated payload after conditions
-        console.log('Updated Payload after conditions:', payload)
+        // console.log('Updated Payload after conditions:', payload)
 
-        let response = await this.$store.dispatch(
-          ACTION_GET_HISTORY_PROBLEM,
-          payload,
-        )
+        await this.$store.dispatch(ACTION_GET_HISTORY_PROBLEM, payload)
 
-        if (response.status === 200 && this.GET_HISTORY_PROBLEM.length > 0) {
-          console.log('GET_HISTORY_PROBLEM', this.GET_HISTORY_PROBLEM)
-        }
+        // if (response.status === 200 && this.GET_HISTORY_PROBLEM.length > 0) {
+        //   console.log('GET_HISTORY_PROBLEM', this.GET_HISTORY_PROBLEM)
+        // }
       } catch (error) {
         console.log('Error in getProblem:', error)
         this.$swal({
@@ -539,7 +543,7 @@ export default {
         const selectedDay = this.chartOptions.xaxis.categories[dataPointIndex]
         this.selectedDay = selectedDay
 
-        console.log('Clicked on Day: ', selectedDay)
+        // console.log('Clicked on Day: ', selectedDay)
 
         if (
           !this.selectedDayProblems.length ||
@@ -562,7 +566,7 @@ export default {
         // Pastikan scroll tabel terjadi setelah perubahan state
         this.$nextTick(() => {
           if (this.isTableVisible && this.$refs.detailTable) {
-            console.log('Scrolling to table')
+            // console.log('Scrolling to table')
             this.$refs.detailTable.scrollIntoView({ behavior: 'smooth' })
           }
         })
@@ -572,7 +576,7 @@ export default {
 
         if (!this.isFirstClick) {
           this.isFirstClick = true
-          console.log('First click triggered')
+          // console.log('First click triggered')
         }
       }
     },
@@ -582,7 +586,7 @@ export default {
       if (this.selectedDayProblems.length > 0 && !this.isInsideChart) {
         const tableContainer = this.$refs.tableContainer
         if (tableContainer && !tableContainer.contains(event.target)) {
-          console.log('Clicked outside. Resetting problems and hiding table.')
+          // console.log('Clicked outside. Resetting problems and hiding table.')
           // Reset data dan sembunyikan tabel
           this.selectedDayProblems = []
           this.isTableVisible = false
