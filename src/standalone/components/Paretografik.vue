@@ -108,6 +108,14 @@ export default {
           align: 'center',
         },
         xaxis: {
+          axisBorder: {
+            show: true,
+            color: '#000',
+          },
+          axisTicks: {
+            show: true,
+            color: '#000',
+          },
           categories: this.GET_PARETO_PROBLEM
             ? this.GET_PARETO_PROBLEM.sort((a, b) => b.jumlah - a.jumlah).map(
                 (item) => item.tool_nm,
@@ -118,6 +126,14 @@ export default {
           },
         },
         yaxis: {
+          axisBorder: {
+            show: true,
+            color: '#000',
+          },
+          axisTicks: {
+            show: true,
+            color: '#000',
+          },
           title: {
             text: 'Jumlah',
           },
