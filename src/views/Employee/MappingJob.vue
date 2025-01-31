@@ -206,7 +206,7 @@ export default {
           top: '45%',
           left: '88%',
           popoverTop: '45%',
-          popoverLeft: '55%',
+          popoverLeft: '53%',
           label: 'DELIVERY & SETTING',
           content: [
             '1. Mengelompokan tool yang akan diregrinding.',
