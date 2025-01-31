@@ -52,6 +52,7 @@
             <option>Team Leader</option>
             <option>Team Member</option>
             <option>Supervisor</option>
+            <option> Staff</option>
             <option>Others</option>
           </select>
           <label for="defaultPos">Pos</label>
@@ -155,6 +156,7 @@
             <option>Team Leader</option>
             <option>Team Member</option>
             <option>Supervisor</option>
+            <option >Staff</option>
             <option>Others</option>
           </select>
           <label for="defaultPos">Pos</label>
