@@ -128,7 +128,7 @@ export default {
           popoverTop: '80%',
           popoverLeft: '68%',
           label: 'Manage Coolant',
-          content: ['1. Supply Coolant to Line Cylinder Head Dan Cam Shaft'],
+          content: ['1. Supply Coolant to Line'],
         },
         {
           key: 'ConsentrasiCheck',
