@@ -335,7 +335,7 @@
                                       'Team Member',
                                       2,
                                       'White',
-                                    )?.nama.split(' ')[1] || ''
+                                    )?.nama.split(' ')[0] || ''
                                   }}
                                 </div>
                               </div>
@@ -366,7 +366,7 @@
                                       'Team Member',
                                       3,
                                       'White',
-                                    )?.nama.split(' ')[1] || ''
+                                    )?.nama.split(' ')[0] || ''
                                   }}
                                 </div>
                               </div>
