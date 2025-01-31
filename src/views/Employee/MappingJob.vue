@@ -369,7 +369,12 @@ export default {
       const currentHour = moment().tz('Asia/Jakarta').hour()
 
       // Tampilkan supervisor hanya antara jam 7 dan 20
-      if (supervisorData && currentHour >= 7 && currentHour < 20) {
+      if (
+        supervisorData &&
+        currentHour >= 7 &&
+        currentHour < 20 &&
+        supervisorData.status === 'Hadir'
+      ) {
         const existingEmployee = this.employees.find(
           (emp) => emp.employee_id === supervisorData.employee_id,
         )

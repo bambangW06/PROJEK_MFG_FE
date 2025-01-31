@@ -1,298 +1,314 @@
 <template>
-  <div class="card">
-    <div class="row align-items-center p-3 border-bottom">
-      <div class="col text-center">
-        <h2 class="font-weight-bold mb-0">
-          Kehadiran:
-          <span
-            :style="{
-              color: parseFloat(percentageHadir) >= 100 ? '#000' : 'red',
-            }"
-          >
-            {{ percentageHadir }}
+  <div class="container-fluid">
+    <div class="card p-2 mb-2">
+      <div class="d-flex justify-content-between align-items-center">
+        <h4 class="text-center m-0">Absensi</h4>
+        <div>
+          <span style="font-size: large; color: #000">
+            <strong>{{ today }}</strong>
           </span>
-        </h2>
-      </div>
-      <div class="col-auto text-end">
-        <span style="font-size: large; color: #000">
-          <strong>{{ today }}</strong>
-        </span>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="container">
-    <div class="row mt-2">
-      <!-- Bagian untuk Shift Red -->
-      <div
-        class="col-md-6"
-        :class="{
-          active: currentShift === 'Red',
-          'red-background': currentShift === 'Red',
-        }"
-      >
-        <h2
-          class="text-center"
-          @click="toggleShift('Red')"
-          style="cursor: pointer; transition: all 0.3s ease-out"
-        >
-          Shift Red
-        </h2>
-        <!-- Loop melalui redShiftEmployees -->
-        <div
-          v-for="(employee, cardIndex) in redShiftEmployees"
-          :key="'red_' + cardIndex"
-        >
-          <!-- Card untuk setiap pegawai di Shift Red -->
-          <div
-            class="card"
-            :class="{
-              'red-border': employee.status !== 'Hadir',
-              'green-border': employee.status === 'Hadir',
-              'not-border': employee.status === '',
-            }"
-          >
-            <div class="row mb-2">
-              <div class="col-auto align-self-center pr-0">
-                <button class="border-round" disabled>
-                  <img class="img-rd" :src="employee.photourl" alt="" />
-                </button>
-              </div>
-              <div class="col">
-                <form>
-                  <div class="row align-items-center">
-                    <label
-                      for="name{{ cardIndex }}"
-                      class="col-auto col-form-label mb-0"
-                      style="width: 85px"
-                      >Nama</label
-                    >
-                    <div class="col pl-0">
-                      <input
-                        type="text"
-                        class="form-control bg"
-                        style="min-width: 100px"
-                        :id="'name' + cardIndex"
-                        v-model="employee.nama"
-                      />
-                    </div>
-                  </div>
-                </form>
-                <form>
-                  <div class="row align-items-center">
-                    <label
-                      for="pos{{ cardIndex }}"
-                      class="col-auto col-form-label mb-0"
-                      style="width: 85px"
-                      >Noreg</label
-                    >
-                    <div class="col pl-0">
-                      <input
-                        type="text"
-                        class="form-control bg"
-                        style="min-width: 100px"
-                        :id="'pos' + cardIndex"
-                        v-model="employee.noreg"
-                      />
-                    </div>
-                  </div>
-                </form>
-                <form>
-                  <div class="row align-items-center">
-                    <label
-                      for="pos{{ cardIndex }}"
-                      class="col-auto col-form-label mb-0"
-                      style="width: 85px"
-                      >Jabatan</label
-                    >
-                    <div class="col pl-0">
-                      <input
-                        type="text"
-                        class="form-control bg"
-                        style="min-width: 100px"
-                        :id="'pos' + cardIndex"
-                        v-model="employee.jabatan"
-                      />
-                    </div>
-                  </div>
-                </form>
-                <div class="row align-items-center">
-                  <label
-                    :for="'status' + cardIndex"
-                    class="col-auto col-form-label mb-0"
-                    style="width: 85px"
-                    >Status</label
-                  >
-                  <div class="col pl-0">
-                    <select
-                      class="form-control bg"
-                      style="min-width: 100px"
-                      :id="'status' + cardIndex"
-                      v-model="employee.status"
-                      @change="updateStatus(0, cardIndex)"
-                      @click="handleSelectClick"
-                    >
-                      <option value="" disabled selected></option>
-                      <option value="Hadir">Hadir</option>
-                      <option value="Cuti">Cuti</option>
-                      <option value="Sakit">Sakit</option>
-                      <option value="Opname">Opname</option>
-                      <option value="Others">Others</option>
-                    </select>
-                  </div>
-                </div>
-                <!--row align-items-center select-->
-              </div>
-              <!--col card-->
-            </div>
-            <!--row card-->
-          </div>
-          <!--card :class-->
-        </div>
-        <!--v-for-->
-      </div>
-      <!--col-md-6-->
+  <div class="container-fluid">
+    <div class="card d-flex justify-content-center align-items-center">
+      <AbsensiSupervisor></AbsensiSupervisor>
+    </div>
 
-      <!-- Bagian untuk Shift White -->
-      <div
-        class="col-md-6"
-        :class="{
-          active: currentShift === 'White',
-          'white-background': currentShift === 'White',
-        }"
-      >
-        <h2
-          class="text-center"
-          @click="toggleShift('White')"
-          style="cursor: pointer; transition: all 0.3s ease-out"
-        >
-          Shift White
-        </h2>
-        <!-- Loop melalui whiteShiftEmployees -->
-        <div
-          v-for="(employee, cardIndex) in whiteShiftEmployees"
-          :key="'white_' + cardIndex"
-        >
-          <!-- Card untuk setiap pegawai di Shift White -->
+    <div class="card">
+      <div class="row align-items-center p-3">
+        <div class="col text-center">
+          <h2 class="font-weight-bold mb-0">
+            Kehadiran Karyawan:
+            <span
+              :style="{
+                color: parseFloat(percentageHadir) >= 100 ? '#000' : 'red',
+              }"
+            >
+              {{ percentageHadir }}
+            </span>
+          </h2>
+        </div>
+      </div>
+
+      <div class="container">
+        <div class="row mt-2">
+          <!-- Bagian untuk Shift Red -->
           <div
-            class="card"
+            class="col-md-6"
             :class="{
-              'red-border': employee.stat !== 'Hadir',
-              'green-border': employee.status === 'Hadir',
-              'not-border': employee.status === '',
+              active: currentShift === 'Red',
+              'red-background': currentShift === 'Red',
             }"
           >
-            <div class="row mb-2">
-              <div class="col-auto align-self-center pr-0">
-                <button class="border-round" disabled>
-                  <img class="img-rd" :src="employee.photourl" alt="" />
-                </button>
-              </div>
-              <div class="col">
-                <form>
-                  <div class="row align-items-center">
-                    <label
-                      for="name{{ cardIndex }}"
-                      class="col-auto col-form-label mb-0"
-                      style="width: 85px"
-                      >Nama</label
-                    >
-                    <div class="col pl-0">
-                      <input
-                        type="text"
-                        class="form-control bg"
-                        style="min-width: 100px"
-                        :id="'name' + cardIndex"
-                        v-model="employee.nama"
-                      />
+            <h2
+              class="text-center"
+              @click="toggleShift('Red')"
+              style="cursor: pointer; transition: all 0.3s ease-out"
+            >
+              Shift Red
+            </h2>
+            <!-- Loop melalui redShiftEmployees -->
+            <div
+              v-for="(employee, cardIndex) in redShiftEmployees"
+              :key="'red_' + cardIndex"
+            >
+              <!-- Card untuk setiap pegawai di Shift Red -->
+              <div
+                class="card"
+                :class="{
+                  'red-border': employee.status !== 'Hadir',
+                  'green-border': employee.status === 'Hadir',
+                  'not-border': employee.status === '',
+                }"
+              >
+                <div class="row mb-2">
+                  <div class="col-auto align-self-center pr-0">
+                    <button class="border-round" disabled>
+                      <img class="img-rd" :src="employee.photourl" alt="" />
+                    </button>
+                  </div>
+                  <div class="col">
+                    <form>
+                      <div class="row align-items-center">
+                        <label
+                          for="name{{ cardIndex }}"
+                          class="col-auto col-form-label mb-0"
+                          style="width: 85px"
+                          >Nama</label
+                        >
+                        <div class="col pl-0">
+                          <input
+                            type="text"
+                            class="form-control bg"
+                            style="min-width: 100px"
+                            :id="'name' + cardIndex"
+                            v-model="employee.nama"
+                          />
+                        </div>
+                      </div>
+                    </form>
+                    <form>
+                      <div class="row align-items-center">
+                        <label
+                          for="pos{{ cardIndex }}"
+                          class="col-auto col-form-label mb-0"
+                          style="width: 85px"
+                          >Noreg</label
+                        >
+                        <div class="col pl-0">
+                          <input
+                            type="text"
+                            class="form-control bg"
+                            style="min-width: 100px"
+                            :id="'pos' + cardIndex"
+                            v-model="employee.noreg"
+                          />
+                        </div>
+                      </div>
+                    </form>
+                    <form>
+                      <div class="row align-items-center">
+                        <label
+                          for="pos{{ cardIndex }}"
+                          class="col-auto col-form-label mb-0"
+                          style="width: 85px"
+                          >Jabatan</label
+                        >
+                        <div class="col pl-0">
+                          <input
+                            type="text"
+                            class="form-control bg"
+                            style="min-width: 100px"
+                            :id="'pos' + cardIndex"
+                            v-model="employee.jabatan"
+                          />
+                        </div>
+                      </div>
+                    </form>
+                    <div class="row align-items-center">
+                      <label
+                        :for="'status' + cardIndex"
+                        class="col-auto col-form-label mb-0"
+                        style="width: 85px"
+                        >Status</label
+                      >
+                      <div class="col pl-0">
+                        <select
+                          class="form-control bg"
+                          style="min-width: 100px"
+                          :id="'status' + cardIndex"
+                          v-model="employee.status"
+                          @change="updateStatus(0, cardIndex)"
+                          @click="handleSelectClick"
+                        >
+                          <option value="" disabled selected></option>
+                          <option value="Hadir">Hadir</option>
+                          <option value="Cuti">Cuti</option>
+                          <option value="Sakit">Sakit</option>
+                          <option value="Opname">Opname</option>
+                          <option value="Others">Others</option>
+                        </select>
+                      </div>
                     </div>
+                    <!--row align-items-center select-->
                   </div>
-                </form>
-                <form>
-                  <div class="row align-items-center">
-                    <label
-                      for="pos{{ cardIndex }}"
-                      class="col-auto col-form-label mb-0"
-                      style="width: 85px"
-                      >Noreg</label
-                    >
-                    <div class="col pl-0">
-                      <input
-                        type="text"
-                        class="form-control bg"
-                        style="min-width: 100px"
-                        :id="'pos' + cardIndex"
-                        v-model="employee.noreg"
-                      />
-                    </div>
-                  </div>
-                </form>
-                <form>
-                  <div class="row align-items-center">
-                    <label
-                      for="pos{{ cardIndex }}"
-                      class="col-auto col-form-label mb-0"
-                      style="width: 85px"
-                      >Jabatan</label
-                    >
-                    <div class="col pl-0">
-                      <input
-                        type="text"
-                        class="form-control bg"
-                        style="min-width: 100px"
-                        :id="'pos' + cardIndex"
-                        v-model="employee.jabatan"
-                      />
-                    </div>
-                  </div>
-                </form>
-                <div class="row align-items-center">
-                  <label
-                    :for="'status' + cardIndex"
-                    class="col-auto col-form-label mb-0"
-                    style="width: 85px"
-                    >Status</label
-                  >
-                  <div class="col pl-0">
-                    <select
-                      class="form-control bg"
-                      style="min-width: 100px"
-                      :id="'status' + cardIndex"
-                      v-model="employee.status"
-                      @change="updateStatus(1, cardIndex)"
-                      @click="handleSelectClick"
-                    >
-                      <!---->
-                      <option value="" disabled selected></option>
-                      <option value="Hadir">Hadir</option>
-                      <option value="Cuti">Cuti</option>
-                      <option value="Sakit">Sakit</option>
-                      <option value="Opname">Opname</option>
-                      <option value="Others">Others</option>
-                    </select>
-                  </div>
+                  <!--col card-->
                 </div>
-                <!--row align-items-center select-->
+                <!--row card-->
               </div>
-              <!--col card-->
+              <!--card :class-->
             </div>
-            <!--row card-->
+            <!--v-for-->
           </div>
-          <!--card :class-->
+          <!--col-md-6-->
+
+          <!-- Bagian untuk Shift White -->
+          <div
+            class="col-md-6"
+            :class="{
+              active: currentShift === 'White',
+              'white-background': currentShift === 'White',
+            }"
+          >
+            <h2
+              class="text-center"
+              @click="toggleShift('White')"
+              style="cursor: pointer; transition: all 0.3s ease-out"
+            >
+              Shift White
+            </h2>
+            <!-- Loop melalui whiteShiftEmployees -->
+            <div
+              v-for="(employee, cardIndex) in whiteShiftEmployees"
+              :key="'white_' + cardIndex"
+            >
+              <!-- Card untuk setiap pegawai di Shift White -->
+              <div
+                class="card"
+                :class="{
+                  'red-border': employee.stat !== 'Hadir',
+                  'green-border': employee.status === 'Hadir',
+                  'not-border': employee.status === '',
+                }"
+              >
+                <div class="row mb-2">
+                  <div class="col-auto align-self-center pr-0">
+                    <button class="border-round" disabled>
+                      <img class="img-rd" :src="employee.photourl" alt="" />
+                    </button>
+                  </div>
+                  <div class="col">
+                    <form>
+                      <div class="row align-items-center">
+                        <label
+                          for="name{{ cardIndex }}"
+                          class="col-auto col-form-label mb-0"
+                          style="width: 85px"
+                          >Nama</label
+                        >
+                        <div class="col pl-0">
+                          <input
+                            type="text"
+                            class="form-control bg"
+                            style="min-width: 100px"
+                            :id="'name' + cardIndex"
+                            v-model="employee.nama"
+                          />
+                        </div>
+                      </div>
+                    </form>
+                    <form>
+                      <div class="row align-items-center">
+                        <label
+                          for="pos{{ cardIndex }}"
+                          class="col-auto col-form-label mb-0"
+                          style="width: 85px"
+                          >Noreg</label
+                        >
+                        <div class="col pl-0">
+                          <input
+                            type="text"
+                            class="form-control bg"
+                            style="min-width: 100px"
+                            :id="'pos' + cardIndex"
+                            v-model="employee.noreg"
+                          />
+                        </div>
+                      </div>
+                    </form>
+                    <form>
+                      <div class="row align-items-center">
+                        <label
+                          for="pos{{ cardIndex }}"
+                          class="col-auto col-form-label mb-0"
+                          style="width: 85px"
+                          >Jabatan</label
+                        >
+                        <div class="col pl-0">
+                          <input
+                            type="text"
+                            class="form-control bg"
+                            style="min-width: 100px"
+                            :id="'pos' + cardIndex"
+                            v-model="employee.jabatan"
+                          />
+                        </div>
+                      </div>
+                    </form>
+                    <div class="row align-items-center">
+                      <label
+                        :for="'status' + cardIndex"
+                        class="col-auto col-form-label mb-0"
+                        style="width: 85px"
+                        >Status</label
+                      >
+                      <div class="col pl-0">
+                        <select
+                          class="form-control bg"
+                          style="min-width: 100px"
+                          :id="'status' + cardIndex"
+                          v-model="employee.status"
+                          @change="updateStatus(1, cardIndex)"
+                          @click="handleSelectClick"
+                        >
+                          <!---->
+                          <option value="" disabled selected></option>
+                          <option value="Hadir">Hadir</option>
+                          <option value="Cuti">Cuti</option>
+                          <option value="Sakit">Sakit</option>
+                          <option value="Opname">Opname</option>
+                          <option value="Others">Others</option>
+                        </select>
+                      </div>
+                    </div>
+                    <!--row align-items-center select-->
+                  </div>
+                  <!--col card-->
+                </div>
+                <!--row card-->
+              </div>
+              <!--card :class-->
+            </div>
+            <!--v-for-->
+          </div>
+          <!--col-md-6 :class-->
         </div>
-        <!--v-for-->
       </div>
-      <!--col-md-6 :class-->
     </div>
   </div>
 </template>
 
 <script>
+import AbsensiSupervisor from '@/standalone/components/AbsensiSupervisor.vue'
 import moment from 'moment'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'EAssignment',
+  components: { AbsensiSupervisor },
 
   computed: {
     ...mapGetters(['getPercentageHadir', 'getCurrentShift']),

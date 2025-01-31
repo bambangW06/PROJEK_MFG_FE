@@ -2,7 +2,7 @@ import axios from 'axios'
 import moment from 'moment-timezone'
 // Impor variabel lingkungan
 const API_URL = process.env.VUE_APP_API_URL
-
+export const ACTION_UPDATE_STATUS_SPV = 'ACTION_UPDATE_STATUS_SPV'
 const state = {
   redShiftEmployees: [],
   whiteShiftEmployees: [],
@@ -197,7 +197,24 @@ const actions = {
       console.error('Error sending data to backend:', error)
     }
   },
-
+  async ACTION_UPDATE_STATUS_SPV({ state }, payload) {
+    try {
+      const localTime = moment()
+        .tz('Asia/Jakarta')
+        .format('YYYY-MM-DD HH:mm:ss')
+      const response = await axios.post(API_URL + '/presence/add', {
+        employee_id: payload.employee_id,
+        nama: payload.nama,
+        noreg: payload.noreg,
+        status: payload.status,
+        dateAbsence: localTime,
+        currentShift: state.currentShift,
+      })
+      return response
+    } catch (error) {
+      console.error('Error sending data to backend:', error)
+    }
+  },
   async fetchHistoryAbsence({ commit, dispatch }) {
     try {
       const response = await axios.get(`${API_URL}/presence/get?`)

@@ -95,7 +95,7 @@ export default {
 <style scoped>
 .img-pfl {
   width: 100%;
-  height: 100%;
+  height: 50px;
   border: none;
   object-fit: cover;
 }
