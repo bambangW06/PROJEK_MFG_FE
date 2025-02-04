@@ -167,7 +167,7 @@ const actions = {
       console.log('eror bro :', error)
     }
   },
-  async updateEmployeeStatus({ state }, payload) {
+  async updateEmployeeStatus({ state, getters }, payload) {
     // console.log('kepanggil gag.....');
     try {
       const { shiftIndex, cardIndex, status } = payload
@@ -178,8 +178,8 @@ const actions = {
         .format('YYYY-MM-DD HH:mm:ss')
       const employee =
         shiftIndex === 0
-          ? state.redShiftEmployees[cardIndex]
-          : state.whiteShiftEmployees[cardIndex]
+          ? getters.getRedShiftEmployees[cardIndex]
+          : getters.getWhiteShiftEmployees[cardIndex]
       if (employee && status) {
         const response = await axios.post(API_URL + '/presence/add', {
           employee_id: employee.employee_id,
