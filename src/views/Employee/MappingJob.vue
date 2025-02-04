@@ -71,9 +71,8 @@ import { mapGetters } from 'vuex'
 import moment from 'moment-timezone'
 import { reactive, toRefs } from 'vue'
 import {
-  ACTION_GET_OTHERS,
-  ACTION_GET_SUPERVISOR,
-  GET_SUPERVISOR,
+  ACTION_GET_HISTORY_ABSEN_SPV,
+  GET_HISTORY_ABSEN_SPV,
 } from '@/store/Employee/EmployeeModule'
 
 export default {
@@ -237,12 +236,13 @@ export default {
       'getPositionWhiteShift',
       'getSelectedEmployees',
       'getActualPosition',
-      GET_SUPERVISOR,
+      GET_HISTORY_ABSEN_SPV,
     ]),
   },
   async mounted() {
     await this.displayTodayDate()
     await this.$store.dispatch('ambilShift')
+    await this.$store.dispatch(ACTION_GET_HISTORY_ABSEN_SPV)
     await this.$store.dispatch('fetchEmployeeForSelect')
     await this.$store.dispatch('fetchActualPosition')
     this.selectEmployeesByShift()
@@ -365,7 +365,9 @@ export default {
       }
 
       // Ambil data supervisor dari store
-      const supervisorData = this.GET_SUPERVISOR[0]
+      const supervisorData = this.GET_HISTORY_ABSEN_SPV[0]
+      console.log('supervisorData', supervisorData)
+
       const currentHour = moment().tz('Asia/Jakarta').hour()
 
       // Tampilkan supervisor hanya antara jam 7 dan 20

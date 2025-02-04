@@ -5,10 +5,15 @@ export const GET_SUPERVISOR = 'GET_SUPERVISOR'
 export const ACTION_GET_KARYAWAN = 'ACTION_GET_KARYAWAN'
 export const SET_SUPERVISOR = 'SET_SUPERVISOR'
 
+export const ACTION_GET_HISTORY_ABSEN_SPV = 'ACTION_GET_HISTORY_ABSEN_SPV'
+export const GET_HISTORY_ABSEN_SPV = 'GET_HISTORY_ABSEN_SPV'
+export const SET_HISTORY_ABSEN_SPV = 'SET_HISTORY_ABSEN_SPV'
+
 const state = {
   response: null,
   karyawan: [],
   SUPERVISOR: [],
+  HISTORY_ABSEN_SPV: [],
 
   // token: null,
   // fullname: null,
@@ -23,6 +28,9 @@ const getters = {
   },
   GET_SUPERVISOR(state) {
     return state.SUPERVISOR
+  },
+  GET_HISTORY_ABSEN_SPV(state) {
+    return state.HISTORY_ABSEN_SPV
   },
 }
 
@@ -48,7 +56,13 @@ const mutations = {
   SET_SUPERVISOR(state, payload) {
     state.SUPERVISOR = payload.map((supervisor) => {
       supervisor.photourl = API_URL + supervisor.photourl
-      console.log('supervisor', supervisor.photourl)
+
+      return supervisor
+    })
+  },
+  SET_HISTORY_ABSEN_SPV(state, payload) {
+    state.HISTORY_ABSEN_SPV = payload.map((supervisor) => {
+      supervisor.photourl = API_URL + supervisor.profile
 
       return supervisor
     })
@@ -97,6 +111,17 @@ const actions = {
     } catch (error) {
       console.error('Error fetching employee list:', error)
       throw error
+    }
+  },
+  async ACTION_GET_HISTORY_ABSEN_SPV({ commit }, payload) {
+    try {
+      const response = await axios.get(API_URL + '/historySPV/get')
+      commit(SET_HISTORY_ABSEN_SPV, response.data.data)
+      console.log('response', response.data.data)
+
+      return response
+    } catch (error) {
+      console.log(error)
     }
   },
   async ActionEditKaryawan({ commit, dispatch }, payload) {
