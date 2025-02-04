@@ -20,6 +20,9 @@
         </div>
       </div>
     </div>
+    <!-- <div class="card p-2">
+      <HistorySPVGraph :selectedMonth="selectedMonth"></HistorySPVGraph>
+    </div> -->
 
     <div class="card mt-2">
       <h3 class="text-center m-0">{{ currentMonth }}</h3>
@@ -113,11 +116,17 @@
 import { mapGetters } from 'vuex'
 import ApexChart from 'vue3-apexcharts'
 import moment from 'moment-timezone'
+import {
+  ACTION_GET_HISTORY_ABSEN_SPV_FOR_GRAPH,
+  GET_ABSENSI_SPV_FOR_GRAPH,
+} from '@/store/Employee/AbsensiModule'
+import HistorySPVGraph from '@/standalone/components/HistorySPVGraph.vue'
 
 export default {
   name: 'EAbsensi',
   components: {
     ApexChart,
+    HistorySPVGraph,
   },
   data() {
     return {

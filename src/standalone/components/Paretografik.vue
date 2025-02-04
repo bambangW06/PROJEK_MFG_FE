@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid" ref="container">
     <div class="card p-2">
-      <h4>Pareto Problem Bulan {{ formattedMonth }}</h4>
+      <h4>Pareto Tool Problem Bulan {{ formattedMonth }}</h4>
       <div>
         <apexchart
           type="bar"

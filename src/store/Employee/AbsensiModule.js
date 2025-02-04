@@ -3,6 +3,12 @@ import moment from 'moment-timezone'
 // Impor variabel lingkungan
 const API_URL = process.env.VUE_APP_API_URL
 export const ACTION_UPDATE_STATUS_SPV = 'ACTION_UPDATE_STATUS_SPV'
+
+export const ACTION_GET_HISTORY_ABSEN_SPV_FOR_GRAPH =
+  'ACTION_GET_HISTORY_ABSEN_SPV_FOR_GRAPH'
+export const GET_ABSENSI_SPV_FOR_GRAPH = 'GET_ABSENSI_SPV_FOR_GRAPH'
+export const SET_HISTORY_ABSEN_SPV_FOR_GRAPH = 'SET_HISTORY_ABSEN_SPV_FOR_GRAPH'
+
 const state = {
   redShiftEmployees: [],
   whiteShiftEmployees: [],
@@ -18,6 +24,7 @@ const state = {
     SnO: null,
   },
   History_Absence: [],
+  ABSENSI_SPV_FOR_GRAPH: [],
 }
 
 const getters = {
@@ -49,6 +56,9 @@ const getters = {
   },
   Get_History_Absence(state) {
     return state.History_Absence
+  },
+  GET_ABSENSI_SPV_FOR_GRAPH(state) {
+    return state.ABSENSI_SPV_FOR_GRAPH
   },
 }
 
@@ -90,6 +100,9 @@ const mutations = {
   },
   Set_History_Absence(state, payload) {
     state.History_Absence = payload
+  },
+  SET_HISTORY_ABSEN_SPV_FOR_GRAPH(state, payload) {
+    state.ABSENSI_SPV_FOR_GRAPH = payload
   },
 }
 
@@ -308,6 +321,19 @@ const actions = {
       })
       commit('Set_History_Absence', response.data.data)
       // console.log('response', response.data.data)
+    } catch (error) {
+      console.log(error)
+    }
+  },
+  async ACTION_GET_HISTORY_ABSEN_SPV_FOR_GRAPH({ commit }, payload) {
+    try {
+      const response = await axios.get(`${API_URL}/historySPV/history `, {
+        params: {
+          selectedMonth: payload,
+        },
+      })
+      commit(SET_HISTORY_ABSEN_SPV_FOR_GRAPH, response.data.data)
+      return response
     } catch (error) {
       console.log(error)
     }
