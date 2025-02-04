@@ -114,7 +114,7 @@ const actions = {
       const response = await axios.get(
         `${API_URL}/laporan/timeranges/${payload}`,
       )
-      console.log(response.data.data)
+      // console.log(response.data.data)
       commit(SET_TIME_RANGES, response.data.data)
       return response
     } catch (error) {
@@ -129,8 +129,12 @@ const actions = {
           shift: payload.shift,
         },
       })
-      commit(SET_ABSENSI, response.data.data)
-      // console.log(response.data.data)
+      // Filter data, ambil semua yang bukan "Supervisor"
+      const filteredData = response.data.data.filter(
+        (item) => item.jabatan !== 'Supervisor',
+      )
+      commit(SET_ABSENSI, filteredData)
+
       return response
     } catch (error) {
       console.error('Error fetching tools:', error)
