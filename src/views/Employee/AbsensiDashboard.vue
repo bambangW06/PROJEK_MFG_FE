@@ -311,12 +311,21 @@ export default {
   components: { AbsensiSupervisor },
 
   computed: {
-    ...mapGetters(['getPercentageHadir', 'getCurrentShift']),
+    ...mapGetters([
+      'getPercentageHadir',
+      'getCurrentShift',
+      'getRedShiftEmployees',
+      'getWhiteShiftEmployees',
+    ]),
     redShiftEmployees() {
-      return this.$store.getters.getRedShiftEmployees
+      console.log(' redShiftEmployees', this.getRedShiftEmployees)
+
+      return this.getRedShiftEmployees
     },
     whiteShiftEmployees() {
-      return this.$store.getters.getWhiteShiftEmployees
+      console.log('whiteShiftEmployees', this.getWhiteShiftEmployees)
+
+      return this.getWhiteShiftEmployees
     },
     selectedStatus() {
       return this.$store.getters.getSelectedStatus
