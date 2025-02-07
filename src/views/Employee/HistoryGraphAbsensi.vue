@@ -20,9 +20,9 @@
         </div>
       </div>
     </div>
-    <!-- <div class="card p-2">
+    <div class="card">
       <HistorySPVGraph :selectedMonth="selectedMonth"></HistorySPVGraph>
-    </div> -->
+    </div>
 
     <div class="card mt-2">
       <h3 class="text-center m-0">{{ currentMonth }}</h3>
@@ -386,6 +386,9 @@ export default {
 }
 .table-bordered th {
   background-color: rgb(198, 240, 240);
+  border: 1px solid black;
+}
+.table-bordered td {
   border: 1px solid black;
 }
 </style>

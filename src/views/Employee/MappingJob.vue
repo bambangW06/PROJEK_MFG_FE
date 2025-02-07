@@ -147,7 +147,7 @@ export default {
           left: '15%',
           popoverTop: '5%',
           popoverLeft: '22%',
-          label: 'SPV',
+          label: 'SH',
         },
         {
           key: 'GL',

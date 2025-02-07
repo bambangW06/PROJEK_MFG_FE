@@ -1,7 +1,7 @@
 <template>
   <div class="row align-items-center p-3">
     <div class="col text-center">
-      <h2 class="font-weight-bold mb-0">Supervisor</h2>
+      <h2 class="font-weight-bold mb-0">Section Head</h2>
     </div>
   </div>
   <div class="card card-spv" :class="statusClass">
@@ -111,6 +111,8 @@ export default {
   computed: {
     ...mapGetters([GET_SUPERVISOR, 'getHistoryAbsence']),
     supervisor() {
+      console.log('GET_SUPERVISOR', this.GET_SUPERVISOR)
+
       return Array.isArray(this.GET_SUPERVISOR) &&
         this.GET_SUPERVISOR.length > 0
         ? this.GET_SUPERVISOR[0]
