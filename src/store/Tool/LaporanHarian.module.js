@@ -131,7 +131,7 @@ const actions = {
       })
       // Filter data, ambil semua yang bukan "Supervisor"
       const filteredData = response.data.data.filter(
-        (item) => item.jabatan !== 'Supervisor',
+        (item) => item.jabatan !== 'Section Head',
       )
       commit(SET_ABSENSI, filteredData)
 
