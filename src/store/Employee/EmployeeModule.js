@@ -9,11 +9,16 @@ export const ACTION_GET_HISTORY_ABSEN_SPV = 'ACTION_GET_HISTORY_ABSEN_SPV'
 export const GET_HISTORY_ABSEN_SPV = 'GET_HISTORY_ABSEN_SPV'
 export const SET_HISTORY_ABSEN_SPV = 'SET_HISTORY_ABSEN_SPV'
 
+export const ACTION_GET_NONSHIFT = 'ACTION_GET_NONSHIFT'
+export const GET_NONSHIFT = 'GET_NONSHIFT'
+export const SET_NONSHIFT = 'SET_NONSHIFT'
+
 const state = {
   response: null,
   karyawan: [],
   SUPERVISOR: [],
   HISTORY_ABSEN_SPV: [],
+  NONSHIFT_DATA: [],
 
   // token: null,
   // fullname: null,
@@ -31,6 +36,9 @@ const getters = {
   },
   GET_HISTORY_ABSEN_SPV(state) {
     return state.HISTORY_ABSEN_SPV
+  },
+  GET_NONSHIFT(state) {
+    return state.NONSHIFT_DATA
   },
 }
 
@@ -67,9 +75,25 @@ const mutations = {
       return supervisor
     })
   },
+  SET_NONSHIFT(state, payload) {
+    state.NONSHIFT_DATA = payload.map((nonShift) => {
+      nonShift.photourl = API_URL + nonShift.profile
+
+      return nonShift
+    })
+  },
 }
 
 const actions = {
+  async ACTION_GET_NONSHIFT({ commit }) {
+    try {
+      const response = await axios.get(`${API_URL}/nonshift/get`)
+      commit(SET_NONSHIFT, response.data.data)
+      return response
+    } catch (error) {
+      console.log(error)
+    }
+  },
   async ACTION_GET_SUPERVISOR({ commit }) {
     try {
       const response = await axios.get(API_URL + '/select/supervisor')

@@ -1,5 +1,6 @@
 import axios from 'axios'
 const API_URL = process.env.VUE_APP_API_URL
+import moment from 'moment-timezone'
 
 const state = {
   posisi: {},
@@ -79,30 +80,48 @@ const actions = {
       // Tambahkan logika lain untuk menangani kesalahan jika diperlukan
     }
   },
+
   async fetchEmployeeForSelect({ commit }) {
     try {
       const response = await axios.get(`${API_URL}/position/get`)
       const data = response.data
-      // console.log('data', data)
-      if (data.message === 'Success to Get Data') {
-        const employees = data.data
-        const employeesWithPhotoUrl = employees.map((employee) => {
-          return {
-            ...employee,
-            photourl: `${API_URL}${employee.profile}`,
-          }
-        })
 
-        const redShiftEmployees = employeesWithPhotoUrl.filter(
+      if (data.message === 'Success to Get Data') {
+        const employees = data.data.map((employee) => ({
+          ...employee,
+          photourl: `${API_URL}${employee.profile}`,
+        }))
+
+        // 🔹 Ambil jam saat ini (WIB)
+        const currentHour = moment().tz('Asia/Jakarta').hour() // hanya ambil jam (0-23)
+
+        // 🔹 Filter karyawan berdasarkan shift
+        let redShiftEmployees = employees.filter(
           (employee) => employee.shift === 'Red',
         )
-        const whiteShiftEmployees = employeesWithPhotoUrl.filter(
+
+        let whiteShiftEmployees = employees.filter(
           (employee) => employee.shift === 'White',
         )
+
+        // 🔹 Masukkan karyawan Non Shift ke kedua shift jika jamnya antara 07:00 - 20:00
+        if (currentHour >= 7 && currentHour < 20) {
+          const nonShiftEmployees = employees.filter(
+            (employee) =>
+              employee.shift === 'Non Shift' &&
+              employee.jabatan === 'Team Member',
+          )
+
+          // Tambahkan ke kedua shift
+          redShiftEmployees = [...redShiftEmployees, ...nonShiftEmployees]
+          whiteShiftEmployees = [...whiteShiftEmployees, ...nonShiftEmployees]
+        }
+        console.log('redShiftEmployees', redShiftEmployees)
+        console.log('whiteShiftEmployees', whiteShiftEmployees)
+
+        // 🔹 Commit hasilnya ke Vuex
         commit('setPositionRedShift', redShiftEmployees)
-        // console.log('redShiftEmployees', redShiftEmployees)
         commit('setPositionWhiteShift', whiteShiftEmployees)
-        // console.log('whiteShiftEmployees', whiteShiftEmployees)
       } else {
         commit('setPositionRedShift', [])
         commit('setPositionWhiteShift', [])
@@ -113,6 +132,7 @@ const actions = {
       commit('setPositionWhiteShift', [])
     }
   },
+
   async fetchActualPosition({ commit }) {
     try {
       const response = await axios.get(`${API_URL}/position/position`)

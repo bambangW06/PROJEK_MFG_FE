@@ -298,17 +298,22 @@
         </div>
       </div>
     </div>
+
+    <!-- <div class="card d-flex justify-content-center align-items-center">
+      <AbsensiNonShift></AbsensiNonShift>
+    </div> -->
   </div>
 </template>
 
 <script>
+import AbsensiNonShift from '@/standalone/components/AbsensiNonShift.vue'
 import AbsensiSupervisor from '@/standalone/components/AbsensiSupervisor.vue'
 import moment from 'moment'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'EAssignment',
-  components: { AbsensiSupervisor },
+  components: { AbsensiSupervisor, AbsensiNonShift },
 
   computed: {
     ...mapGetters([

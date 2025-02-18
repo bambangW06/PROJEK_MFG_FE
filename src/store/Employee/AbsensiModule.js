@@ -9,6 +9,8 @@ export const ACTION_GET_HISTORY_ABSEN_SPV_FOR_GRAPH =
 export const GET_ABSENSI_SPV_FOR_GRAPH = 'GET_ABSENSI_SPV_FOR_GRAPH'
 export const SET_HISTORY_ABSEN_SPV_FOR_GRAPH = 'SET_HISTORY_ABSEN_SPV_FOR_GRAPH'
 
+export const ACTION_POST_ABSEN_NONSHIFT = 'ACTION_POST_ABSEN_NONSHIFT'
+
 const state = {
   redShiftEmployees: [],
   whiteShiftEmployees: [],
@@ -107,12 +109,30 @@ const mutations = {
 }
 
 const actions = {
-  async fetchEmployeeData({ commit }) {
+  async ambilShift({ commit }) {
+    try {
+      const response = await axios.get(API_URL + '/shift/get')
+      const data = response.data
+
+      const currentShift = data.data[0].current_shift
+      // console.log('currentShift', currentShift)
+
+      commit('setCurrentShift', currentShift)
+    } catch (error) {
+      console.log('eror bro :', error)
+    }
+  },
+
+  async fetchEmployeeData({ commit, state, dispatch }) {
+    await dispatch('ambilShift') // Ambil shift sebelum proses
     try {
       const response = await axios.get(`${API_URL}/select/get`)
       const data = response.data
+
       if (data.message === 'Success to Get Data') {
         const employees = data.data
+
+        // 🔹 Urutkan berdasarkan jabatan
         employees.sort((a, b) => {
           const jabatanOrder = {
             'Group Leader': 1,
@@ -121,32 +141,67 @@ const actions = {
           }
           return jabatanOrder[a.jabatan] - jabatanOrder[b.jabatan]
         })
-        const employeesWithPhotoUrl = employees.map((employee) => {
-          return {
-            ...employee,
-            photourl: `${API_URL}${employee.profile}`,
-          }
-        })
 
-        const redShiftEmployees = employeesWithPhotoUrl.filter(
+        // 🔹 Tambahkan URL foto
+        const employeesWithPhotoUrl = employees.map((employee) => ({
+          ...employee,
+          photourl: `${API_URL}${employee.profile}`,
+        }))
+
+        // 🔹 Ambil shift saat ini
+        const currentShift = state.currentShift // "Red" atau "White"
+        console.log('✅ Current Shift:', currentShift)
+
+        // 🔹 Cek waktu sekarang (WIB)
+        const currentHour = moment().tz('Asia/Jakarta').hour()
+        console.log('🕒 Current Hour:', currentHour)
+
+        // 🔹 Filter karyawan sesuai shift
+        let redShiftEmployees = employeesWithPhotoUrl.filter(
           (employee) => employee.shift === 'Red',
         )
-        const whiteShiftEmployees = employeesWithPhotoUrl.filter(
+        let whiteShiftEmployees = employeesWithPhotoUrl.filter(
           (employee) => employee.shift === 'White',
         )
+
+        // 🔹 Karyawan Non Shift + Team Member ikut ke shift saat ini
+        const nonShiftTeamMembers = employeesWithPhotoUrl.filter(
+          (employee) =>
+            employee.shift === 'Non Shift' &&
+            employee.jabatan === 'Team Member',
+        )
+
+        // 🔹 Masukkan ke shift jika jam antara 07:00 - 20:00
+        if (currentHour >= 7 && currentHour <= 20) {
+          console.log('✅ Non Shift Team Members masuk shift saat ini!')
+          if (currentShift === 'Red') {
+            redShiftEmployees = [...redShiftEmployees, ...nonShiftTeamMembers]
+          } else if (currentShift === 'White') {
+            whiteShiftEmployees = [
+              ...whiteShiftEmployees,
+              ...nonShiftTeamMembers,
+            ]
+          }
+        } else {
+          console.log(
+            '⛔ Di luar jam kerja, Non Shift Team Members tidak masuk shift.',
+          )
+        }
+
+        // 🔹 Simpan ke state
         commit('setRedShiftEmployees', redShiftEmployees)
         commit('setWhiteShiftEmployees', whiteShiftEmployees)
-        // console.log('iki lho', redShiftEmployees, whiteShiftEmployees);
       } else {
         commit('setRedShiftEmployees', [])
         commit('setWhiteShiftEmployees', [])
       }
     } catch (error) {
-      console.error('Error fetching employee data:', error)
+      console.error('❌ Error fetching employee data:', error)
       commit('setRedShiftEmployees', [])
       commit('setWhiteShiftEmployees', [])
     }
   },
+
   async addCurrentShift({ commit }, payload) {
     try {
       const shift = payload
@@ -167,19 +222,7 @@ const actions = {
       console.log('eror bro :', error)
     }
   },
-  async ambilShift({ commit }) {
-    try {
-      const response = await axios.get(API_URL + '/shift/get')
-      const data = response.data
 
-      const currentShift = data.data[0].current_shift
-      console.log('currentShift', currentShift)
-
-      commit('setCurrentShift', currentShift)
-    } catch (error) {
-      console.log('eror bro :', error)
-    }
-  },
   async updateEmployeeStatus({ state, getters }, payload) {
     // console.log('kepanggil gag.....');
     try {
@@ -333,6 +376,24 @@ const actions = {
         },
       })
       commit(SET_HISTORY_ABSEN_SPV_FOR_GRAPH, response.data.data)
+      return response
+    } catch (error) {
+      console.log(error)
+    }
+  },
+  async ACTION_POST_ABSEN_NONSHIFT({ commit, state }, payload) {
+    try {
+      const localTime = moment()
+        .tz('Asia/Jakarta')
+        .format('YYYY-MM-DD HH:mm:ss')
+      const response = await axios.post(API_URL + '/presence/add', {
+        employee_id: payload.employee_id,
+        nama: payload.nama,
+        noreg: payload.noreg,
+        status: payload.status,
+        dateAbsence: localTime,
+        currentShift: state.currentShift,
+      })
       return response
     } catch (error) {
       console.log(error)
