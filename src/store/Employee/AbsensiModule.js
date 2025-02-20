@@ -109,7 +109,7 @@ const mutations = {
 }
 
 const actions = {
-  async ambilShift({ commit }) {
+  async ambilShift({ commit, dispatch }) {
     try {
       const response = await axios.get(API_URL + '/shift/get')
       const data = response.data
@@ -118,13 +118,14 @@ const actions = {
       // console.log('currentShift', currentShift)
 
       commit('setCurrentShift', currentShift)
+
+      dispatch('fetchEmployeeData')
     } catch (error) {
       console.log('eror bro :', error)
     }
   },
 
-  async fetchEmployeeData({ commit, state, dispatch }) {
-    await dispatch('ambilShift') // Ambil shift sebelum proses
+  async fetchEmployeeData({ commit, state }) {
     try {
       const response = await axios.get(`${API_URL}/select/get`)
       const data = response.data
