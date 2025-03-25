@@ -266,6 +266,32 @@ export default {
             },
           ],
         },
+        {
+          component: 'CNavGroup',
+          name: 'Oli Management', // Nama menu untuk EAssesment
+          icon: 'cilDrop', // Ikonya bisa disesuaikan
+          items: [
+            {
+              component: 'cNavItem',
+              name: 'Pemakaian Chemical',
+              to: '/chemical/pemakaian',
+              icon: 'cilBeaker',
+            },
+            {
+              component: 'CNavGroup',
+              name: 'Master Data ', // Nama menu untuk EAssesment
+              icon: 'cilLibraryAdd', // Ikonya bisa disesuaikan
+              items: [
+                {
+                  component: 'CNavItem',
+                  name: 'Master Chemicals',
+                  to: '/master/chemicals',
+                  icon: 'cilDrop',
+                },
+              ],
+            },
+          ],
+        },
         // {
         //   component: 'CNavGroup',
         //   name: 'Delivery Management', // Nama menu untuk EAssesment

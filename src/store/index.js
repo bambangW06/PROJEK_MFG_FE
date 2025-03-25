@@ -19,6 +19,8 @@ import MasterLines from './Tool/MasterLines.module'
 import MasterMachines from './Tool/MasterMachines.module'
 import HistoryKurasModule from './Coolant/HistoryKuras.module'
 import MasterProblemsModule from './Tool/MasterProblems.module'
+import MasterOliModule from './Oli/MasterOli.module'
+import pemakaianOliModule from './Oli/pemakaianOli.module'
 
 export default createStore({
   state: {
@@ -58,5 +60,7 @@ export default createStore({
     MasterMachines,
     HistoryKurasModule,
     MasterProblemsModule,
+    MasterOliModule,
+    pemakaianOliModule,
   },
 })

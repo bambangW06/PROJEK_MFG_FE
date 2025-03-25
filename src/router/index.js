@@ -158,6 +158,16 @@ const routes = [
         name: 'MasterGelLines',
         component: () => import('@/views/DeliveryManagement/MasterLine.vue'),
       },
+      {
+        path: '/master/chemicals',
+        name: 'MasterChemicals',
+        component: () => import('@/views/OliManagement/MasterChemical.vue'),
+      },
+      {
+        path: '/chemical/pemakaian',
+        name: 'PemakaianOli',
+        component: () => import('@/views/OliManagement/PemakaianOli.vue'),
+      },
 
       /*define other in here*/
     ],

@@ -37,12 +37,14 @@
           </div>
           <div class="form-group mb-3">
             <label for="cell">Cell</label>
-            <input
-              id="cell"
-              type="text"
-              class="form-control"
+            <v-select
+              label="cell_nm"
+              placeholder="Pilih Cell"
               v-model="cell_nm"
-            />
+              :options="GET_CELL_NM"
+              @update:modelValue="onCellChange"
+            >
+            </v-select>
           </div>
           <div class="form-group mb-3">
             <label for="machineDsc">Machine Desc</label>
@@ -62,6 +64,18 @@
               v-model="machine_maker"
             />
           </div>
+          <div class="form-group mb-3">
+            <label for="idx_pos">Index Position</label>
+            <input
+              id="idx_pos"
+              type="number"
+              class="form-control"
+              v-model="idx_pos"
+              readonly
+              placeholder="Auto Generate"
+            />
+          </div>
+
           <div class="form-group mb-3">
             <div v-if="!isEditMode">
               <label for="createdBy">Created By</label>
@@ -256,7 +270,11 @@ import {
   ACTION_ADD_MASTER_MACHINE,
   ACTION_DELETE_MASTER_MACHINE,
   ACTION_EDIT_MASTER_MACHINE,
+  ACTION_GET_CELL_NM,
+  ACTION_GET_LAST_INDEX_POS,
   ACTION_GET_MASTER_MACHINES,
+  GET_CELL_NM,
+  GET_LAST_INDEX_POS,
   GET_MASTER_MACHINES,
 } from '@/store/Tool/MasterMachines.module'
 import { ACTION_GET_LINES, GET_LINES } from '@/store/Tool/MasterLines.module'
@@ -276,10 +294,16 @@ export default {
       currentPage: 1, // Current page
       searchResult: '',
       machine_id: null,
+      idx_pos: null,
     }
   },
   computed: {
-    ...mapGetters([GET_MASTER_MACHINES, GET_LINES]),
+    ...mapGetters([
+      GET_MASTER_MACHINES,
+      GET_LINES,
+      GET_CELL_NM,
+      GET_LAST_INDEX_POS,
+    ]),
     isFilled() {
       if (this.isEditMode) {
         return (
@@ -330,6 +354,40 @@ export default {
     this.$store.dispatch(ACTION_GET_LINES)
   },
   methods: {
+    async onLineChange() {
+      try {
+        const payload = {
+          root_line_id: this.selectedLine.line_id,
+        }
+
+        await this.$store.dispatch(ACTION_GET_CELL_NM, payload)
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    async onCellChange() {
+      try {
+        const payload = {
+          line_id: this.cell_nm.line_id,
+          root_line_id: this.selectedLine.line_id,
+          cell_nm: this.cell_nm.cell_nm,
+        }
+
+        let response = await this.$store.dispatch(
+          ACTION_GET_LAST_INDEX_POS,
+          payload,
+        )
+
+        if (response.status === 200) {
+          console.log('response', response)
+
+          this.idx_pos = this.GET_LAST_INDEX_POS[0].maxidx
+          console.log('idx_pos', this.idx_pos)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    },
     goToPage(page) {
       if (page < 1 || page > this.totalPages) return
       this.currentPage = page
@@ -345,6 +403,7 @@ export default {
       this.machine_nm = item.machine_nm
       this.cell_nm = item.cell_nm
       this.machine_desc = item.machine_desc
+      this.idx_pos = item.idx_pos
       this.machine_maker = item.machine_maker
       this.created_by = ''
     },
@@ -358,13 +417,16 @@ export default {
     async addMasterMachine() {
       try {
         const payload = {
+          line_id: this.cell_nm.line_id,
           root_line_id: this.selectedLine.line_id,
           machine_nm: this.machine_nm,
-          cell_nm: this.cell_nm,
+          cell_nm: this.cell_nm.cell_nm,
           machine_desc: this.machine_desc,
           machine_maker: this.machine_maker,
+          idx_pos: this.idx_pos,
           created_by: this.created_by,
         }
+
         let response = await this.$store.dispatch(
           ACTION_ADD_MASTER_MACHINE,
           payload,
@@ -389,12 +451,14 @@ export default {
     async updateMasterMachine() {
       try {
         const payload = {
+          line_id: this.GET_CELL_NM.line_id,
           machine_id: this.machine_id,
           root_line_id: this.selectedLine.root_line_id,
           cell_nm: this.cell_nm,
           machine_nm: this.machine_nm,
           machine_desc: this.machine_desc,
           machine_maker: this.machine_maker,
+          idx_pos: this.idx_pos,
           changed_by: this.changed_by,
         }
         let response = await this.$store.dispatch(

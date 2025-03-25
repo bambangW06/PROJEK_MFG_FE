@@ -286,6 +286,11 @@
                 </td>
               </tr>
             </tbody>
+            <tbody v-if="filteredInProcess.length === 0">
+              <tr>
+                <td colspan="7" class="text-center">No data available</td>
+              </tr>
+            </tbody>
           </table>
         </div>
       </div>
@@ -334,6 +339,11 @@
                     <i class="fas fa-edit text-primary" aria-hidden="true"></i>
                   </button>
                 </td>
+              </tr>
+            </tbody>
+            <tbody v-if="filteredNextProcess.length === 0">
+              <tr>
+                <td colspan="10" class="text-center">No data available</td>
               </tr>
             </tbody>
           </table>
@@ -432,6 +442,11 @@
                     </button>
                   </div>
                 </td>
+              </tr>
+            </tbody>
+            <tbody v-if="GET_PROBLEM_ANALISA.length === 0">
+              <tr>
+                <td colspan="11" class="text-center">No data available</td>
               </tr>
             </tbody>
           </table>
