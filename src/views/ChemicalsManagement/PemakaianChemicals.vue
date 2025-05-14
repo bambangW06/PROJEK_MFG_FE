@@ -1,140 +1,272 @@
 <template>
-  <div class="modal fade" id="modalSelection" tabindex="-1">
+  <!-- <div class="modal" tabindex="-1" id="modalPemakaianOli">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Pilih Aksi</h5>
+          <h5 class="modal-title">Add Pemakaian Oli</h5>
           <button
             type="button"
             class="btn-close"
             data-bs-dismiss="modal"
+            @click="resetModal"
           ></button>
         </div>
         <div class="modal-body">
-          <p>
-            Pilih tindakan untuk mesin <b>{{ selectedMachine?.machine_nm }}</b>
-          </p>
+          <div>
+            <h5>PIC</h5>
+          </div>
+          <div>
+            <v-select
+              v-model="pic"
+              :options="getKaryawanList"
+              label="nama"
+            ></v-select>
+          </div>
+          <div class="mt-2">
+            <h5>Mesin</h5>
+          </div>
+          <div>
+            <v-select
+              v-model="selectedMachine"
+              :options="GET_MASTER_MACHINES"
+              label="machine_nm"
+            ></v-select>
+          </div>
+          <div>
+            <h5>Nama Oli</h5>
+          </div>
+          <v-select
+            v-model="oil_nm"
+            :options="GET_MASTER_OIL"
+            label="oil_nm"
+            @update:modelValue="onOilChange"
+          ></v-select>
+          <div class="input-group mt-2">
+            <h5>Type Oli</h5>
+          </div>
+          <input v-model="type_nm" type="text" class="form-control" />
+
+          <div class="input-group mt-2">
+            <h5>Jumlah</h5>
+          </div>
+          <div>
+            <div class="input-group">
+              <input
+                v-model="oil_volume"
+                type="number"
+                class="form-control"
+                step="any"
+                @input="validateInput"
+              />
+              <span class="input-group-text">Liter</span>
+            </div>
+            <p v-if="warning" class="text-danger">{{ warning }}</p>
+          </div>
+          <div class="input-group mt-2">
+            <h5>Tanggal</h5>
+          </div>
+          <input v-model="date" type="date" class="form-control" />
         </div>
         <div class="modal-footer">
           <button
-            class="btn btn-primary"
-            data-bs-toggle="modal"
-            data-bs-target="#modalPemakaianOli"
-            @click="setModalMode('add')"
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+            @click="resetModal"
           >
-            Tambah Pemakaian Oli
+            Close
           </button>
           <button
-            class="btn btn-secondary"
-            data-bs-toggle="modal"
-            data-bs-target="#modalPemakaianOli"
-            @click="setModalMode('cek')"
+            @click="addPemakaianOli"
+            type="button"
+            class="btn btn-primary"
+            data-bs-dismiss="modal"
+            :disabled="!isFilled"
           >
-            Cek Parameter
+            Save
           </button>
         </div>
       </div>
     </div>
-  </div>
-
-  <div
-    class="modal fade"
-    id="modalPemakaianOli"
-    tabindex="-1"
-    @hidden.bs.modal="modalSelection"
-  >
+  </div> -->
+  <div class="modal" tabindex="-1" id="modalPemakaianOli">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">{{ modalTitle }}</h5>
+          <h5 class="modal-title">
+            {{
+              isCheckParameter ? 'Cek Parameter Coolant' : 'Add Pemakaian Oli'
+            }}
+          </h5>
           <button
             type="button"
             class="btn-close"
             data-bs-dismiss="modal"
+            @click="resetModal"
           ></button>
         </div>
+
         <div class="modal-body">
-          <template v-if="modalMode === 'add'">
+          <!-- Toggle mode -->
+          <div class="mb-3">
+            <label class="form-label">Mode</label>
+            <v-select
+              v-model="mode"
+              :options="['Pemakaian Chemical', 'Cek Parameter']"
+              @update:modelValue="onModeChange"
+            ></v-select>
+          </div>
+
+          <!-- Jika mode Add Pemakaian -->
+          <template v-if="mode === 'Pemakaian Chemical'">
             <div>
               <h5>PIC</h5>
-              <v-select
-                v-model="pic"
-                :options="getKaryawanList"
-                label="nama"
-              ></v-select>
             </div>
+            <v-select
+              v-model="pic"
+              :options="getKaryawanList"
+              label="nama"
+            ></v-select>
+
             <div class="mt-2">
               <h5>Mesin</h5>
-              <v-select
-                v-model="selectedMachine"
-                :options="GET_MASTER_MACHINES"
-                label="machine_nm"
-              ></v-select>
             </div>
+            <v-select
+              v-model="selectedMachine"
+              :options="GET_MASTER_MACHINES"
+              label="machine_nm"
+            ></v-select>
+
             <div>
               <h5>Nama Oli</h5>
-              <v-select
-                v-model="oil_nm"
-                :options="GET_MASTER_OIL"
-                label="oil_nm"
-                @update:modelValue="onOilChange"
-              ></v-select>
             </div>
+            <v-select
+              v-model="oil_nm"
+              :options="GET_MASTER_OIL"
+              label="oil_nm"
+              @update:modelValue="onOilChange"
+            ></v-select>
+
             <div class="input-group mt-2">
               <h5>Type Oli</h5>
             </div>
             <input v-model="type_nm" type="text" class="form-control" />
+
             <div class="input-group mt-2">
               <h5>Jumlah</h5>
             </div>
-            <div>
-              <div class="input-group">
-                <input
-                  v-model="oil_volume"
-                  type="number"
-                  class="form-control"
-                  step="any"
-                />
-                <span class="input-group-text">Liter</span>
-              </div>
+            <div class="input-group">
+              <input
+                v-model="oil_volume"
+                type="number"
+                class="form-control"
+                step="any"
+                @input="validateInput"
+              />
+              <span class="input-group-text">Liter</span>
             </div>
+            <p v-if="warning" class="text-danger">{{ warning }}</p>
+
             <div class="input-group mt-2">
               <h5>Tanggal</h5>
             </div>
             <input v-model="date" type="date" class="form-control" />
           </template>
 
+          <!-- Jika mode Cek Parameter -->
           <template v-else>
-            <p>
-              Cek parameter untuk mesin <b>{{ selectedMachine?.machine_nm }}</b>
-            </p>
             <div>
-              <h5>Tekanan Oli:</h5>
-              <input type="text" class="form-control" v-model="oilPressure" />
+              <h5>PIC</h5>
             </div>
+            <v-select
+              v-model="pic"
+              :options="getKaryawanList"
+              label="nama"
+            ></v-select>
+
             <div class="mt-2">
-              <h5>Temperatur:</h5>
-              <input type="text" class="form-control" v-model="temperature" />
+              <h5>Mesin</h5>
             </div>
+            <v-select
+              v-model="selectedMachine"
+              :options="GET_MASTER_MACHINES"
+              label="machine_nm"
+            ></v-select>
+
+            <div class="mt-2">
+              <h5>Visual</h5>
+              <v-select
+                v-model="selectedVisual"
+                :options="visualOptions"
+                label="opt_nm"
+              >
+              </v-select>
+            </div>
+
+            <div class="mt-2">
+              <h5>Aroma</h5>
+              <v-select
+                v-model="selectedAroma"
+                :options="aromaOptions"
+                label="opt_nm"
+              >
+              </v-select>
+            </div>
+
+            <div class="mt-2">
+              <h5>Sludge</h5>
+              <v-select
+                v-model="selectedSludge"
+                :options="sludgeOptions"
+                label="opt_nm"
+              >
+              </v-select>
+            </div>
+
+            <div class="mt-2">
+              <h5>Konsentrasi</h5>
+              <v-select
+                v-model="concentration"
+                :options="cons_range_values"
+                label="opt_nm"
+              >
+              </v-select>
+            </div>
+
+            <div class="mt-2">
+              <h5>pH</h5>
+              <v-select v-model="ph" :options="ph_range_values" label="opt_nm">
+              </v-select>
+            </div>
+
+            <div class="input-group mt-2">
+              <h5>Tanggal</h5>
+            </div>
+            <input v-model="date" type="date" class="form-control" />
           </template>
         </div>
+
         <div class="modal-footer">
           <button
             type="button"
             class="btn btn-secondary"
             data-bs-dismiss="modal"
+            @click="resetModal"
           >
             Close
           </button>
           <button
-            v-if="modalMode === 'add'"
+            type="button"
             class="btn btn-primary"
-            @click="addPemakaianOli"
+            data-bs-dismiss="modal"
+            :disabled="!isFilled"
+            @click="
+              mode === 'Pemakaian Chemical'
+                ? addPemakaianOli()
+                : saveCekParameter()
+            "
           >
             Save
-          </button>
-          <button v-else class="btn btn-success" @click="cekParameter">
-            Cek
           </button>
         </div>
       </div>
@@ -144,7 +276,7 @@
   <div class="container-fluid">
     <div class="card p-2 mb-2">
       <div class="d-flex justify-content-between align-items-center">
-        <h4 class="text-center m-0">Pemakaian Oli</h4>
+        <h4 class="text-center m-0">Pemakaian Chemical</h4>
         <!-- <div>
           <button
             class="btn btn-primary"
@@ -158,7 +290,9 @@
       </div>
     </div>
   </div>
-
+  <marquee behavior="" direction="" style="font-size: x-large; color: red"
+    >Still Development</marquee
+  >
   <div class="container-fluid dashboard">
     <!-- Crank Shaft -->
 
@@ -187,17 +321,28 @@
                 <button
                   @mouseover="showPopover($event, machine)"
                   @mouseleave="hidePopover"
-                  class="machine-box"
                   data-bs-toggle="modal"
-                  data-bs-target="#modalSelection"
-                  @click="selectedMachine = machine"
+                  data-bs-target="#modalPemakaianOli"
+                  @click="openAddModal(machine)"
+                  class="machine-box"
                 >
-                  <i
-                    v-if="hasOilData(machine)"
-                    class="fas fa-fill-drip badge-icon"
-                  ></i>
+                  <div class="machine-icon-wrapper">
+                    <img
+                      src="../../assets/images/MC. NC.png"
+                      alt="Machine Icon"
+                      class="machine-img"
+                    />
+                    <i
+                      v-if="hasOilData(machine)"
+                      class="fas fa-fill-drip badge-icon"
+                    ></i>
+                    <!-- <i
+                      v-if="isCheckScheduled(machine)"
+                      class="fas fa-calendar-check schedule-icon"
+                      title="Belum ada pengecekan chemical"
+                    ></i> -->
+                  </div>
                 </button>
-
                 <p class="machine-label">{{ machine.machine_nm }}</p>
               </div>
             </div>
@@ -242,6 +387,11 @@
                   data-bs-target="#modalPemakaianOli"
                   @click="openAddModal(machine)"
                 >
+                  <img
+                    src="../../assets/images/MC. NC.png"
+                    alt="Machine Icon"
+                    class="machine-img"
+                  />
                   <i
                     v-if="hasOilData(machine)"
                     class="fas fa-fill-drip badge-icon"
@@ -277,6 +427,11 @@
                   data-bs-target="#modalPemakaianOli"
                   @click="openAddModal(machine)"
                 >
+                  <img
+                    src="../../assets/images/MC. NC.png"
+                    alt="Machine Icon"
+                    class="machine-img"
+                  />
                   <i
                     v-if="hasOilData(machine)"
                     class="fas fa-fill-drip badge-icon"
@@ -324,6 +479,11 @@
                   data-bs-target="#modalPemakaianOli"
                   @click="openAddModal(machine)"
                 >
+                  <img
+                    src="../../assets/images/MC. NC.png"
+                    alt="Machine Icon"
+                    class="machine-img"
+                  />
                   <i
                     v-if="hasOilData(machine)"
                     class="fas fa-fill-drip badge-icon"
@@ -359,6 +519,11 @@
                   data-bs-target="#modalPemakaianOli"
                   @click="openAddModal(machine)"
                 >
+                  <img
+                    src="../../assets/images/MC. NC.png"
+                    alt="Machine Icon"
+                    class="machine-img"
+                  />
                   <i
                     v-if="hasOilData(machine)"
                     class="fas fa-fill-drip badge-icon"
@@ -404,6 +569,11 @@
                   data-bs-target="#modalPemakaianOli"
                   @click="openAddModal(machine)"
                 >
+                  <img
+                    src="../../assets/images/MC. NC.png"
+                    alt="Machine Icon"
+                    class="machine-img"
+                  />
                   <i
                     v-if="hasOilData(machine)"
                     class="fas fa-fill-drip badge-icon"
@@ -460,6 +630,30 @@
           </tr>
         </tfoot>
       </table>
+      <table class="style-table table-responsive mt-4">
+        <thead>
+          <tr>
+            <th>Visual</th>
+            <th>Aroma</th>
+            <th>Sludge</th>
+            <th>Cons</th>
+            <th>pH</th>
+            <th>PIC Check</th>
+            <th>Judge</th>
+          </tr>
+        </thead>
+        <tbody class="body-table">
+          <tr v-for="(data, index) in popoverContent.result_data" :key="index">
+            <td>{{ data.visual_nm }}</td>
+            <td>{{ data.aroma_nm }}</td>
+            <td>{{ data.sludge_nm }}</td>
+            <td>{{ data.cons_val }}</td>
+            <td>{{ data.ph_val }}</td>
+            <td>{{ data.pic_check }}</td>
+            <td>{{ data.judge_sts }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>
@@ -467,14 +661,14 @@
 import {
   ACTION_GET_MASTER_OIL,
   GET_MASTER_OIL,
-} from '@/store/Oli/MasterOli.module'
+} from '@/store/Chemical/MasterChemicals.module'
 import {
   ACTION_ADD_PEMAKAIAN_OLI,
   ACTION_GET_MACHINES,
   ACTION_GET_OILS_USAGE,
   GET_DATA_MACHINES_ALL,
   GET_OILS_USAGE,
-} from '@/store/Oli/pemakaianOli.module'
+} from '@/store/Chemical/pemakaianChemicals.module'
 import { ACTION_GET_LINES, GET_LINES } from '@/store/Tool/MasterLines.module'
 import {
   ACTION_GET_MASTER_MACHINES,
@@ -483,6 +677,15 @@ import {
 import { mapGetters } from 'vuex'
 import moment from 'moment-timezone'
 import draggable from 'vuedraggable'
+import {
+  ACTION_GET_OPTIONS_PARAMETERS,
+  ACTION_GET_RANGE_OPTION,
+  ACTION_GET_RESULT_CHECK,
+  ACTION_POST_PARAMETERS_CHECK,
+  GET_OPTIONS_PARAMETERS,
+  GET_RANGE_OPTION,
+  GET_RESULT_DATA,
+} from '@/store/Chemical/parametersCheck.module'
 
 export default {
   name: 'PemakaianOli',
@@ -491,6 +694,8 @@ export default {
   },
   data() {
     return {
+      mode: 'Pemakaian Chemical', // atau 'Cek Parameter'
+      isCheckParameter: false,
       selectedLine: '',
       oil_nm: '',
       type_nm: '',
@@ -503,11 +708,20 @@ export default {
       popoverContent: {},
       popoverX: 0,
       popoverY: 0,
-      modalMode: 'add', // 'add' untuk pemakaian oli, 'cek' untuk cek parameter
-      modalTitle: 'Tambah Pemakaian Oli',
-      selectedMachine: null,
-      oilPressure: '',
-      temperature: '',
+      scheduleCheckData: [],
+      concentration: null,
+      ph: null,
+      selectedVisual: null,
+      selectedAroma: null,
+      selectedSludge: null,
+      visualOptions: [],
+      aromaOptions: [],
+      sludgeOptions: [],
+      concentration_options: [],
+      ph_options: [],
+      cons_options: [],
+      cons_range_values: [],
+      ph_range_values: [],
     }
   },
 
@@ -519,6 +733,9 @@ export default {
       GET_MASTER_OIL,
       'getKaryawanList',
       GET_OILS_USAGE,
+      GET_OPTIONS_PARAMETERS,
+      GET_RANGE_OPTION,
+      GET_RESULT_DATA,
     ]),
     sortedMachines() {
       const orderCrank = ['Line B', 'Line A']
@@ -666,12 +883,23 @@ export default {
       return grouped
     },
     isFilled() {
+      if (this.mode === 'Pemakaian Chemical') {
+        return (
+          this.oil_volume !== '' &&
+          this.oil_id !== '' &&
+          this.machine_id !== '' &&
+          this.oil_nm !== '' &&
+          this.pic !== ''
+        )
+      }
       return (
-        this.oil_volume !== '' &&
-        this.oil_id !== '' &&
-        this.machine_id !== '' &&
-        this.oil_nm !== '' &&
-        this.pic !== ''
+        this.pic !== '' &&
+        this.selectedMachine !== '' &&
+        this.selectedVisual !== '' &&
+        this.selectedAroma !== '' &&
+        this.selectedSludge !== '' &&
+        this.concentration !== '' &&
+        this.ph !== ''
       )
     },
   },
@@ -681,12 +909,115 @@ export default {
     await this.fetchDataOli()
     await this.$store.dispatch('fetchKaryawanList')
     await this.$store.dispatch(ACTION_GET_OILS_USAGE)
+    await this.$store.dispatch(ACTION_GET_RESULT_CHECK)
+    await this.getOptions()
   },
   methods: {
-    setModalMode(mode) {
-      this.modalMode = mode
-      this.modalTitle =
-        mode === 'add' ? 'Tambah Pemakaian Oli' : 'Cek Parameter'
+    async saveCekParameter() {
+      try {
+        const currentTime = moment().tz('Asia/Jakarta').format('HH:mm:ss')
+        // Gabungkan tanggal dari input dengan jam sekarang
+        const formattedDate = moment(
+          `${this.date} ${currentTime}`,
+          'YYYY-MM-DD HH:mm:ss',
+        )
+          .tz('Asia/Jakarta')
+          .format('YYYY-MM-DD HH:mm:ss')
+        const payload = {
+          pic: this.pic.nama,
+          machine_nm: this.selectedMachine.machine_nm,
+          machine_id: this.selectedMachine.machine_id,
+          visual_nm: this.selectedVisual.opt_nm,
+          aroma_nm: this.selectedAroma.opt_nm,
+          sludge_nm: this.selectedSludge.opt_nm,
+          cons_val: this.concentration,
+          ph: this.ph,
+          created_dt: formattedDate,
+        }
+        let response = await this.$store.dispatch(
+          ACTION_POST_PARAMETERS_CHECK,
+          payload,
+        )
+        if (response.status === 200) {
+          this.$swal({
+            icon: 'success',
+            title: 'Success',
+            text: 'Data Berhasil Disimpan',
+            showConfirmButton: false,
+            timer: 1700,
+          })
+        } else {
+          this.$swal({
+            icon: 'error',
+            title: 'Error',
+            text: 'Data Gagal Disimpan',
+          })
+        }
+      } catch (error) {
+        console.error('Error saving cek parameter:', error)
+      }
+    },
+    async getOptions() {
+      try {
+        let response_range = await this.$store.dispatch(ACTION_GET_RANGE_OPTION)
+        if (response_range.status === 200) {
+          this.ph_options = this.GET_RANGE_OPTION.filter(
+            (option) => option.option_id === 11,
+          )
+          this.cons_options = this.GET_RANGE_OPTION.filter(
+            (option) => option.option_id === 10,
+          )
+          console.log('ph_options', this.ph_options)
+          console.log('cons_options', this.cons_options)
+          // Buat daftar angka dari min ke max untuk ph_options
+          if (this.ph_options.length > 0) {
+            const { min_value, max_value } = this.ph_options[0]
+            this.ph_range_values = Array.from(
+              { length: max_value - min_value + 1 },
+              (_, i) => min_value + i,
+            )
+          }
+
+          // Buat daftar angka dari min ke max untuk cons_options
+          if (this.cons_options.length > 0) {
+            const { min_value, max_value } = this.cons_options[0]
+            this.cons_range_values = Array.from(
+              { length: max_value - min_value + 1 },
+              (_, i) => min_value + i,
+            )
+          }
+        }
+
+        let response = await this.$store.dispatch(ACTION_GET_OPTIONS_PARAMETERS)
+        console.log('response options', response)
+        if (response.status === 200) {
+          this.visualOptions = this.GET_OPTIONS_PARAMETERS.filter(
+            (option) => option.param_id === 4,
+          )
+
+          this.aromaOptions = this.GET_OPTIONS_PARAMETERS.filter(
+            (option) => option.param_id === 5,
+          )
+          this.sludgeOptions = this.GET_OPTIONS_PARAMETERS.filter(
+            (option) => option.param_id === 8,
+          )
+          console.log('visualOptions', this.visualOptions)
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    isCheckScheduled(machine) {
+      // Anggap kamu punya data dari backend: scheduleCheckData
+      // Bentuknya array of objects misal: [{machine_id: 1, checked: true}, ...]
+
+      const check = this.scheduleCheckData.find(
+        (item) => item.machine_id === machine.machine_id,
+      )
+      return !check // return true jika BELUM dicek
+    },
+    onModeChange(value) {
+      this.isCheckParameter = value === 'Cek Parameter'
     },
     openAddModal(machine) {
       this.selectedMachine = machine
@@ -698,6 +1029,9 @@ export default {
     },
     showPopover(event, machine) {
       const buttonRect = event.target.getBoundingClientRect()
+      const resultData = this.GET_RESULT_DATA.filter(
+        (result) => result.machine_id === machine.machine_id,
+      )
       const oilsData = this.GET_OILS_USAGE.filter(
         (oil) => oil.machine_id === machine.machine_id,
       )
@@ -707,6 +1041,7 @@ export default {
         oil_usage: oilsData.length
           ? oilsData
           : [{ oil_nm: 'Tidak ada data', type_nm: '-', oil_volume: '0' }],
+        result_data: resultData,
       }
       this.popoverVisible = true
 
@@ -750,17 +1085,7 @@ export default {
         this.warning = ''
       }
     },
-    // async onLineChange() {
-    //   try {
-    //     const payload = {
-    //       line_id: this.selectedLine.line_id,
-    //     }
-    //     // console.log('payload', payload)
-    //     await this.$store.dispatch(ACTION_GET_MASTER_MACHINES, payload)
-    //   } catch (error) {
-    //     console.log(error)
-    //   }
-    // },
+
     async fetchDataOli() {
       await this.$store.dispatch(ACTION_GET_MASTER_OIL)
     },
@@ -818,9 +1143,6 @@ export default {
         })
       }
     },
-    cekParameter() {
-      alert(`Tekanan Oli: ${this.oilPressure}, Temperatur: ${this.temperature}`)
-    },
     resetModal() {
       this.selectedLine = null
       this.selectedMachine = null
@@ -835,16 +1157,6 @@ export default {
 </script>
 
 <style>
-.badge-icon {
-  position: absolute;
-  top: 1px;
-  left: 1px;
-  color: rgba(255, 251, 0); /* Ubah sesuai kebutuhan */
-  font-size: 14px;
-  /* transform: rotate(45deg); 
-  transform-origin: center;  */
-}
-
 .body-table td {
   border: 1px solid white;
   text-align: center !important;
@@ -864,7 +1176,8 @@ export default {
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
   z-index: 9999;
   font-size: 14px;
-  min-width: 220px;
+  min-width: 300px; /* diperbesar dari 220px */
+  max-width: 100%; /* biar gak melewati container */
   border: 1px solid #aaa;
 }
 
@@ -908,27 +1221,50 @@ dashboard {
   padding: 20px;
 }
 
+/* Global Styling */
 .line-title {
   font-size: 1.5rem;
   font-weight: bold;
   background-color: #222; /* Hitam pekat */
   color: white;
+  text-align: center;
+  padding: 10px;
+  border: 1px solid black;
 }
+
 .col,
 .col-md-6 {
   background-color: #f5f5f5; /* Abu muda */
+  border: 1px solid black;
 }
-.category-title {
+
+/* Kartu */
+.card {
+  background-color: #f5f7fa; /* Background lebih nyaman */
+  border: 1px solid #b0bec5; /* Border lebih soft */
+  padding: 10px;
+  margin: 10px 0;
+}
+
+/* Judul */
+.category-title,
+.cell-title {
   font-size: 1.3rem;
   font-weight: bold;
+  color: #2c3e50; /* Warna teks lebih enak dibaca */
 }
 
 .cell-title {
   font-size: 1.1rem;
-  font-weight: bold;
   margin-top: 10px;
 }
 
+/* Section untuk mesin */
+.cell-section {
+  background-color: #9c9a9a !important;
+}
+
+/* Container untuk mesin */
 .machine-container {
   display: flex;
   flex-wrap: wrap;
@@ -942,65 +1278,77 @@ dashboard {
   flex-direction: column;
   align-items: center;
   text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.machine-box-wrapper:hover {
+  transform: scale(1.2);
+}
+
+.machine-label {
+  margin-top: 5px;
+  font-size: 0.5rem; /* Ukuran lebih kecil */
+  font-weight: bold;
+  text-align: center;
+  color: #333;
+  transition: transform 0.3s ease; /* Agar ikut animasi */
+}
+
+/* Gambar mesin */
+.machine-icon-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.machine-img {
+  width: 40px;
+  height: 50px;
 }
 
 .machine-box {
-  width: 30px;
-  height: 40px;
-  background-color: #4e5052;
+  width: 50px;
+  height: 50px;
   border: none;
   border-radius: 8px;
   position: relative;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  border: 1px solid #b0bec5;
   display: flex;
+  flex-direction: column; /* Susun ke bawah */
   align-items: center;
   justify-content: center;
+  transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .machine-box::after {
   content: '';
   position: absolute;
-  width: 60px; /* Lebih besar dari kotak mesin */
-  height: 60px;
-  background-color: rgba(46, 46, 46, 0.1); /* Transparan */
+  width: 80px; /* Lebih besar untuk mencakup label */
+  height: 80px;
+  background-color: white;
   border-radius: 10px;
   z-index: -1;
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 
+/* Efek Hover */
 .machine-box:hover::after {
   opacity: 1;
 }
-.machine-box-wrapper:hover .machine-box,
-.machine-box-wrapper:hover .machine-label {
-  transform: scale(1.3);
-  transition: transform 0.3s ease;
-}
 
-.col-md-6 {
-  border: 1px solid black;
+/* Badge icon untuk indikator */
+.badge-icon {
+  position: absolute;
+  top: -5px;
+  left: 1px;
+  color: rgb(247, 103, 46); /* Warna indikator */
+  font-size: 14px;
 }
-.machine-label {
-  margin-top: 5px;
-  font-size: 0.4rem;
-  font-weight: bold;
-  text-align: center;
-  color: #333;
-}
-
-.card {
-  background-color: #f5f7fa; /* Background lebih nyaman */
-  border: 1px solid #b0bec5; /* Border lebih soft */
-}
-
-.category-title,
-.cell-title {
-  color: #2c3e50; /* Warna teks lebih enak dibaca */
-}
-.cell-section {
-  background-color: #f5f5f5 !important;
+.schedule-icon {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  color: orange;
+  font-size: 14px;
 }
 </style>

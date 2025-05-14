@@ -144,7 +144,7 @@ export default {
 
         {
           componet: 'CNavGroup',
-          name: 'Tool Management', // Nama menu untuk EAssesment
+          name: 'Tool & Coolant Management', // Nama menu untuk EAssesment
           icon: 'cilSettings', // Ikonya bisa disesuaikan
           items: [
             // {
@@ -190,55 +190,13 @@ export default {
               icon: 'cilHistory', // Ikonya bisa disesuaikan
               parentId: 'ROOT',
             },
-            {
-              component: 'CNavGroup',
-              name: 'Master Data',
-              icon: 'cilFolder',
-              items: [
-                {
-                  component: 'CNavItem',
-                  name: 'Master Time Report',
-                  to: '/tool/masterTimeReport',
-                  icon: 'cilClock',
-                  parentId: 'ROOT',
-                },
-                {
-                  component: 'CNavItem',
-                  name: 'Master Tools',
-                  to: '/tool/masterTools',
-                  icon: 'cilSettings',
-                  parentId: 'ROOT',
-                },
-                {
-                  component: 'CNavItem',
-                  name: 'Master Lines',
-                  to: '/tool/masterLines',
-                  icon: 'cilMap',
-                  parentId: 'ROOT',
-                },
-                {
-                  component: 'CNavItem',
-                  name: 'Master Machines',
-                  to: '/tool/masterMachines',
-                  icon: 'cilFactory',
-                  parentId: 'ROOT',
-                },
-                {
-                  component: 'CNavItem',
-                  name: 'Master Problems',
-                  to: '/tool/masterProblems',
-                  icon: 'cilWarning',
-                  parentId: 'ROOT',
-                },
-              ],
-            },
           ],
         },
 
         {
           component: 'CNavGroup',
-          name: 'Coolant Management', // Nama menu untuk EAssesment
-          icon: 'cilDrop', // Ikonya bisa disesuaikan
+          name: 'TPM Coolant', // Nama menu untuk EAssesment
+          icon: 'cilCalendar', // Ikonya bisa disesuaikan
           items: [
             {
               component: 'CNavItem',
@@ -268,7 +226,7 @@ export default {
         },
         {
           component: 'CNavGroup',
-          name: 'Oli Management', // Nama menu untuk EAssesment
+          name: 'Chemical Management', // Nama menu untuk EAssesment
           icon: 'cilDrop', // Ikonya bisa disesuaikan
           items: [
             {
@@ -277,18 +235,54 @@ export default {
               to: '/chemical/pemakaian',
               icon: 'cilBeaker',
             },
+          ],
+        },
+        {
+          component: 'CNavGroup',
+          name: 'Master Data',
+          icon: 'cilFolder',
+          items: [
             {
-              component: 'CNavGroup',
-              name: 'Master Data ', // Nama menu untuk EAssesment
-              icon: 'cilLibraryAdd', // Ikonya bisa disesuaikan
-              items: [
-                {
-                  component: 'CNavItem',
-                  name: 'Master Chemicals',
-                  to: '/master/chemicals',
-                  icon: 'cilDrop',
-                },
-              ],
+              component: 'CNavItem',
+              name: 'Master Chemicals',
+              to: '/master/chemicals',
+              icon: 'cilDrop',
+              parentId: 'ROOT',
+            },
+            {
+              component: 'CNavItem',
+              name: 'Master Lines',
+              to: '/tool/masterLines',
+              icon: 'cilMap',
+              parentId: 'ROOT',
+            },
+            {
+              component: 'CNavItem',
+              name: 'Master Machines',
+              to: '/tool/masterMachines',
+              icon: 'cilFactory',
+              parentId: 'ROOT',
+            },
+            {
+              component: 'CNavItem',
+              name: 'Master Problems',
+              to: '/tool/masterProblems',
+              icon: 'cilWarning',
+              parentId: 'ROOT',
+            },
+            {
+              component: 'CNavItem',
+              name: 'Master Time Report',
+              to: '/tool/masterTimeReport',
+              icon: 'cilClock',
+              parentId: 'ROOT',
+            },
+            {
+              component: 'CNavItem',
+              name: 'Master Tools',
+              to: '/tool/masterTools',
+              icon: 'cilSettings',
+              parentId: 'ROOT',
             },
           ],
         },

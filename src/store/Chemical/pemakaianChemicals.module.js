@@ -85,7 +85,7 @@ const actions = {
     try {
       const response = await axios.get(`${API_URL}/pemakaianOli/oils-usage`)
       commit(SET_OILS_USAGE, response.data.data)
-      console.log('response', response.data.data)
+      // console.log('response', response.data.data)
 
       return response
     } catch (error) {

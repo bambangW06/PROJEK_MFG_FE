@@ -225,7 +225,7 @@ import {
   ACTION_EDIT_MASTER_OIL,
   ACTION_GET_MASTER_OIL,
   GET_MASTER_OIL,
-} from '@/store/Oli/MasterOli.module'
+} from '@/store/Chemical/MasterChemicals.module'
 import { mapGetters } from 'vuex'
 export default {
   name: 'MasterChemicals',

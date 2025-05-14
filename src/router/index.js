@@ -161,12 +161,15 @@ const routes = [
       {
         path: '/master/chemicals',
         name: 'MasterChemicals',
-        component: () => import('@/views/OliManagement/MasterChemical.vue'),
+        component: () =>
+          import('@/views/ChemicalsManagement/MasterChemicals.vue'),
+        meta: { requiresSpecialToken: true },
       },
       {
         path: '/chemical/pemakaian',
         name: 'PemakaianOli',
-        component: () => import('@/views/OliManagement/PemakaianOli.vue'),
+        component: () =>
+          import('@/views/ChemicalsManagement/PemakaianChemicals.vue'),
       },
 
       /*define other in here*/
