@@ -939,6 +939,7 @@ export default {
           payload,
         )
         if (response.status === 200) {
+          await this.$store.dispatch(ACTION_GET_RESULT_CHECK)
           this.$swal({
             icon: 'success',
             title: 'Success',
