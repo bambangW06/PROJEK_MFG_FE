@@ -283,6 +283,7 @@
                   data-bs-target="#modalPemakaianOli"
                   @click="openAddModal(machine)"
                   class="machine-box"
+                  :class="getJudgeClass(machine)"
                 >
                   <div class="machine-icon-wrapper">
                     <img
@@ -344,6 +345,7 @@
                   data-bs-toggle="modal"
                   data-bs-target="#modalPemakaianOli"
                   @click="openAddModal(machine)"
+                  :class="getJudgeClass(machine)"
                 >
                   <img
                     src="../../assets/images/MC. NC.png"
@@ -389,6 +391,7 @@
                   data-bs-toggle="modal"
                   data-bs-target="#modalPemakaianOli"
                   @click="openAddModal(machine)"
+                  :class="getJudgeClass(machine)"
                 >
                   <img
                     src="../../assets/images/MC. NC.png"
@@ -446,6 +449,7 @@
                   data-bs-toggle="modal"
                   data-bs-target="#modalPemakaianOli"
                   @click="openAddModal(machine)"
+                  :class="getJudgeClass(machine)"
                 >
                   <img
                     src="../../assets/images/MC. NC.png"
@@ -491,6 +495,7 @@
                   data-bs-toggle="modal"
                   data-bs-target="#modalPemakaianOli"
                   @click="openAddModal(machine)"
+                  :class="getJudgeClass(machine)"
                 >
                   <img
                     src="../../assets/images/MC. NC.png"
@@ -546,6 +551,7 @@
                   data-bs-toggle="modal"
                   data-bs-target="#modalPemakaianOli"
                   @click="openAddModal(machine)"
+                  :class="getJudgeClass(machine)"
                 >
                   <img
                     src="../../assets/images/MC. NC.png"
@@ -892,6 +898,19 @@ export default {
     await this.getOptions()
   },
   methods: {
+    getJudgeClass(machine) {
+      const result = this.GET_RESULT_DATA.find(
+        (r) => r.machine_id === machine.machine_id,
+      )
+      const judge = result?.judge_sts || 'Normal'
+
+      return {
+        'bg-normal': judge === 'Normal',
+        'bg-warning': judge === 'Warning',
+        'bg-danger': judge === 'Danger',
+      }
+    },
+
     async saveCekParameter() {
       try {
         const currentTime = moment().tz('Asia/Jakarta').format('HH:mm:ss')
@@ -1143,6 +1162,14 @@ export default {
 </script>
 
 <style>
+.bg-warning {
+  background-color: yellow !important;
+}
+
+.bg-danger {
+  background-color: red !important;
+}
+
 .tight-select >>> .vs__dropdown-toggle {
   margin-bottom: 0px !important;
   padding-bottom: 2px; /* optional */
