@@ -29,7 +29,10 @@ const getters = {
 
 const mutations = {
   SET_OPTIONS_PARAMETERS(state, payload) {
-    state.DATA_OPTIONS_PARAMETERS = payload
+    state.DATA_OPTIONS_PARAMETERS = payload.map((option) => {
+      option.ilustration = API_URL + option.ilustration
+      return option
+    })
   },
   SET_RANGE_OPTION(state, payload) {
     state.RANGE_DATA = payload

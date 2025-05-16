@@ -1,94 +1,4 @@
 <template>
-  <!-- <div class="modal" tabindex="-1" id="modalPemakaianOli">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Add Pemakaian Oli</h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            @click="resetModal"
-          ></button>
-        </div>
-        <div class="modal-body">
-          <div>
-            <h5>PIC</h5>
-          </div>
-          <div>
-            <v-select
-              v-model="pic"
-              :options="getKaryawanList"
-              label="nama"
-            ></v-select>
-          </div>
-          <div class="mt-2">
-            <h5>Mesin</h5>
-          </div>
-          <div>
-            <v-select
-              v-model="selectedMachine"
-              :options="GET_MASTER_MACHINES"
-              label="machine_nm"
-            ></v-select>
-          </div>
-          <div>
-            <h5>Nama Oli</h5>
-          </div>
-          <v-select
-            v-model="oil_nm"
-            :options="GET_MASTER_OIL"
-            label="oil_nm"
-            @update:modelValue="onOilChange"
-          ></v-select>
-          <div class="input-group mt-2">
-            <h5>Type Oli</h5>
-          </div>
-          <input v-model="type_nm" type="text" class="form-control" />
-
-          <div class="input-group mt-2">
-            <h5>Jumlah</h5>
-          </div>
-          <div>
-            <div class="input-group">
-              <input
-                v-model="oil_volume"
-                type="number"
-                class="form-control"
-                step="any"
-                @input="validateInput"
-              />
-              <span class="input-group-text">Liter</span>
-            </div>
-            <p v-if="warning" class="text-danger">{{ warning }}</p>
-          </div>
-          <div class="input-group mt-2">
-            <h5>Tanggal</h5>
-          </div>
-          <input v-model="date" type="date" class="form-control" />
-        </div>
-        <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal"
-            @click="resetModal"
-          >
-            Close
-          </button>
-          <button
-            @click="addPemakaianOli"
-            type="button"
-            class="btn btn-primary"
-            data-bs-dismiss="modal"
-            :disabled="!isFilled"
-          >
-            Save
-          </button>
-        </div>
-      </div>
-    </div>
-  </div> -->
   <div class="modal" tabindex="-1" id="modalPemakaianOli">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -195,12 +105,37 @@
 
             <div class="mt-2">
               <h5>Visual</h5>
-              <v-select
-                v-model="selectedVisual"
-                :options="visualOptions"
-                label="opt_nm"
-              >
-              </v-select>
+              <div style="display: flex; align-items: center; gap: 12px">
+                <div
+                  :style="
+                    selectedVisual && selectedVisual.ilustration
+                      ? 'flex: 1 1 auto; max-width: calc(100% - 120px);'
+                      : 'width: 100%'
+                  "
+                >
+                  <v-select
+                    v-model="selectedVisual"
+                    :options="visualOptions"
+                    label="opt_nm"
+                  />
+                </div>
+
+                <div
+                  v-if="selectedVisual && selectedVisual.ilustration"
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                  "
+                >
+                  <small><strong>Ilustrasi:</strong></small>
+                  <img
+                    :src="selectedVisual.ilustration"
+                    :alt="selectedVisual.opt_nm"
+                    style="max-width: 100px; height: auto; border-radius: 4px"
+                  />
+                </div>
+              </div>
             </div>
 
             <div class="mt-2">
@@ -215,12 +150,37 @@
 
             <div class="mt-2">
               <h5>Sludge</h5>
-              <v-select
-                v-model="selectedSludge"
-                :options="sludgeOptions"
-                label="opt_nm"
-              >
-              </v-select>
+              <div style="display: flex; align-items: center; gap: 12px">
+                <div
+                  :style="
+                    selectedSludge && selectedSludge.ilustration
+                      ? 'flex: 1 1 auto; max-width: calc(100% - 120px);'
+                      : 'width: 100%'
+                  "
+                >
+                  <v-select
+                    v-model="selectedSludge"
+                    :options="sludgeOptions"
+                    label="opt_nm"
+                  />
+                </div>
+
+                <div
+                  v-if="selectedSludge && selectedSludge.ilustration"
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                  "
+                >
+                  <small><strong>Ilustrasi:</strong></small>
+                  <img
+                    :src="selectedSludge.ilustration"
+                    :alt="selectedSludge.opt_nm"
+                    style="max-width: 100px; height: auto; border-radius: 4px"
+                  />
+                </div>
+              </div>
             </div>
 
             <div class="mt-2">
@@ -229,14 +189,22 @@
                 v-model="concentration"
                 :options="cons_range_values"
                 label="opt_nm"
-              >
-              </v-select>
+                class="tight-select"
+              />
+              <small class="standard-text">
+                Standar: {{ cons_options[0].min_value }} -
+                {{ cons_options[0].max_value }} %
+              </small>
             </div>
 
             <div class="mt-2">
               <h5>pH</h5>
               <v-select v-model="ph" :options="ph_range_values" label="opt_nm">
               </v-select>
+              <small class="standard-text">
+                Standar: {{ ph_options[0].min_value }} -
+                {{ ph_options[0].max_value }} %
+              </small>
             </div>
 
             <div class="input-group mt-2">
@@ -277,16 +245,6 @@
     <div class="card p-2 mb-2">
       <div class="d-flex justify-content-between align-items-center">
         <h4 class="text-center m-0">Pemakaian Chemical</h4>
-        <!-- <div>
-          <button
-            class="btn btn-primary"
-            data-bs-toggle="modal"
-            data-bs-target="#modalPemakaianOli"
-            @click="openAddModal"
-          >
-            <i class="fas fa-plus"></i>
-          </button>
-        </div> -->
       </div>
     </div>
   </div>
@@ -336,11 +294,11 @@
                       v-if="hasOilData(machine)"
                       class="fas fa-fill-drip badge-icon"
                     ></i>
-                    <!-- <i
-                      v-if="isCheckScheduled(machine)"
+                    <i
+                      v-if="!isCheckScheduled(machine)"
                       class="fas fa-calendar-check schedule-icon"
-                      title="Belum ada pengecekan chemical"
-                    ></i> -->
+                      title="Sudah di cek"
+                    ></i>
                   </div>
                 </button>
                 <p class="machine-label">{{ machine.machine_nm }}</p>
@@ -396,6 +354,11 @@
                     v-if="hasOilData(machine)"
                     class="fas fa-fill-drip badge-icon"
                   ></i>
+                  <i
+                    v-if="!isCheckScheduled(machine)"
+                    class="fas fa-calendar-check schedule-icon"
+                    title="Sudah di cek"
+                  ></i>
                 </button>
                 <p class="machine-label">{{ machine.machine_nm }}</p>
               </div>
@@ -435,6 +398,11 @@
                   <i
                     v-if="hasOilData(machine)"
                     class="fas fa-fill-drip badge-icon"
+                  ></i>
+                  <i
+                    v-if="!isCheckScheduled(machine)"
+                    class="fas fa-calendar-check schedule-icon"
+                    title="Sudah di cek"
                   ></i>
                 </button>
                 <p class="machine-label">{{ machine.machine_nm }}</p>
@@ -488,6 +456,11 @@
                     v-if="hasOilData(machine)"
                     class="fas fa-fill-drip badge-icon"
                   ></i>
+                  <i
+                    v-if="!isCheckScheduled(machine)"
+                    class="fas fa-calendar-check schedule-icon"
+                    title="Sudah di cek"
+                  ></i>
                 </button>
                 <p class="machine-label">{{ machine.machine_nm }}</p>
               </div>
@@ -527,6 +500,11 @@
                   <i
                     v-if="hasOilData(machine)"
                     class="fas fa-fill-drip badge-icon"
+                  ></i>
+                  <i
+                    v-if="!isCheckScheduled(machine)"
+                    class="fas fa-calendar-check schedule-icon"
+                    title="Sudah di cek"
                   ></i>
                 </button>
                 <p class="machine-label">{{ machine.machine_nm }}</p>
@@ -577,6 +555,11 @@
                   <i
                     v-if="hasOilData(machine)"
                     class="fas fa-fill-drip badge-icon"
+                  ></i>
+                  <i
+                    v-if="!isCheckScheduled(machine)"
+                    class="fas fa-calendar-check schedule-icon"
+                    title="Sudah di cek"
                   ></i>
                 </button>
                 <p class="machine-label">{{ machine.machine_nm }}</p>
@@ -676,7 +659,6 @@ import {
 } from '@/store/Tool/MasterMachines.module'
 import { mapGetters } from 'vuex'
 import moment from 'moment-timezone'
-import draggable from 'vuedraggable'
 import {
   ACTION_GET_OPTIONS_PARAMETERS,
   ACTION_GET_RANGE_OPTION,
@@ -689,9 +671,6 @@ import {
 
 export default {
   name: 'PemakaianOli',
-  components: {
-    draggable,
-  },
   data() {
     return {
       mode: 'Pemakaian Chemical', // atau 'Cek Parameter'
@@ -947,6 +926,7 @@ export default {
             showConfirmButton: false,
             timer: 1700,
           })
+          this.resetModal()
         } else {
           this.$swal({
             icon: 'error',
@@ -1012,7 +992,7 @@ export default {
       // Anggap kamu punya data dari backend: scheduleCheckData
       // Bentuknya array of objects misal: [{machine_id: 1, checked: true}, ...]
 
-      const check = this.scheduleCheckData.find(
+      const check = this.GET_RESULT_DATA.find(
         (item) => item.machine_id === machine.machine_id,
       )
       return !check // return true jika BELUM dicek
@@ -1152,12 +1132,28 @@ export default {
       this.oil_volume = null
       this.pic = null
       this.type_nm = null
+      this.selectedAroma = null
+      this.selectedSludge = null
+      this.selectedVisual = null
+      this.concentration = null
+      this.ph = null
     },
   },
 }
 </script>
 
 <style>
+.tight-select >>> .vs__dropdown-toggle {
+  margin-bottom: 0px !important;
+  padding-bottom: 2px; /* optional */
+}
+
+.standard-text {
+  margin-top: -10px;
+  display: block;
+  color: rgb(51, 201, 5);
+}
+
 .body-table td {
   border: 1px solid white;
   text-align: center !important;
@@ -1349,7 +1345,7 @@ dashboard {
   position: absolute;
   top: 2px;
   right: 2px;
-  color: orange;
+  color: green;
   font-size: 14px;
 }
 </style>

@@ -244,6 +244,13 @@ export default {
           items: [
             {
               component: 'CNavItem',
+              name: 'Master Option Parameters',
+              to: '/master/optionParameters',
+              icon: 'cilDrop',
+              parentId: 'ROOT',
+            },
+            {
+              component: 'CNavItem',
               name: 'Master Chemicals',
               to: '/master/chemicals',
               icon: 'cilDrop',

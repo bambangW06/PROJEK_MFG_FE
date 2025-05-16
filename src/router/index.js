@@ -171,7 +171,12 @@ const routes = [
         component: () =>
           import('@/views/ChemicalsManagement/PemakaianChemicals.vue'),
       },
-
+      {
+        path: '/master/optionParameters',
+        name: 'MasterOptions',
+        component: () =>
+          import('@/views/ChemicalsManagement/MasterOptionParameters.vue'),
+      },
       /*define other in here*/
     ],
   },

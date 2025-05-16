@@ -22,6 +22,7 @@ import MasterProblemsModule from './Tool/MasterProblems.module'
 import MasterOliModule from './Chemical/MasterChemicals.module'
 import pemakaianOliModule from './Chemical/pemakaianChemicals.module'
 import parametersCheckModule from './Chemical/parametersCheck.module'
+import MasterOption from './Chemical/MasterOption.module'
 
 export default createStore({
   state: {
@@ -64,5 +65,6 @@ export default createStore({
     MasterOliModule,
     pemakaianOliModule,
     parametersCheckModule,
+    MasterOption,
   },
 })
