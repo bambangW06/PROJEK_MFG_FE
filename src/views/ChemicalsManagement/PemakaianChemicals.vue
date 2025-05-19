@@ -245,67 +245,63 @@
   </div>
 
   <div class="container-fluid">
-    <div class="card card-chemical p-2 mb-2">
+    <div class="card p-2 mb-2">
       <div class="d-flex justify-content-between align-items-center">
         <h4 class="text-center m-0">Pemakaian Chemical</h4>
       </div>
     </div>
   </div>
-  <marquee behavior="" direction="" style="font-size: x-large; color: red"
-    >Still Development</marquee
-  >
-  <div class="container-fluid dashboard">
+
+  <div class="container-fluid">
     <!-- Crank Shaft -->
     <div
-      class="card card-chemical p-2"
+      class="card p-2"
       v-if="groupedMachines.normal && groupedMachines.normal['Crank Shaft']"
     >
-      <div class="row p-3">
-        <div class="line-title text-center" style="border: 1px solid black">
-          Crank Shaft
-        </div>
-        <div class="col col-chemical" style="border: 1px solid black">
-          <div
-            class="card card-chemical p-2 mb-2 mt-2 cell-section"
-            style="border: 1px solid black !important"
-            v-for="(machines, cellName) in sortedMachines.normal['Crank Shaft']"
-            :key="cellName"
-          >
-            <h4 class="cell-title">{{ cellName }}</h4>
-            <div class="machine-container">
-              <div
-                v-for="machine in machines"
-                :key="machine.machine_id"
-                class="machine-box-wrapper"
+      <div class="card p-2">
+        <div class="card card-title text-center">Crank Shaft</div>
+        <div
+          class="card mb-2 mt-2 cell-section"
+          style="border: 1px solid black !important"
+          v-for="(machines, cellName) in sortedMachines.normal['Crank Shaft']"
+          :key="cellName"
+        >
+          <h4 class="cell-title">{{ cellName }}</h4>
+          <div class="machine-container">
+            <div
+              v-for="machine in machines"
+              :key="machine.machine_id"
+              class="machine-box-wrapper"
+            >
+              <button
+                @mouseover="showPopover($event, machine)"
+                @mouseleave="hidePopover"
+                data-bs-toggle="modal"
+                data-bs-target="#modalPemakaianOli"
+                @click="openAddModal(machine)"
+                class="machine-box"
               >
-                <button
-                  @mouseover="showPopover($event, machine)"
-                  @mouseleave="hidePopover"
-                  data-bs-toggle="modal"
-                  data-bs-target="#modalPemakaianOli"
-                  @click="openAddModal(machine)"
-                  class="machine-box"
+                <div
                   :class="getJudgeClass(machine)"
+                  class="machine-icon-wrapper"
                 >
-                  <div class="machine-icon-wrapper">
-                    <img
-                      src="../../assets/images/MC. NC.png"
-                      alt="Machine Icon"
-                      class="machine-img"
-                    />
-                    <i
-                      v-if="hasOilData(machine)"
-                      class="fas fa-fill-drip badge-icon"
-                    ></i>
-                    <i
-                      v-if="!isCheckScheduled(machine)"
-                      class="fas fa-calendar-check schedule-icon"
-                      title="Sudah di cek"
-                    ></i>
-                  </div>
-                </button>
-                <p class="machine-label">{{ machine.machine_nm }}</p>
-              </div>
+                  <img
+                    src="../../assets/images/MC. NC.png"
+                    alt="Machine Icon"
+                    class="machine-img"
+                  />
+                  <i
+                    v-if="hasOilData(machine)"
+                    class="fas fa-fill-drip badge-icon"
+                  ></i>
+                  <i
+                    v-if="!isCheckScheduled(machine)"
+                    class="fas fa-calendar-check schedule-icon"
+                    title="Sudah di cek"
+                  ></i>
+                </div>
+              </button>
+              <p class="machine-label">{{ machine.machine_nm }}</p>
             </div>
           </div>
         </div>
@@ -314,23 +310,21 @@
 
     <!-- Cylinder Block -->
     <div
-      class="card card-chemical mt-2 p-2"
+      class="card mt-2 p-2"
       v-if="
         groupedMachines.special && groupedMachines.special['Cylinder Block']
       "
     >
       <div class="row p-3">
-        <div class="line-title text-center" style="border: 1px solid black">
-          Cylinder Block
-        </div>
-        <div class="col-md-6 col-chemical">
+        <div class="card card-title text-center">Cylinder Block</div>
+        <div class="col-md-6 card">
           <h4 class="category-title text-center">Rough Area</h4>
           <div
             v-for="(machines, cellName) in sortedMachines.special[
               'Cylinder Block'
             ].Rough"
             :key="cellName"
-            class="cell-section card card-chemical p-2 mb-2"
+            class="cell-section card mb-2"
             style="border: 1px solid black !important"
           >
             <h5 class="cell-title">{{ cellName }}</h5>
@@ -347,9 +341,11 @@
                   data-bs-target="#modalPemakaianOli"
                   @click="openAddModal(machine)"
                   class="machine-box"
-                  :class="getJudgeClass(machine)"
                 >
-                  <div class="machine-icon-wrapper">
+                  <div
+                    :class="getJudgeClass(machine)"
+                    class="machine-icon-wrapper"
+                  >
                     <img
                       src="../../assets/images/MC. NC.png"
                       alt="Machine Icon"
@@ -371,14 +367,16 @@
             </div>
           </div>
         </div>
-        <div class="col-md-6 col-chemical">
+        <div
+          class="col-md-6 card d-flex justify-content-center align-items-center"
+        >
           <h4 class="category-title text-center">Finish Area</h4>
           <div
             v-for="(machines, cellName) in sortedMachines.special[
               'Cylinder Block'
             ].Finish"
             :key="cellName"
-            class="cell-section card card-chemical p-2 mb-2"
+            class="cell-section card mb-2"
             style="border: 1px solid black !important"
           >
             <h5 class="cell-title">{{ cellName }}</h5>
@@ -395,9 +393,11 @@
                   data-bs-target="#modalPemakaianOli"
                   @click="openAddModal(machine)"
                   class="machine-box"
-                  :class="getJudgeClass(machine)"
                 >
-                  <div class="machine-icon-wrapper">
+                  <div
+                    :class="getJudgeClass(machine)"
+                    class="machine-icon-wrapper"
+                  >
                     <img
                       src="../../assets/images/MC. NC.png"
                       alt="Machine Icon"
@@ -424,25 +424,23 @@
 
     <!-- Cylinder Head -->
     <div
-      class="card card-chemical mt-2 p-2"
+      class="card mt-2 p-2"
       v-if="groupedMachines.special && groupedMachines.special['Cylinder Head']"
     >
       <div class="row p-3">
-        <div class="line-title text-center" style="border: 1px solid black">
-          Cylinder Head
-        </div>
-        <div class="col-md-6 col-chemical">
-          <h4 class="category-title">Rough Area</h4>
+        <div class="card card-title text-center">Cylinder Head</div>
+        <div class="col-md-6 card">
+          <h4 class="category-title text-center">Rough Area</h4>
           <div
             v-for="(machines, cellName) in sortedMachines.special[
               'Cylinder Head'
             ].Rough"
             :key="cellName"
-            class="cell-section card card-chemical p-2 mb-2"
+            class="cell-section card mb-2"
             style="border: 1px solid black !important"
           >
             <h5 class="cell-title">{{ cellName }}</h5>
-            <div class="machine-container">
+            <div class="machine-container-khusus">
               <div
                 v-for="machine in machines"
                 :key="machine.machine_id"
@@ -455,9 +453,11 @@
                   data-bs-target="#modalPemakaianOli"
                   @click="openAddModal(machine)"
                   class="machine-box"
-                  :class="getJudgeClass(machine)"
                 >
-                  <div class="machine-icon-wrapper">
+                  <div
+                    :class="getJudgeClass(machine)"
+                    class="machine-icon-wrapper"
+                  >
                     <img
                       src="../../assets/images/MC. NC.png"
                       alt="Machine Icon"
@@ -479,18 +479,20 @@
             </div>
           </div>
         </div>
-        <div class="col-md-6 col-chemical">
-          <h4 class="category-title">Finish Area</h4>
+        <div
+          class="col-md-6 card d-flex justify-content-center align-items-center"
+        >
+          <h4 class="category-title text-center">Finish Area</h4>
           <div
             v-for="(machines, cellName) in sortedMachines.special[
               'Cylinder Head'
             ].Finish"
             :key="cellName"
-            class="cell-section card card-chemical p-2 mb-2"
+            class="cell-section card mb-2"
             style="border: 1px solid black !important"
           >
             <h5 class="cell-title">{{ cellName }}</h5>
-            <div class="machine-container">
+            <div class="machine-container-khusus">
               <div
                 v-for="machine in machines"
                 :key="machine.machine_id"
@@ -503,9 +505,11 @@
                   data-bs-target="#modalPemakaianOli"
                   @click="openAddModal(machine)"
                   class="machine-box"
-                  :class="getJudgeClass(machine)"
                 >
-                  <div class="machine-icon-wrapper">
+                  <div
+                    :class="getJudgeClass(machine)"
+                    class="machine-icon-wrapper"
+                  >
                     <img
                       src="../../assets/images/MC. NC.png"
                       alt="Machine Icon"
@@ -532,55 +536,54 @@
 
     <!-- Cam Shaft -->
     <div
-      class="card card-chemical p-2"
+      class="card p-2"
       v-if="groupedMachines.normal && groupedMachines.normal['Cam Shaft']"
     >
-      <div class="row p-3">
-        <div class="line-title text-center" style="border: 1px solid black">
-          Cam Shaft
-        </div>
-        <div class="col col-chemical" style="border: 1px solid black">
-          <div
-            class="card card-chemical p-2 mb-2 mt-2 cell-section"
-            style="border: 1px solid black !important"
-            v-for="(machines, cellName) in sortedMachines.normal['Cam Shaft']"
-            :key="cellName"
-          >
-            <h4 class="cell-title">{{ cellName }}</h4>
-            <div class="machine-container">
-              <div
-                v-for="machine in machines"
-                :key="machine.machine_id"
-                class="machine-box-wrapper"
+      <div class="card p-2">
+        <div class="card card-title text-center">Cam Shaft</div>
+
+        <div
+          class="card mb-2 mt-2 cell-section"
+          style="border: 1px solid black !important"
+          v-for="(machines, cellName) in sortedMachines.normal['Cam Shaft']"
+          :key="cellName"
+        >
+          <h4 class="cell-title">{{ cellName }}</h4>
+          <div class="machine-container-khusus">
+            <div
+              v-for="machine in machines"
+              :key="machine.machine_id"
+              class="machine-box-wrapper"
+            >
+              <button
+                @mouseover="showPopover($event, machine)"
+                @mouseleave="hidePopover"
+                data-bs-toggle="modal"
+                data-bs-target="#modalPemakaianOli"
+                @click="openAddModal(machine)"
+                class="machine-box"
               >
-                <button
-                  @mouseover="showPopover($event, machine)"
-                  @mouseleave="hidePopover"
-                  data-bs-toggle="modal"
-                  data-bs-target="#modalPemakaianOli"
-                  @click="openAddModal(machine)"
-                  class="machine-box"
+                <div
                   :class="getJudgeClass(machine)"
+                  class="machine-icon-wrapper"
                 >
-                  <div class="machine-icon-wrapper">
-                    <img
-                      src="../../assets/images/MC. NC.png"
-                      alt="Machine Icon"
-                      class="machine-img"
-                    />
-                    <i
-                      v-if="hasOilData(machine)"
-                      class="fas fa-fill-drip badge-icon"
-                    ></i>
-                    <i
-                      v-if="!isCheckScheduled(machine)"
-                      class="fas fa-calendar-check schedule-icon"
-                      title="Sudah di cek"
-                    ></i>
-                  </div>
-                </button>
-                <p class="machine-label">{{ machine.machine_nm }}</p>
-              </div>
+                  <img
+                    src="../../assets/images/MC. NC.png"
+                    alt="Machine Icon"
+                    class="machine-img"
+                  />
+                  <i
+                    v-if="hasOilData(machine)"
+                    class="fas fa-fill-drip badge-icon"
+                  ></i>
+                  <i
+                    v-if="!isCheckScheduled(machine)"
+                    class="fas fa-calendar-check schedule-icon"
+                    title="Sudah di cek"
+                  ></i>
+                </div>
+              </button>
+              <p class="machine-label">{{ machine.machine_nm }}</p>
             </div>
           </div>
         </div>
@@ -1174,11 +1177,11 @@ export default {
 
 <style>
 .bg-warning {
-  background-color: yellow !important;
+  background-color: rgb(236, 236, 41) !important;
 }
 
 .bg-danger {
-  background-color: red !important;
+  background-color: rgb(255, 84, 84) !important;
 }
 
 .tight-select >>> .vs__dropdown-toggle {
@@ -1252,32 +1255,21 @@ export default {
   margin-top: 5px;
 }
 
-dashboard {
+/* dashboard {
   padding: 20px;
-}
+} */
 
 /* Global Styling */
 .line-title {
   font-size: 1.5rem;
   font-weight: bold;
-  background-color: #222; /* Hitam pekat */
-  color: white;
+  background-color: #79e7fa; /* Biru modern */
+  color: black;
   text-align: center;
   padding: 10px;
-  border: 1px solid black;
-}
-
-.col-chemical {
-  background-color: #f5f5f5; /* Abu muda */
-  border: 1px solid black;
-}
-
-/* Kartu */
-.card-chemical {
-  background-color: #f5f7fa; /* Background lebih nyaman */
-  border: 1px solid #b0bec5; /* Border lebih soft */
-  padding: 10px;
-  margin: 10px 0;
+  border: none;
+  border-radius: 8px;
+  margin-bottom: 10px;
 }
 
 /* Judul */
@@ -1285,28 +1277,38 @@ dashboard {
 .cell-title {
   font-size: 1.3rem;
   font-weight: bold;
-  color: #2c3e50; /* Warna teks lebih enak dibaca */
+  color: #263238; /* Biru kehitaman modern */
 }
 
 .cell-title {
   font-size: 1.1rem;
   margin-top: 10px;
+  color: #37474f;
 }
 
 /* Section untuk mesin */
 .cell-section {
-  background-color: #9c9a9a !important;
+  background-color: #e3f2fd !important; /* Soft blue */
+  padding: 4%;
 }
 
 /* Container untuk mesin */
 .machine-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center; /* Pusatkan secara horizontal */
-  align-items: center; /* Pusatkan secara vertikal */
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
 }
-
+/* Container untuk mesin */
+.machine-container-khusus {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+  justify-content: center;
+  align-items: center;
+}
+/* Mesin */
 .machine-box-wrapper {
   display: flex;
   flex-direction: column;
@@ -1316,22 +1318,24 @@ dashboard {
 }
 
 .machine-box-wrapper:hover {
-  transform: scale(1.2);
+  transform: scale(1.1);
 }
 
 .machine-label {
   margin-top: 5px;
-  font-size: 0.5rem; /* Ukuran lebih kecil */
-  font-weight: bold;
-  text-align: center;
-  color: #333;
-  transition: transform 0.3s ease; /* Agar ikut animasi */
+  font-size: 0.6rem;
+  font-weight: 500;
+  color: #455a64;
 }
 
-/* Gambar mesin */
+/* Ikon Mesin */
 .machine-icon-wrapper {
   position: relative;
   display: inline-block;
+  background-color: #fffefe;
+  border-radius: 10px;
+  padding: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .machine-img {
@@ -1358,7 +1362,7 @@ dashboard {
   position: absolute;
   width: 80px; /* Lebih besar untuk mencakup label */
   height: 80px;
-  background-color: white;
+  background-color: rgb(226, 226, 226);
   border-radius: 10px;
   z-index: -1;
   opacity: 0;
@@ -1373,16 +1377,22 @@ dashboard {
 /* Badge icon untuk indikator */
 .badge-icon {
   position: absolute;
-  top: -5px;
+  top: 0px;
   left: 1px;
-  color: rgb(247, 103, 46); /* Warna indikator */
+  color: rgb(65, 218, 78); /* Warna indikator */
   font-size: 14px;
 }
 .schedule-icon {
   position: absolute;
   top: 2px;
   right: 2px;
-  color: green;
+  color: rgb(65, 218, 78);
   font-size: 14px;
+}
+.card-title {
+  background-color: rgb(42, 207, 207) !important;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #263238; /* Biru kehitaman modern */
 }
 </style>
