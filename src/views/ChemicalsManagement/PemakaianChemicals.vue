@@ -256,7 +256,6 @@
   >
   <div class="container-fluid dashboard">
     <!-- Crank Shaft -->
-
     <div
       class="card card-chemical p-2"
       v-if="groupedMachines.normal && groupedMachines.normal['Crank Shaft']"
@@ -265,7 +264,7 @@
         <div class="line-title text-center" style="border: 1px solid black">
           Crank Shaft
         </div>
-        <div class="col-chemical" style="border: 1px solid black">
+        <div class="col col-chemical" style="border: 1px solid black">
           <div
             class="card card-chemical p-2 mb-2 mt-2 cell-section"
             style="border: 1px solid black !important"
@@ -324,7 +323,7 @@
         <div class="line-title text-center" style="border: 1px solid black">
           Cylinder Block
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6 col-chemical">
           <h4 class="category-title text-center">Rough Area</h4>
           <div
             v-for="(machines, cellName) in sortedMachines.special[
@@ -344,33 +343,35 @@
                 <button
                   @mouseover="showPopover($event, machine)"
                   @mouseleave="hidePopover"
-                  class="machine-box"
                   data-bs-toggle="modal"
                   data-bs-target="#modalPemakaianOli"
                   @click="openAddModal(machine)"
+                  class="machine-box"
                   :class="getJudgeClass(machine)"
                 >
-                  <img
-                    src="../../assets/images/MC. NC.png"
-                    alt="Machine Icon"
-                    class="machine-img"
-                  />
-                  <i
-                    v-if="hasOilData(machine)"
-                    class="fas fa-fill-drip badge-icon"
-                  ></i>
-                  <i
-                    v-if="!isCheckScheduled(machine)"
-                    class="fas fa-calendar-check schedule-icon"
-                    title="Sudah di cek"
-                  ></i>
+                  <div class="machine-icon-wrapper">
+                    <img
+                      src="../../assets/images/MC. NC.png"
+                      alt="Machine Icon"
+                      class="machine-img"
+                    />
+                    <i
+                      v-if="hasOilData(machine)"
+                      class="fas fa-fill-drip badge-icon"
+                    ></i>
+                    <i
+                      v-if="!isCheckScheduled(machine)"
+                      class="fas fa-calendar-check schedule-icon"
+                      title="Sudah di cek"
+                    ></i>
+                  </div>
                 </button>
                 <p class="machine-label">{{ machine.machine_nm }}</p>
               </div>
             </div>
           </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6 col-chemical">
           <h4 class="category-title text-center">Finish Area</h4>
           <div
             v-for="(machines, cellName) in sortedMachines.special[
@@ -390,26 +391,28 @@
                 <button
                   @mouseover="showPopover($event, machine)"
                   @mouseleave="hidePopover"
-                  class="machine-box"
                   data-bs-toggle="modal"
                   data-bs-target="#modalPemakaianOli"
                   @click="openAddModal(machine)"
+                  class="machine-box"
                   :class="getJudgeClass(machine)"
                 >
-                  <img
-                    src="../../assets/images/MC. NC.png"
-                    alt="Machine Icon"
-                    class="machine-img"
-                  />
-                  <i
-                    v-if="hasOilData(machine)"
-                    class="fas fa-fill-drip badge-icon"
-                  ></i>
-                  <i
-                    v-if="!isCheckScheduled(machine)"
-                    class="fas fa-calendar-check schedule-icon"
-                    title="Sudah di cek"
-                  ></i>
+                  <div class="machine-icon-wrapper">
+                    <img
+                      src="../../assets/images/MC. NC.png"
+                      alt="Machine Icon"
+                      class="machine-img"
+                    />
+                    <i
+                      v-if="hasOilData(machine)"
+                      class="fas fa-fill-drip badge-icon"
+                    ></i>
+                    <i
+                      v-if="!isCheckScheduled(machine)"
+                      class="fas fa-calendar-check schedule-icon"
+                      title="Sudah di cek"
+                    ></i>
+                  </div>
                 </button>
                 <p class="machine-label">{{ machine.machine_nm }}</p>
               </div>
@@ -428,7 +431,7 @@
         <div class="line-title text-center" style="border: 1px solid black">
           Cylinder Head
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6 col-chemical">
           <h4 class="category-title">Rough Area</h4>
           <div
             v-for="(machines, cellName) in sortedMachines.special[
@@ -448,33 +451,35 @@
                 <button
                   @mouseover="showPopover($event, machine)"
                   @mouseleave="hidePopover"
-                  class="machine-box"
                   data-bs-toggle="modal"
                   data-bs-target="#modalPemakaianOli"
                   @click="openAddModal(machine)"
+                  class="machine-box"
                   :class="getJudgeClass(machine)"
                 >
-                  <img
-                    src="../../assets/images/MC. NC.png"
-                    alt="Machine Icon"
-                    class="machine-img"
-                  />
-                  <i
-                    v-if="hasOilData(machine)"
-                    class="fas fa-fill-drip badge-icon"
-                  ></i>
-                  <i
-                    v-if="!isCheckScheduled(machine)"
-                    class="fas fa-calendar-check schedule-icon"
-                    title="Sudah di cek"
-                  ></i>
+                  <div class="machine-icon-wrapper">
+                    <img
+                      src="../../assets/images/MC. NC.png"
+                      alt="Machine Icon"
+                      class="machine-img"
+                    />
+                    <i
+                      v-if="hasOilData(machine)"
+                      class="fas fa-fill-drip badge-icon"
+                    ></i>
+                    <i
+                      v-if="!isCheckScheduled(machine)"
+                      class="fas fa-calendar-check schedule-icon"
+                      title="Sudah di cek"
+                    ></i>
+                  </div>
                 </button>
                 <p class="machine-label">{{ machine.machine_nm }}</p>
               </div>
             </div>
           </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6 col-chemical">
           <h4 class="category-title">Finish Area</h4>
           <div
             v-for="(machines, cellName) in sortedMachines.special[
@@ -494,26 +499,28 @@
                 <button
                   @mouseover="showPopover($event, machine)"
                   @mouseleave="hidePopover"
-                  class="machine-box"
                   data-bs-toggle="modal"
                   data-bs-target="#modalPemakaianOli"
                   @click="openAddModal(machine)"
+                  class="machine-box"
                   :class="getJudgeClass(machine)"
                 >
-                  <img
-                    src="../../assets/images/MC. NC.png"
-                    alt="Machine Icon"
-                    class="machine-img"
-                  />
-                  <i
-                    v-if="hasOilData(machine)"
-                    class="fas fa-fill-drip badge-icon"
-                  ></i>
-                  <i
-                    v-if="!isCheckScheduled(machine)"
-                    class="fas fa-calendar-check schedule-icon"
-                    title="Sudah di cek"
-                  ></i>
+                  <div class="machine-icon-wrapper">
+                    <img
+                      src="../../assets/images/MC. NC.png"
+                      alt="Machine Icon"
+                      class="machine-img"
+                    />
+                    <i
+                      v-if="hasOilData(machine)"
+                      class="fas fa-fill-drip badge-icon"
+                    ></i>
+                    <i
+                      v-if="!isCheckScheduled(machine)"
+                      class="fas fa-calendar-check schedule-icon"
+                      title="Sudah di cek"
+                    ></i>
+                  </div>
                 </button>
                 <p class="machine-label">{{ machine.machine_nm }}</p>
               </div>
@@ -525,15 +532,14 @@
 
     <!-- Cam Shaft -->
     <div
-      class="card card-chemical mt-2 p-2"
+      class="card card-chemical p-2"
       v-if="groupedMachines.normal && groupedMachines.normal['Cam Shaft']"
     >
       <div class="row p-3">
         <div class="line-title text-center" style="border: 1px solid black">
           Cam Shaft
         </div>
-
-        <div class="col-chemical" style="border: 1px solid black">
+        <div class="col col-chemical" style="border: 1px solid black">
           <div
             class="card card-chemical p-2 mb-2 mt-2 cell-section"
             style="border: 1px solid black !important"
@@ -550,26 +556,28 @@
                 <button
                   @mouseover="showPopover($event, machine)"
                   @mouseleave="hidePopover"
-                  class="machine-box"
                   data-bs-toggle="modal"
                   data-bs-target="#modalPemakaianOli"
                   @click="openAddModal(machine)"
+                  class="machine-box"
                   :class="getJudgeClass(machine)"
                 >
-                  <img
-                    src="../../assets/images/MC. NC.png"
-                    alt="Machine Icon"
-                    class="machine-img"
-                  />
-                  <i
-                    v-if="hasOilData(machine)"
-                    class="fas fa-fill-drip badge-icon"
-                  ></i>
-                  <i
-                    v-if="!isCheckScheduled(machine)"
-                    class="fas fa-calendar-check schedule-icon"
-                    title="Sudah di cek"
-                  ></i>
+                  <div class="machine-icon-wrapper">
+                    <img
+                      src="../../assets/images/MC. NC.png"
+                      alt="Machine Icon"
+                      class="machine-img"
+                    />
+                    <i
+                      v-if="hasOilData(machine)"
+                      class="fas fa-fill-drip badge-icon"
+                    ></i>
+                    <i
+                      v-if="!isCheckScheduled(machine)"
+                      class="fas fa-calendar-check schedule-icon"
+                      title="Sudah di cek"
+                    ></i>
+                  </div>
                 </button>
                 <p class="machine-label">{{ machine.machine_nm }}</p>
               </div>
@@ -1259,8 +1267,7 @@ dashboard {
   border: 1px solid black;
 }
 
-.col-chemical,
-.col-md-6 {
+.col-chemical {
   background-color: #f5f5f5; /* Abu muda */
   border: 1px solid black;
 }
