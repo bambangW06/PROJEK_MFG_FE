@@ -5,7 +5,9 @@
         <div class="modal-header">
           <h5 class="modal-title">
             {{
-              isCheckParameter ? 'Cek Parameter Coolant' : 'Add Pemakaian Oli'
+              isCheckParameter
+                ? 'Cek Parameter Coolant'
+                : 'Add Pemakaian Chemical'
             }}
           </h5>
           <button
@@ -19,11 +21,12 @@
         <div class="modal-body">
           <!-- Toggle mode -->
           <div class="mb-3">
-            <label class="form-label">Mode</label>
+            <h5 class="form-label">Mode</h5>
             <v-select
               v-model="mode"
               :options="['Pemakaian Chemical', 'Cek Parameter']"
               @update:modelValue="onModeChange"
+              style="font-size: larger; font-weight: bold"
             ></v-select>
           </div>
 
@@ -48,7 +51,7 @@
             ></v-select>
 
             <div>
-              <h5>Nama Oli</h5>
+              <h5>Nama Chemical</h5>
             </div>
             <v-select
               v-model="oil_nm"
@@ -58,7 +61,7 @@
             ></v-select>
 
             <div class="input-group mt-2">
-              <h5>Type Oli</h5>
+              <h5>Type Chemical</h5>
             </div>
             <input v-model="type_nm" type="text" class="form-control" />
 
@@ -242,7 +245,7 @@
   </div>
 
   <div class="container-fluid">
-    <div class="card p-2 mb-2">
+    <div class="card card-chemical p-2 mb-2">
       <div class="d-flex justify-content-between align-items-center">
         <h4 class="text-center m-0">Pemakaian Chemical</h4>
       </div>
@@ -255,16 +258,16 @@
     <!-- Crank Shaft -->
 
     <div
-      class="card p-2"
+      class="card card-chemical p-2"
       v-if="groupedMachines.normal && groupedMachines.normal['Crank Shaft']"
     >
       <div class="row p-3">
         <div class="line-title text-center" style="border: 1px solid black">
           Crank Shaft
         </div>
-        <div class="col" style="border: 1px solid black">
+        <div class="col-chemical" style="border: 1px solid black">
           <div
-            class="card p-2 mb-2 mt-2 cell-section"
+            class="card card-chemical p-2 mb-2 mt-2 cell-section"
             style="border: 1px solid black !important"
             v-for="(machines, cellName) in sortedMachines.normal['Crank Shaft']"
             :key="cellName"
@@ -312,7 +315,7 @@
 
     <!-- Cylinder Block -->
     <div
-      class="card mt-2 p-2"
+      class="card card-chemical mt-2 p-2"
       v-if="
         groupedMachines.special && groupedMachines.special['Cylinder Block']
       "
@@ -328,7 +331,7 @@
               'Cylinder Block'
             ].Rough"
             :key="cellName"
-            class="cell-section card p-2 mb-2"
+            class="cell-section card card-chemical p-2 mb-2"
             style="border: 1px solid black !important"
           >
             <h5 class="cell-title">{{ cellName }}</h5>
@@ -374,7 +377,7 @@
               'Cylinder Block'
             ].Finish"
             :key="cellName"
-            class="cell-section card p-2 mb-2"
+            class="cell-section card card-chemical p-2 mb-2"
             style="border: 1px solid black !important"
           >
             <h5 class="cell-title">{{ cellName }}</h5>
@@ -418,7 +421,7 @@
 
     <!-- Cylinder Head -->
     <div
-      class="card mt-2 p-2"
+      class="card card-chemical mt-2 p-2"
       v-if="groupedMachines.special && groupedMachines.special['Cylinder Head']"
     >
       <div class="row p-3">
@@ -432,7 +435,7 @@
               'Cylinder Head'
             ].Rough"
             :key="cellName"
-            class="cell-section card p-2 mb-2"
+            class="cell-section card card-chemical p-2 mb-2"
             style="border: 1px solid black !important"
           >
             <h5 class="cell-title">{{ cellName }}</h5>
@@ -478,7 +481,7 @@
               'Cylinder Head'
             ].Finish"
             :key="cellName"
-            class="cell-section card p-2 mb-2"
+            class="cell-section card card-chemical p-2 mb-2"
             style="border: 1px solid black !important"
           >
             <h5 class="cell-title">{{ cellName }}</h5>
@@ -522,7 +525,7 @@
 
     <!-- Cam Shaft -->
     <div
-      class="card mt-2 p-2"
+      class="card card-chemical mt-2 p-2"
       v-if="groupedMachines.normal && groupedMachines.normal['Cam Shaft']"
     >
       <div class="row p-3">
@@ -530,9 +533,9 @@
           Cam Shaft
         </div>
 
-        <div class="col" style="border: 1px solid black">
+        <div class="col-chemical" style="border: 1px solid black">
           <div
-            class="card p-2 mb-2 mt-2 cell-section"
+            class="card card-chemical p-2 mb-2 mt-2 cell-section"
             style="border: 1px solid black !important"
             v-for="(machines, cellName) in sortedMachines.normal['Cam Shaft']"
             :key="cellName"
@@ -1256,14 +1259,14 @@ dashboard {
   border: 1px solid black;
 }
 
-.col,
+.col-chemical,
 .col-md-6 {
   background-color: #f5f5f5; /* Abu muda */
   border: 1px solid black;
 }
 
 /* Kartu */
-.card {
+.card-chemical {
   background-color: #f5f7fa; /* Background lebih nyaman */
   border: 1px solid #b0bec5; /* Border lebih soft */
   padding: 10px;
