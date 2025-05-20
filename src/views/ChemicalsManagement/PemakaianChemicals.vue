@@ -596,67 +596,72 @@
       :style="{ top: popoverY + 'px', left: popoverX + 'px' }"
       ref="popover"
     >
-      <table class="style-table table-responsive">
-        <thead>
-          <!-- Baris pertama: Nama Mesin -->
-          <tr>
-            <th colspan="3">Nama Mesin: {{ popoverContent.machine_nm }}</th>
-          </tr>
+      <!-- TABEL 1 -->
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th colspan="3">Nama Mesin: {{ popoverContent.machine_nm }}</th>
+            </tr>
+            <tr>
+              <th>Chemical</th>
+              <th>Type</th>
+              <th>Jumlah (Liter)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(oil, index) in popoverContent.oil_usage" :key="index">
+              <td>{{ oil.oil_nm }}</td>
+              <td>{{ oil.type_nm }}</td>
+              <td>{{ oil.oil_volume }}</td>
+            </tr>
+          </tbody>
+          <tfoot
+            v-if="
+              popoverContent.oil_usage.some(
+                (oil) => oil.oil_nm === 'Tidak ada data',
+              )
+            "
+          >
+            <tr>
+              <td colspan="3" class="text-center text-info">
+                Klik untuk tambah pemakaian chemical
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
 
-          <!-- Header untuk daftar oli -->
-          <tr>
-            <th>Chemical</th>
-            <th>Type</th>
-            <th>Jumlah (Liter)</th>
-          </tr>
-        </thead>
-
-        <tbody class="body-table">
-          <!-- List oli yang dipakai di mesin -->
-          <tr v-for="(oil, index) in popoverContent.oil_usage" :key="index">
-            <td>{{ oil.oil_nm }}</td>
-            <td>{{ oil.type_nm }}</td>
-            <td>{{ oil.oil_volume }}</td>
-          </tr>
-        </tbody>
-        <tfoot
-          v-if="
-            popoverContent.oil_usage.some(
-              (oil) => oil.oil_nm === 'Tidak ada data',
-            )
-          "
-        >
-          <tr>
-            <td colspan="3" class="text-center text-info">
-              Klik untuk tambah pemakaian chemical
-            </td>
-          </tr>
-        </tfoot>
-      </table>
-      <table class="style-table table-responsive mt-4">
-        <thead>
-          <tr>
-            <th>Visual</th>
-            <th>Aroma</th>
-            <th>Sludge</th>
-            <th>Cons</th>
-            <th>pH</th>
-            <th>PIC Check</th>
-            <th>Judge</th>
-          </tr>
-        </thead>
-        <tbody class="body-table">
-          <tr v-for="(data, index) in popoverContent.result_data" :key="index">
-            <td>{{ data.visual_nm }}</td>
-            <td>{{ data.aroma_nm }}</td>
-            <td>{{ data.sludge_nm }}</td>
-            <td>{{ data.cons_val }}</td>
-            <td>{{ data.ph_val }}</td>
-            <td>{{ data.pic_check }}</td>
-            <td>{{ data.judge_sts }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <!-- TABEL 2 -->
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Visual</th>
+              <th>Aroma</th>
+              <th>Sludge</th>
+              <th>Cons</th>
+              <th>pH</th>
+              <th>PIC Check</th>
+              <th>Judge</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="(data, index) in popoverContent.result_data"
+              :key="index"
+            >
+              <td>{{ data.visual_nm }}</td>
+              <td>{{ data.aroma_nm }}</td>
+              <td>{{ data.sludge_nm }}</td>
+              <td>{{ data.cons_val }}</td>
+              <td>{{ data.ph_val }}</td>
+              <td>{{ data.pic_check }}</td>
+              <td>{{ data.judge_sts }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
@@ -1195,49 +1200,20 @@ export default {
   color: rgb(51, 201, 5);
 }
 
-.body-table td {
-  border: 1px solid white;
-  text-align: center !important;
-}
-
-.style-table th {
-  border: 1px solid white;
-  text-align: center !important;
-}
-
-/* Styling Popover */
 .popover {
   position: absolute;
   background: white;
-  padding: 8px;
-  border-radius: 5px;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.2);
   z-index: 9999;
-  font-size: 14px;
-  min-width: 300px; /* diperbesar dari 220px */
-  max-width: 100%; /* biar gak melewati container */
+  font-size: 12px;
+  /* min-width: 100px; */
+  max-width: 35vw;
   border: 1px solid #aaa;
 }
 
-/* Table style */
-.popover table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.popover th {
-  background: #666;
-  color: white;
-  padding: 5px;
-  text-align: left;
-}
-
-.popover td {
-  padding: 5px;
-  background: #f0f0f0;
-}
-
-/* Bikin panah ke bawah */
+/* Panah popover */
 .popover::after {
   content: '';
   position: absolute;
@@ -1247,6 +1223,32 @@ export default {
   border-width: 10px;
   border-style: solid;
   border-color: white transparent transparent transparent;
+}
+
+/* Table wrapper untuk masing-masing tabel */
+.table-wrapper {
+  overflow-x: auto;
+  margin-bottom: 16px;
+}
+
+/* Table styling */
+.popover table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.popover th,
+.popover td {
+  padding: 8px;
+  border: 1px solid #ddd;
+  text-align: center;
+  word-wrap: break-word;
+}
+
+.popover th {
+  background-color: #666;
+  color: white;
 }
 
 .text-danger {
