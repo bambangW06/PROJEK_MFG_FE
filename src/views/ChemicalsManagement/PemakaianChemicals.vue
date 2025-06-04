@@ -1168,7 +1168,7 @@ export default {
       this.oil_nm = null
       this.selectedMachine = null
       this.oil_volume = null
-      this.pic = null
+      
       this.type_nm = null
       this.selectedAroma = null
       this.selectedSludge = null
