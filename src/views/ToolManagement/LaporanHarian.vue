@@ -895,6 +895,7 @@ export default {
         )
         this.problemCategory = problem.problem_nm
         this.timeCategory = problem.waktu
+        this.selectedTimeRange = problem.time_range || ''
       } else if (this.modalType === 'next proses') {
         // Line data
         this.problem_id = problem.problem_id
@@ -905,12 +906,12 @@ export default {
         // Machine data dengan debugging
         this.selectedMachine = problem.machine_nm
         this.machine_id = problem.machine_id
-        console.log('Selected Machine:', this.selectedMachine)
+        // console.log('Selected Machine:', this.selectedMachine)
 
         // Tool data dengan debugging
         this.selectedTool = problem.tool_nm
         this.tool_id = problem.tool_id
-        console.log('Selected Tool:', this.selectedTool)
+        // console.log('Selected Tool:', this.selectedTool)
 
         this.counter = problem.act_counter
         this.stdCounter = problem.std_counter
@@ -927,7 +928,7 @@ export default {
         }
         // Simpan tool yang dipilih
         this.tool_id = this.selectedTool.tool_id
-        console.log('Selected Tool:', this.tool_id)
+        // console.log('Selected Tool:', this.tool_id)
 
         // Dispatch action untuk mendapatkan counter berdasarkan tool yang dipilih
         let response = await this.$store.dispatch(
@@ -961,7 +962,7 @@ export default {
           time_range: this.selectedTimeRange, // Mengambil jam yang dipilih dari state
           selectedDate: this.selectedDate, // Mengambil tanggal yang dipilih dari state
         }
-        console.log('payload fetchProblemData', payload)
+        // console.log('payload fetchProblemData', payload)
 
         let response = await this.$store.dispatch(
           ACTION_GET_PROBLEM_MODAL,

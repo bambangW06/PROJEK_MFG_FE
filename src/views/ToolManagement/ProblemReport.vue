@@ -133,7 +133,12 @@
         <div class="modal-body">
           <label>Problem</label>
           <div>
-            <input type="text" class="form-control" v-model="editProblem" />
+            <input
+              type="text"
+              class="form-control"
+              v-model="editProblem"
+              readonly
+            />
           </div>
           <label for="">Analisa</label>
           <div>
