@@ -7,6 +7,9 @@ tests/e2e/reports/
 .env.local
 .env.*.local
 .env
+.env.dev
+.env.standalone
+.env.prod
 
 # dependencies
 /node_modules
