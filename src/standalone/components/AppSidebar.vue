@@ -235,6 +235,12 @@ export default {
               to: '/chemical/pemakaian',
               icon: 'cilBeaker',
             },
+            {
+              component: 'cNavItem',
+              name: 'History Pemakaian Chemical',
+              to: '/chemical/historyPemakaian',
+              icon: 'cilHistory',
+            },
           ],
         },
         {

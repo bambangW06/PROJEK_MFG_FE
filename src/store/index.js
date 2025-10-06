@@ -23,6 +23,7 @@ import MasterOliModule from './Chemical/MasterChemicals.module'
 import pemakaianOliModule from './Chemical/pemakaianChemicals.module'
 import parametersCheckModule from './Chemical/parametersCheck.module'
 import MasterOption from './Chemical/MasterOption.module'
+import HistoryPemakaianModule from './Chemical/HistoryPemakaian.module'
 
 export default createStore({
   state: {
@@ -66,5 +67,6 @@ export default createStore({
     pemakaianOliModule,
     parametersCheckModule,
     MasterOption,
+    HistoryPemakaianModule,
   },
 })
