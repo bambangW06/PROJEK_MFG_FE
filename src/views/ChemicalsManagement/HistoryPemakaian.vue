@@ -106,10 +106,10 @@
               </thead>
               <tbody v-if="GET_HISTORY_CHEMICAL.length > 0">
                 <tr
-                  v-for="(data, index) in paginatedHistoryChemical"
+                  v-for="(data, index) in paginatedUsage"
                   :key="data.usage_id"
                 >
-                  <td>{{ index + 1 }}</td>
+                  <td>{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
                   <td>{{ data.created_dt }}</td>
                   <td>{{ data.machine_nm }}</td>
                   <td>{{ data.oil_nm }}</td>
@@ -233,11 +233,8 @@
                 </tr>
               </thead>
               <tbody v-if="GET_HISTORY_CHEMICAL.length > 0">
-                <tr
-                  v-for="(data, index) in paginatedHistoryChemical"
-                  :key="index"
-                >
-                  <td>{{ index + 1 }}</td>
+                <tr v-for="(data, index) in paginatedParam" :key="index">
+                  <td>{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
                   <td>{{ data.shift }}</td>
                   <td>{{ data.created_dt }}</td>
                   <td>{{ data.machine_nm }}</td>
@@ -385,7 +382,13 @@ export default {
 
   computed: {
     ...mapGetters(['getLineNames', 'getMachinesNames', 'GET_HISTORY_CHEMICAL']),
-    paginatedHistoryChemical() {
+    paginatedUsage() {
+      const start = (this.currentPage - 1) * this.itemsPerPage
+      const end = start + this.itemsPerPage
+      return this.GET_HISTORY_CHEMICAL.slice(start, end)
+    },
+
+    paginatedParam() {
       const start = (this.currentPage - 1) * this.itemsPerPage
       const end = start + this.itemsPerPage
       return this.GET_HISTORY_CHEMICAL.slice(start, end)
@@ -508,6 +511,7 @@ export default {
     activeTab(newVal, oldVal) {
       if (newVal !== oldVal) {
         if (newVal === 'usage') this.selectedMachineUsage = null
+        this.currentPage = 1
         this.fetchHistoryData()
       }
     },
