@@ -607,7 +607,7 @@
       ref="popover"
     >
       <!-- TABEL 1 -->
-      <div class="table-wrapper">
+      <div class="table-wrapper table-responsive text-center">
         <table>
           <thead>
             <tr>
@@ -626,9 +626,13 @@
               <td>{{ oil.oil_nm }}</td>
               <td>{{ oil.type_nm }}</td>
               <td>{{ oil.oil_volume }}</td>
-              {{
-                oil.oil_nm !== 'Tidak ada data' ? oil.note_nm || 'test' : ''
-              }}
+              <td>
+                {{
+                  oil.oil_nm !== 'Tidak ada data'
+                    ? oil.note_nm || 'REGULER'
+                    : ''
+                }}
+              </td>
               <td>{{ oil.pic }}</td>
             </tr>
           </tbody>

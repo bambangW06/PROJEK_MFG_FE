@@ -209,12 +209,12 @@ export default {
                   to: '/planSchedule', // Path yang dituju saat menu EAssesment diklik
                   icon: 'cilCalendar', // Ikonya bisa disesuaikan
                 },
-                {
-                  component: 'CNavItem',
-                  name: 'History Conc & pH', // Nama menu untuk EAssesment
-                  to: '/historyConc', // Path yang dituju saat menu EAssesment diklik
-                  icon: 'cilHistory', // Ikonya bisa disesuaikan
-                },
+                // {
+                //   component: 'CNavItem',
+                //   name: 'History Conc & pH',
+                //   to: '/historyConc',
+                //   icon: 'cilHistory',
+                // },
                 {
                   component: 'CNavItem',
                   name: 'History Kuras', // Nama menu untuk EAssesment

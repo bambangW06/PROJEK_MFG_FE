@@ -82,20 +82,43 @@
               :options="usageChartOptions"
               :series="usageChartSeries"
             />
-            <div v-if="!selectedMachineUsage" class="text-center fw-semibold">
-              Total by Type:
-              <span v-for="(d, i) in usageChartSeries[0]?.data || []" :key="i">
-                {{ usageChartOptions.xaxis.categories[i] }}: {{ d }} L
-                <span v-if="i < usageChartSeries[0].data.length - 1">|</span>
-              </span>
-            </div>
+            <!-- <div
+              v-if="selectedMachineUsage === null"
+              class="text-center fw-semibold mt-3"
+            >
+              <div class="table-responsive">
+                <table
+                  class="table table-bordered align-middle text-center mx-auto"
+                  style="width: auto"
+                >
+                  <thead>
+                    <tr>
+                      <th colspan="2">Total by Type</th>
+                    </tr>
+                    <tr>
+                      <th>Type</th>
+                      <th>Total (L)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="(d, i) in usageChartSeries[0]?.data || []"
+                      :key="i"
+                    >
+                      <td>{{ usageChartOptions.xaxis.categories[i] }}</td>
+                      <td>{{ d }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div> -->
           </div>
 
           <!-- Table -->
           <h6 class="fw-bold">Detail Usage</h6>
           <div class="table-responsive text-center">
-            <table class="table table-bordered table-sm">
-              <thead class="table-light">
+            <table class="table table-bordered">
+              <thead>
                 <tr>
                   <th>No</th>
                   <th>Date</th>
@@ -216,8 +239,8 @@
 
           <h6 class="fw-bold">Detail Parameters</h6>
           <div class="table-responsive text-center">
-            <table class="table table-bordered table-sm">
-              <thead class="table-light">
+            <table class="table table-bordered">
+              <thead>
                 <tr>
                   <th>No</th>
                   <th>Shift</th>
@@ -434,7 +457,7 @@ export default {
             this.usageChartOptions = {
               ...this.usageChartOptions,
               xaxis: { categories: sorted.map((d) => d.oil_nm) },
-              title: { text: 'Total Usage per Chemical Type', align: 'center' },
+              title: { text: 'Total Usage', align: 'center' },
             }
 
             this.usageChartSeries = [
@@ -750,6 +773,12 @@ export default {
 }
 </script>
 <style scoped>
+.table-bordered th {
+  background-color: rgb(198, 240, 240) !important;
+}
+.table-bordered {
+  border: 1px solid black !important;
+}
 /* Samakan tinggi dan padding biar flatpickr & v-select sejajar */
 .vs__dropdown-toggle,
 .form-control {
