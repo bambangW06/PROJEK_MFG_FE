@@ -81,6 +81,16 @@
             <p v-if="warning" class="text-danger">{{ warning }}</p>
 
             <div class="input-group mt-2">
+              <h5>Note</h5>
+            </div>
+            <v-select
+              :options="GET_MASTER_NOTE"
+              label="note_nm"
+              v-model="note_nm"
+            >
+            </v-select>
+
+            <div class="input-group mt-2">
               <h5>Tanggal</h5>
             </div>
             <input v-model="date" type="date" class="form-control" />
@@ -601,12 +611,14 @@
         <table>
           <thead>
             <tr>
-              <th colspan="3">Nama Mesin: {{ popoverContent.machine_nm }}</th>
+              <th colspan="5">Nama Mesin: {{ popoverContent.machine_nm }}</th>
             </tr>
             <tr>
               <th>Chemical</th>
               <th>Type</th>
               <th>Jumlah (Liter)</th>
+              <th>Note</th>
+              <th>PIC</th>
             </tr>
           </thead>
           <tbody>
@@ -614,6 +626,10 @@
               <td>{{ oil.oil_nm }}</td>
               <td>{{ oil.type_nm }}</td>
               <td>{{ oil.oil_volume }}</td>
+              {{
+                oil.oil_nm !== 'Tidak ada data' ? oil.note_nm || 'test' : ''
+              }}
+              <td>{{ oil.pic }}</td>
             </tr>
           </tbody>
           <tfoot
@@ -624,7 +640,7 @@
             "
           >
             <tr>
-              <td colspan="3" class="text-center text-info">
+              <td colspan="5" class="text-center text-info">
                 Klik untuk tambah pemakaian chemical
               </td>
             </tr>
@@ -693,6 +709,10 @@ import {
   GET_RANGE_OPTION,
   GET_RESULT_DATA,
 } from '@/store/Chemical/parametersCheck.module'
+import {
+  ACTION_GET_MASTER_NOTE,
+  GET_MASTER_NOTE,
+} from '@/store/Chemical/MasterNote.module'
 
 export default {
   name: 'PemakaianOli',
@@ -726,6 +746,7 @@ export default {
       cons_options: [],
       cons_range_values: [],
       ph_range_values: [],
+      note_nm: null,
     }
   },
 
@@ -740,6 +761,7 @@ export default {
       GET_OPTIONS_PARAMETERS,
       GET_RANGE_OPTION,
       GET_RESULT_DATA,
+      GET_MASTER_NOTE,
     ]),
     sortedMachines() {
       const orderCrank = ['Line B', 'Line A']
@@ -914,7 +936,7 @@ export default {
     await this.$store.dispatch('fetchKaryawanList')
     await this.$store.dispatch(ACTION_GET_OILS_USAGE)
     await this.$store.dispatch(ACTION_GET_RESULT_CHECK)
-    await this.getOptions()
+    await this.$store.dispatch(ACTION_GET_MASTER_NOTE)
   },
   methods: {
     getJudgeClass(machine) {
@@ -978,37 +1000,59 @@ export default {
     },
     async getOptions() {
       try {
-        let response_range = await this.$store.dispatch(ACTION_GET_RANGE_OPTION)
+        const payload = {
+          line_id: this.selectedMachine.root_line_id,
+          machine_id: this.selectedMachine.machine_id,
+        }
+        let response_range = await this.$store.dispatch(
+          ACTION_GET_RANGE_OPTION,
+          payload,
+        )
+
         if (response_range.status === 200) {
-          this.ph_options = this.GET_RANGE_OPTION.filter(
-            (option) => option.option_id === 11,
-          )
-          this.cons_options = this.GET_RANGE_OPTION.filter(
-            (option) => option.option_id === 10,
-          )
-          console.log('ph_options', this.ph_options)
-          console.log('cons_options', this.cons_options)
-          // Buat daftar angka dari min ke max untuk ph_options
+          console.log('getrangeoption', this.GET_RANGE_OPTION)
+
+          const { std_min_cons, std_max_cons, std_ph_min, std_ph_max } =
+            this.GET_RANGE_OPTION
+
+          // 🔹 Simpan ke struktur lama tanpa option_id
+          this.ph_options = [
+            {
+              min_value: parseFloat(std_ph_min),
+              max_value: parseFloat(std_ph_max),
+            },
+          ]
+
+          this.cons_options = [
+            {
+              min_value: parseFloat(std_min_cons),
+              max_value: parseFloat(std_max_cons),
+            },
+          ]
+
+          // === BIKIN DAFTAR ANGKA (range values) ===
+          // ph range
           if (this.ph_options.length > 0) {
             const { min_value, max_value } = this.ph_options[0]
+            // bikin list kelipatan 0.1 biar smooth, bisa kamu ubah ke integer juga
             this.ph_range_values = Array.from(
-              { length: max_value - min_value + 1 },
-              (_, i) => min_value + i,
+              { length: Math.floor((max_value - min_value) * 10) + 1 },
+              (_, i) => (min_value + i / 10).toFixed(1),
             )
           }
 
-          // Buat daftar angka dari min ke max untuk cons_options
+          // cons range
           if (this.cons_options.length > 0) {
             const { min_value, max_value } = this.cons_options[0]
             this.cons_range_values = Array.from(
-              { length: max_value - min_value + 1 },
-              (_, i) => min_value + i,
+              { length: Math.floor((max_value - min_value) * 10) + 1 },
+              (_, i) => (min_value + i / 10).toFixed(1),
             )
           }
         }
 
         let response = await this.$store.dispatch(ACTION_GET_OPTIONS_PARAMETERS)
-        console.log('response options', response)
+        // console.log('response options', response)
         if (response.status === 200) {
           this.visualOptions = this.GET_OPTIONS_PARAMETERS.filter(
             (option) => option.param_id === 4,
@@ -1020,7 +1064,7 @@ export default {
           this.sludgeOptions = this.GET_OPTIONS_PARAMETERS.filter(
             (option) => option.param_id === 8,
           )
-          console.log('visualOptions', this.visualOptions)
+          // console.log('visualOptions', this.visualOptions)
         }
       } catch (error) {
         console.error(error)
@@ -1038,8 +1082,9 @@ export default {
     onModeChange(value) {
       this.isCheckParameter = value === 'Cek Parameter'
     },
-    openAddModal(machine) {
+    async openAddModal(machine) {
       this.selectedMachine = machine
+      await this.getOptions()
     },
     hasOilData(machine) {
       return this.GET_OILS_USAGE.some(
@@ -1138,8 +1183,9 @@ export default {
           oil_volume: this.oil_volume,
           pic: this.pic.nama,
           created_dt: formattedDate,
+          note_id: this.note_nm ? this.note_nm.note_id : null,
+          note_nm: this.note_nm ? this.note_nm.note_nm : null,
         }
-        // console.log('payload', payload)
 
         let response = await this.$store.dispatch(
           ACTION_ADD_PEMAKAIAN_OLI,
@@ -1168,13 +1214,14 @@ export default {
       this.oil_nm = null
       this.selectedMachine = null
       this.oil_volume = null
-      
+
       this.type_nm = null
       this.selectedAroma = null
       this.selectedSludge = null
       this.selectedVisual = null
       this.concentration = null
       this.ph = null
+      this.note_nm = null
     },
   },
 }

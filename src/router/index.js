@@ -183,6 +183,11 @@ const routes = [
         component: () =>
           import('@/views/ChemicalsManagement/HistoryPemakaian.vue'),
       },
+      {
+        path: '/master/notes',
+        name: 'MasterNotes',
+        component: () => import('@/views/ChemicalsManagement/MasterNote.vue'),
+      },
       /*define other in here*/
     ],
   },

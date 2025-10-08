@@ -53,9 +53,11 @@ const actions = {
       console.log(error)
     }
   },
-  async ACTION_GET_RANGE_OPTION({ commit }) {
+  async ACTION_GET_RANGE_OPTION({ commit }, payload) {
     try {
-      const response = await axios.get(`${API_URL}/parametersOptions/range`)
+      const response = await axios.get(`${API_URL}/parametersOptions/range`, {
+        params: payload,
+      })
       commit(SET_RANGE_OPTION, response.data.data)
       return response
     } catch (error) {

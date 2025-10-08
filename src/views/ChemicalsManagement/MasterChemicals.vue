@@ -36,10 +36,8 @@
                 type="text"
                 class="form-control"
                 v-model="oil_nm"
+                @input="oil_nm = oil_nm.toUpperCase()"
               />
-              <div v-if="errorOilName" class="text-danger">
-                {{ errorOilName }}
-              </div>
             </div>
           </div>
           <div>
@@ -245,22 +243,10 @@ export default {
     ...mapGetters([GET_MASTER_OIL]),
     isFilled() {
       if (this.isEditMode) {
-        return this.oil_nm !== '' && !this.errorOilName
+        return this.oil_nm !== ''
       } else {
-        return (
-          this.oil_nm !== '' && this.created_by !== '' && !this.errorOilName
-        )
+        return this.oil_nm !== '' && this.created_by !== ''
       }
-    },
-    errorOilName() {
-      if (this.oil_nm) {
-        this.oil_nm = this.oil_nm.toUpperCase() // Ubah ke huruf besar semua
-      }
-
-      if (!/^[A-Z0-9]+(?:[-\s]?[A-Z0-9]+)*$/.test(this.oil_nm)) {
-        return 'Harus huruf besar Ex: CIRCULATING VG 32'
-      }
-      return ''
     },
 
     errorMaterialNo() {
@@ -412,7 +398,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .table-bordered th {
   background-color: rgb(198, 240, 240);
 }

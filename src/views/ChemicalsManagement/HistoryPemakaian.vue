@@ -551,14 +551,29 @@ export default {
           ACTION_GET_HISTORY_CHEMICAL,
           payload,
         )
-        if (response.status === 200)
-          console.log('response', this.GET_HISTORY_CHEMICAL)
+
+        if (response.status === 200) {
+          console.log('response', response)
+
+          if (this.activeTab === 'param') {
+            const { data, std_data } = response.data
+            // console.log('response:', response.data) // ✅ untuk verifikasi
+
+            // Simpan data utama seperti biasa (ke Vuex)
+            // this.GET_HISTORY_CHEMICAL sudah di-handle oleh Vuex mutation
+
+            // Kalau tab sekarang PARAMETER, set grafik dengan standar
+            if (this.activeTab === 'param') {
+              this.setParameterChart(data, std_data)
+            }
+          }
+        }
       } catch (error) {
         console.error(error)
       }
     },
 
-    setParameterChart(data) {
+    setParameterChart(data, std = {}) {
       if (!data?.length) {
         this.paramChartSeries = []
         this.paramChartOptions.xaxis.categories = []
@@ -588,13 +603,28 @@ export default {
         ...d,
       }))
 
-      // Ambil standar min-max dari data, kalau belum ada pakai default sementara
-      const std_max_cons = sorted[0]?.std_max_cons ?? 6
-      const std_min_cons = sorted[0]?.std_min_cons ?? 3
-      const std_ph_max = sorted[0]?.std_ph_max ?? 9
-      const std_ph_min = sorted[0]?.std_ph_min ?? 7
+      // 🔥 Ambil nilai standar
+      const std_max_cons = parseFloat(
+        std.std_max_cons ?? sorted[0]?.std_max_cons ?? 6,
+      )
+      const std_min_cons = parseFloat(
+        std.std_min_cons ?? sorted[0]?.std_min_cons ?? 3,
+      )
+      const std_ph_max = parseFloat(
+        std.std_ph_max ?? sorted[0]?.std_ph_max ?? 9,
+      )
+      const std_ph_min = parseFloat(
+        std.std_ph_min ?? sorted[0]?.std_ph_min ?? 7,
+      )
 
-      // Hitung yaxis min/max supaya semua annotation terlihat
+      console.log('STD dari backend:', {
+        std_max_cons,
+        std_min_cons,
+        std_ph_max,
+        std_ph_min,
+      })
+
+      // Hitung yaxis min/max
       const yMin = Math.min(
         std_min_cons,
         std_ph_min,
@@ -607,6 +637,9 @@ export default {
         ...phSeries.map((p) => p.y),
         ...consSeries.map((c) => c.y),
       )
+
+      // 💬 bikin helper biar rapi
+      const fmt = (val) => `${val}${val > 10 ? '' : '%'}` // misal <10 pakai %, opsional
 
       // Set chart options dengan annotation
       this.paramChartOptions = {
@@ -627,9 +660,9 @@ export default {
           yaxis: [
             {
               y: std_max_cons,
-              borderColor: '#FF4560',
+              borderColor: '#FF0000',
               label: {
-                text: 'Max Cons',
+                text: `Max Cons: ${fmt(std_max_cons)}`,
                 style: { color: '#fff', background: '#FF4560' },
               },
             },
@@ -637,15 +670,15 @@ export default {
               y: std_min_cons,
               borderColor: '#FEB019',
               label: {
-                text: 'Min Cons',
+                text: `Min Cons: ${fmt(std_min_cons)}`,
                 style: { color: '#fff', background: '#00E396' },
               },
             },
             {
               y: std_ph_max,
-              borderColor: '#FF4560',
+              borderColor: '#FF0000',
               label: {
-                text: 'Max pH',
+                text: `Max pH: ${fmt(std_ph_max)}`,
                 style: { color: '#fff', background: '#775DD0' },
               },
             },
@@ -653,7 +686,7 @@ export default {
               y: std_ph_min,
               borderColor: '#FEB019',
               label: {
-                text: 'Min pH',
+                text: `Min pH: ${fmt(std_ph_min)}`,
                 style: { color: '#fff', background: '#FEB019' },
               },
             },
@@ -667,6 +700,7 @@ export default {
         { name: 'Concentration', data: consSeries },
       ]
     },
+
     async onLineChange(line, type) {
       try {
         const response = await this.$store.dispatch(

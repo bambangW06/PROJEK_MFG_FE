@@ -195,40 +195,40 @@ export default {
 
         {
           component: 'CNavGroup',
-          name: 'TPM Coolant', // Nama menu untuk EAssesment
-          icon: 'cilCalendar', // Ikonya bisa disesuaikan
-          items: [
-            {
-              component: 'CNavItem',
-              name: 'Planing Kuras Coolant ', // Nama menu untuk EAssesment
-              to: '/planSchedule', // Path yang dituju saat menu EAssesment diklik
-              icon: 'cilCalendar', // Ikonya bisa disesuaikan
-            },
-            {
-              component: 'CNavItem',
-              name: 'History Conc & pH', // Nama menu untuk EAssesment
-              to: '/historyConc', // Path yang dituju saat menu EAssesment diklik
-              icon: 'cilHistory', // Ikonya bisa disesuaikan
-            },
-            {
-              component: 'CNavItem',
-              name: 'History Kuras', // Nama menu untuk EAssesment
-              to: '/historyKuras', // Path yang dituju saat menu EAssesment diklik
-              icon: 'cilHistory', // Ikonya bisa disesuaikan
-            },
-            {
-              component: 'CNavItem',
-              name: 'Master Schedule', // Nama menu untuk EAssesment
-              to: '/ScheduleKuras', // Path yang dituju saat menu EAssesment diklik
-              icon: 'cilLibraryAdd', // Ikonya bisa disesuaikan
-            },
-          ],
-        },
-        {
-          component: 'CNavGroup',
           name: 'Chemical Management', // Nama menu untuk EAssesment
           icon: 'cilDrop', // Ikonya bisa disesuaikan
           items: [
+            {
+              component: 'CNavGroup',
+              name: 'TPM Coolant', // Nama menu untuk EAssesment
+              icon: 'cilCalendar', // Ikonya bisa disesuaikan
+              items: [
+                {
+                  component: 'CNavItem',
+                  name: 'Planing Kuras Coolant ', // Nama menu untuk EAssesment
+                  to: '/planSchedule', // Path yang dituju saat menu EAssesment diklik
+                  icon: 'cilCalendar', // Ikonya bisa disesuaikan
+                },
+                {
+                  component: 'CNavItem',
+                  name: 'History Conc & pH', // Nama menu untuk EAssesment
+                  to: '/historyConc', // Path yang dituju saat menu EAssesment diklik
+                  icon: 'cilHistory', // Ikonya bisa disesuaikan
+                },
+                {
+                  component: 'CNavItem',
+                  name: 'History Kuras', // Nama menu untuk EAssesment
+                  to: '/historyKuras', // Path yang dituju saat menu EAssesment diklik
+                  icon: 'cilHistory', // Ikonya bisa disesuaikan
+                },
+                {
+                  component: 'CNavItem',
+                  name: 'Master Schedule', // Nama menu untuk EAssesment
+                  to: '/ScheduleKuras', // Path yang dituju saat menu EAssesment diklik
+                  icon: 'cilLibraryAdd', // Ikonya bisa disesuaikan
+                },
+              ],
+            },
             {
               component: 'cNavItem',
               name: 'Pemakaian Chemical',
@@ -260,6 +260,13 @@ export default {
               name: 'Master Chemicals',
               to: '/master/chemicals',
               icon: 'cilDrop',
+              parentId: 'ROOT',
+            },
+            {
+              component: 'CNavItem',
+              name: 'Master Notes',
+              to: '/master/notes',
+              icon: 'cilNotes',
               parentId: 'ROOT',
             },
             {
