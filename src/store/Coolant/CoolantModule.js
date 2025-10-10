@@ -45,15 +45,17 @@ const actions = {
   async fetchMachines({ commit }, lineId) {
     try {
       const response = await axios.get(
-        `${process.env.VUE_APP_API_URL}/machines/get?line_id=${lineId}`,
+        `${API_URL}/machines/get?line_id=${lineId}`,
       )
-      if (response.data && response.data.data) {
-        this.machinesNames = response.data.data.map((machine) => ({
-          machine_id: machine.machine_id,
-          machine_nm: machine.machine_nm,
-        }))
+
+      if (response.data?.data) {
+        // Urutkan berdasarkan idx_pos
+        const sortedMachines = response.data.data.sort(
+          (a, b) => a.idx_pos - b.idx_pos,
+        )
+
+        commit('setMachinesNames', sortedMachines)
       }
-      commit('setMachinesNames', response.data.data)
       return response
     } catch (error) {
       console.error('Error fetching machines:', error)

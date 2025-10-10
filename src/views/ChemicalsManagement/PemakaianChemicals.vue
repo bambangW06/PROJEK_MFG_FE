@@ -1170,20 +1170,22 @@ export default {
           })
           return
         }
+
+        const line_id = this.selectedMachine?.root_line_id
+
         const currentTime = moment().tz('Asia/Jakarta').format('HH:mm:ss')
-        // Gabungkan tanggal dari input dengan jam sekarang
         const formattedDate = moment(
           `${this.date} ${currentTime}`,
           'YYYY-MM-DD HH:mm:ss',
         )
           .tz('Asia/Jakarta')
           .format('YYYY-MM-DD HH:mm:ss')
+
+        // --- Payload default
         const payload = {
           oil_id: this.oil_nm.oil_id,
           oil_nm: this.oil_nm.oil_nm,
           type_nm: this.type_nm,
-          machine_id: this.selectedMachine.machine_id,
-          machine_nm: this.selectedMachine.machine_nm,
           oil_volume: this.oil_volume,
           pic: this.pic.nama,
           created_dt: formattedDate,
@@ -1191,10 +1193,19 @@ export default {
           note_nm: this.note_nm ? this.note_nm.note_nm : null,
         }
 
-        let response = await this.$store.dispatch(
+        // --- Kondisi khusus untuk MIXING REGULER
+        if (this.note_nm?.note_nm === 'MIXING REGULER') {
+          payload.line_id = line_id
+        } else {
+          payload.machine_id = this.selectedMachine.machine_id
+          payload.machine_nm = this.selectedMachine.machine_nm
+        }
+
+        const response = await this.$store.dispatch(
           ACTION_ADD_PEMAKAIAN_OLI,
           payload,
         )
+
         if (response.status === 201) {
           this.$swal({
             icon: 'success',
@@ -1203,6 +1214,7 @@ export default {
           })
           this.$store.dispatch(ACTION_GET_OILS_USAGE)
         }
+
         this.resetModal()
       } catch (error) {
         this.$swal({
@@ -1212,6 +1224,7 @@ export default {
         })
       }
     },
+
     resetModal() {
       this.selectedLine = null
       this.selectedMachine = null

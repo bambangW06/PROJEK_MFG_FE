@@ -136,6 +136,8 @@
                   <th>Machine</th>
                   <th>Chemical</th>
                   <th>Usage (L)</th>
+                  <th>Remarks</th>
+                  <th>PIC</th>
                 </tr>
               </thead>
               <tbody v-if="GET_HISTORY_CHEMICAL.length > 0">
@@ -145,14 +147,25 @@
                 >
                   <td>{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
                   <td>{{ data.created_dt }}</td>
-                  <td>{{ data.machine_nm }}</td>
+                  <td>
+                    {{ data.machine_nm ? data.machine_nm : 'ALL MACHINE' }}
+                  </td>
                   <td>{{ data.oil_nm }}</td>
                   <td>{{ data.oil_volume }} L</td>
+                  <td>
+                    {{
+                      data.note_nm && data.note_nm.trim()
+                        ? data.note_nm
+                        : 'REGULER'
+                    }}
+                  </td>
+
+                  <td>{{ data.pic }}</td>
                 </tr>
               </tbody>
               <tbody v-else>
                 <tr>
-                  <td colspan="5">No Data</td>
+                  <td colspan="7">No Data</td>
                 </tr>
               </tbody>
             </table>
@@ -558,7 +571,7 @@ export default {
           else if (this.selectedLineUsage && !this.selectedMachineUsage) {
             const grouped = {} // grouped[machine_nm][oil_nm] = total
             data.forEach((item) => {
-              const machine = item.machine_nm || 'Unknown Machine'
+              const machine = item.machine_nm || 'All Machine'
               const oil = item.oil_nm || 'Unknown Oil'
               const vol = parseFloat(item.oil_volume) || 0
               if (!grouped[machine]) grouped[machine] = {}
@@ -810,11 +823,23 @@ export default {
       // Set chart options dengan annotation
       this.paramChartOptions = {
         ...this.paramChartOptions,
-        xaxis: { categories },
+        xaxis: {
+          categories,
+        },
         yaxis: {
           min: yMin,
           max: yMax,
           title: { text: 'Nilai Parameter' },
+          axisBorder: {
+            show: true,
+            color: '#333', // warna garis sumbu X
+            height: 2, // ketebalan
+          },
+          axisTicks: {
+            show: true,
+            color: '#333',
+            height: 6, // panjang garis kecil di bawah label
+          },
         },
         title: {
           text: `Trend Parameter (${
@@ -837,7 +862,7 @@ export default {
               borderColor: '#FEB019',
               label: {
                 text: `Min Cons: ${fmt(std_min_cons)}`,
-                style: { color: '#fff', background: '#00E396' },
+                style: { color: '#fff', background: '#FEB019' },
               },
             },
             {
@@ -845,7 +870,7 @@ export default {
               borderColor: '#FF0000',
               label: {
                 text: `Max pH: ${fmt(std_ph_max)}`,
-                style: { color: '#fff', background: '#775DD0' },
+                style: { color: '#fff', background: '#FF4560' },
               },
             },
             {
