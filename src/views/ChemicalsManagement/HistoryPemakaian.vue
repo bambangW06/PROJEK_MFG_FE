@@ -33,6 +33,18 @@
         <!-- Filter Card -->
         <div class="card p-3 mb-3 shadow-sm">
           <div class="row d-flex flex-wrap gap-3 mb-3 align-items-end">
+            <div class="col filter-group flex-grow-1">
+              <label class="form-label fw-semibold mb-1">Chemical</label>
+              <v-select
+                :options="GET_MASTER_OIL"
+                v-model="selectedChemical"
+                label="oil_nm"
+                placeholder="Pilih Chemical"
+                class="w-100"
+                :append-to-body="true"
+              />
+            </div>
+
             <!-- Line -->
             <div class="col filter-group flex-grow-1">
               <label class="form-label fw-semibold mb-1">Line</label>
@@ -41,7 +53,6 @@
                 v-model="selectedLineUsage"
                 label="line_nm"
                 placeholder="Pilih Line"
-                @input="onLineChange"
                 class="w-100"
                 :append-to-body="true"
               />
@@ -196,7 +207,6 @@
                 v-model="selectedLineParam"
                 label="line_nm"
                 placeholder="Pilih Line"
-                @input="onLineChange"
                 class="w-100"
                 :append-to-body="true"
               />
@@ -329,12 +339,17 @@ import {
   ACTION_GET_HISTORY_CHEMICAL,
   GET_HISTORY_CHEMICAL,
 } from '@/store/Chemical/HistoryPemakaian.module'
+import {
+  ACTION_GET_MASTER_OIL,
+  GET_MASTER_OIL,
+} from '@/store/Chemical/MasterChemicals.module'
 
 export default {
   name: 'HistoryChemical',
   components: { apexchart: VueApexCharts, Datepicker, FlatPickr },
   data() {
     return {
+      selectedChemical: null,
       currentPage: 1,
       itemsPerPage: 10,
       activeTab: 'usage',
@@ -404,7 +419,12 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['getLineNames', 'getMachinesNames', 'GET_HISTORY_CHEMICAL']),
+    ...mapGetters([
+      'getLineNames',
+      'getMachinesNames',
+      GET_HISTORY_CHEMICAL,
+      GET_MASTER_OIL,
+    ]),
     paginatedUsage() {
       const start = (this.currentPage - 1) * this.itemsPerPage
       const end = start + this.itemsPerPage
@@ -637,7 +657,13 @@ export default {
         await this.fetchHistoryData()
       }
     },
-
+    async selectedChemical(newVal) {
+      if (newVal) {
+        await this.fetchHistoryData()
+      } else {
+        await this.fetchHistoryData()
+      }
+    },
     async selectedLineParam(newVal) {
       if (newVal) {
         this.selectedMachineParam = null
@@ -682,6 +708,8 @@ export default {
 
         if (this.activeTab === 'usage' && this.selectedMachineUsage?.machine_id)
           payload.machine_id = this.selectedMachineUsage.machine_id
+        if (this.activeTab === 'usage' && this.selectedChemical?.oil_id)
+          payload.oil_id = this.selectedChemical.oil_id
         if (this.activeTab === 'param' && this.selectedMachineParam?.machine_id)
           payload.machine_id = this.selectedMachineParam.machine_id
 
@@ -884,6 +912,7 @@ export default {
     }
 
     await this.fetchHistoryData()
+    await this.$store.dispatch(ACTION_GET_MASTER_OIL)
   },
 }
 </script>
