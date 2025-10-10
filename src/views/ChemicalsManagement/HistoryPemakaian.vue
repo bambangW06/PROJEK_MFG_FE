@@ -439,59 +439,170 @@ export default {
           return
         }
 
-        // --- Kondisi untuk TAB USAGE ---
         if (this.activeTab === 'usage') {
-          if (!this.selectedMachineUsage) {
-            // Total per oil_nm
+          let data = val || []
+          if (data.length === 0) {
+            this.usageChartSeries = []
+            return
+          }
+
+          // 🔧 Inject line info kalau filter line aktif tapi BE gak kirim line_id
+          if (this.selectedLineUsage && data.length && !data[0].line_id) {
+            data = data.map((d) => ({
+              ...d,
+              line_id: this.selectedLineUsage.line_id,
+              line_nm: this.selectedLineUsage.line_nm,
+            }))
+          }
+
+          // =======================================================
+          // 1️⃣ TANPA FILTER → Pareto per Line
+          // =======================================================
+          if (!this.selectedLineUsage && !this.selectedMachineUsage) {
+            const grouped = {} // grouped[line_nm][oil_nm] = total
+            data.forEach((item) => {
+              const line = item.line_nm || 'Unknown Line'
+              const oil = item.oil_nm || 'Unknown Oil'
+              const vol = parseFloat(item.oil_volume) || 0
+              if (!grouped[line]) grouped[line] = {}
+              grouped[line][oil] = (grouped[line][oil] || 0) + vol
+            })
+
+            const totals = Object.entries(grouped).map(([line, oils]) => ({
+              line,
+              total: Object.values(oils).reduce((a, b) => a + b, 0),
+            }))
+            const sortedLines = totals
+              .sort((a, b) => b.total - a.total)
+              .map((d) => d.line)
+
+            const allOils = [...new Set(data.map((d) => d.oil_nm))]
+            const series = allOils.map((oil) => ({
+              name: oil,
+              data: sortedLines.map((line) => grouped[line]?.[oil] || 0),
+            }))
+
+            this.usageChartOptions = {
+              ...this.usageChartOptions,
+              chart: { type: 'bar', stacked: true },
+              xaxis: { categories: sortedLines },
+              title: {
+                text: 'Pareto Total Chemical per Line',
+                align: 'center',
+              },
+              xaxis: {
+                categories: sortedLines,
+                axisBorder: {
+                  show: true,
+                  color: '#333', // warna garis sumbu X
+                  height: 2, // ketebalan
+                },
+                axisTicks: {
+                  show: true,
+                  color: '#333',
+                  height: 6, // panjang garis kecil di bawah label
+                },
+              },
+              yaxis: {
+                title: {
+                  text: 'Volume (Liter)',
+                },
+                axisBorder: {
+                  show: true,
+                  color: '#333', // warna garis sumbu Y
+                  width: 2, // ketebalan garis Y
+                },
+                axisTicks: {
+                  show: true,
+                  color: '#333',
+                  width: 2,
+                },
+                labels: {
+                  formatter: (val) => `${Math.round(val * 10) / 10} L`, // bulatkan 1 desimal
+                },
+                tickAmount: 4, // jumlah garis pada sumbu Y, misal 0, 0.5, 1.0, 1.5, 2.0
+                decimalsInFloat: 1, // biar 0.5 bukan 0.666666
+              },
+              grid: {
+                show: true,
+                borderColor: '#ddd', // warna garis bantu (grid)
+                strokeDashArray: 4, // garis bantu putus-putus
+              },
+            }
+            this.usageChartSeries = series
+          }
+
+          // =======================================================
+          // 2️⃣ FILTER LINE → Pareto per Machine
+          // =======================================================
+          else if (this.selectedLineUsage && !this.selectedMachineUsage) {
+            const grouped = {} // grouped[machine_nm][oil_nm] = total
+            data.forEach((item) => {
+              const machine = item.machine_nm || 'Unknown Machine'
+              const oil = item.oil_nm || 'Unknown Oil'
+              const vol = parseFloat(item.oil_volume) || 0
+              if (!grouped[machine]) grouped[machine] = {}
+              grouped[machine][oil] = (grouped[machine][oil] || 0) + vol
+            })
+
+            const totals = Object.entries(grouped).map(([machine, oils]) => ({
+              machine,
+              total: Object.values(oils).reduce((a, b) => a + b, 0),
+            }))
+            const sortedMachines = totals
+              .sort((a, b) => b.total - a.total)
+              .map((d) => d.machine)
+
+            const allOils = [...new Set(data.map((d) => d.oil_nm))]
+            const series = allOils.map((oil) => ({
+              name: oil,
+              data: sortedMachines.map((m) => grouped[m]?.[oil] || 0),
+            }))
+
+            this.usageChartOptions = {
+              ...this.usageChartOptions,
+              chart: { type: 'bar', stacked: true },
+              xaxis: { categories: sortedMachines },
+              title: {
+                text: `Pareto Total Chemical per Machine (${this.selectedLineUsage.line_nm})`,
+                align: 'center',
+              },
+            }
+            this.usageChartSeries = series
+          }
+
+          // =======================================================
+          // 3️⃣ FILTER LINE + MACHINE → Pareto per Chemical
+          // =======================================================
+          else if (this.selectedLineUsage && this.selectedMachineUsage) {
+            const filtered = data.filter(
+              (d) => d.machine_id === this.selectedMachineUsage.machine_id,
+            )
+
             const totalsByOil = {}
-            val.forEach((item) => {
+            filtered.forEach((item) => {
               const oil = item.oil_nm
               const vol = parseFloat(item.oil_volume) || 0
               totalsByOil[oil] = (totalsByOil[oil] || 0) + vol
             })
 
             const sorted = Object.entries(totalsByOil)
-              .map(([oil_nm, total]) => ({ oil_nm, total }))
+              .map(([oil, total]) => ({ oil, total }))
               .sort((a, b) => b.total - a.total)
 
             this.usageChartOptions = {
               ...this.usageChartOptions,
-              xaxis: { categories: sorted.map((d) => d.oil_nm) },
-              title: { text: 'Total Usage', align: 'center' },
+              chart: { type: 'bar', stacked: false },
+              xaxis: { categories: sorted.map((d) => d.oil) },
+              title: {
+                text: `Pareto Chemical Usage (${this.selectedMachineUsage.machine_nm})`,
+                align: 'center',
+              },
             }
 
             this.usageChartSeries = [
               { name: 'Total Usage (L)', data: sorted.map((d) => d.total) },
             ]
-          } else {
-            // per tanggal per oil_nm
-            const grouped = {}
-            val.forEach((item) => {
-              const date = item.created_dt.split(' ')[0]
-              const oil = item.oil_nm
-              const vol = parseFloat(item.oil_volume) || 0
-              if (!grouped[oil]) grouped[oil] = {}
-              grouped[oil][date] = (grouped[oil][date] || 0) + vol
-            })
-
-            const allDates = [
-              ...new Set(val.map((d) => d.created_dt.split(' ')[0])),
-            ].sort()
-            const series = Object.keys(grouped).map((oil) => ({
-              name: oil,
-              data: allDates.map((dt) => grouped[oil][dt] || 0),
-            }))
-
-            this.usageChartOptions = {
-              ...this.usageChartOptions,
-              xaxis: { categories: allDates },
-              title: {
-                text: `Daily Usage per Chemical (${this.selectedMachineUsage.machine_nm})`,
-                align: 'center',
-              },
-            }
-
-            this.usageChartSeries = series
           }
         }
 
@@ -508,7 +619,7 @@ export default {
         if (newVal && newVal.length > 0) {
           const defaultLine = newVal.find((l) => l.line_nm === 'Cylinder Head')
           if (defaultLine) {
-            if (!this.selectedLineUsage) this.selectedLineUsage = defaultLine
+            // if (!this.selectedLineUsage) this.selectedLineUsage = defaultLine
             if (!this.selectedLineParam) this.selectedLineParam = defaultLine
           }
         }
@@ -519,6 +630,10 @@ export default {
       if (newVal) {
         this.selectedMachineUsage = null
         await this.onLineChange(newVal, 'usage')
+        await this.fetchHistoryData()
+      } else {
+        // Kalau line dikosongkan → reset machine juga + fetch ulang tanpa filter
+        this.selectedMachineUsage = null
         await this.fetchHistoryData()
       }
     },
