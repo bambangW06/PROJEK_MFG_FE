@@ -1,4 +1,59 @@
 <template>
+  <!-- Modal Note -->
+  <div
+    class="modal"
+    id="noteModal"
+    tabindex="-1"
+    aria-hidden="true"
+    ref="noteModal"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content p-3">
+        <h6 class="fw-bold mb-2">Tambah / Edit Note</h6>
+
+        <div class="mb-2">
+          <label class="form-label">Tanggal</label>
+          <input
+            type="date"
+            class="form-control form-control-sm"
+            v-model="noteForm.date"
+          />
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label">Shift</label>
+          <select class="form-select form-select-sm" v-model="noteForm.shift">
+            <option value="R">R</option>
+            <option value="W">W</option>
+          </select>
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label">Note</label>
+          <v-select
+            :options="GET_MASTER_NOTE"
+            v-model="noteForm.selectedNote"
+            label="note_nm"
+            placeholder="Pilih note..."
+          />
+        </div>
+
+        <div class="text-end">
+          <button class="btn btn-secondary btn-sm me-2" data-bs-dismiss="modal">
+            Batal
+          </button>
+          <button
+            class="btn btn-primary btn-sm"
+            @click="saveNote"
+            data-bs-dismiss="modal"
+          >
+            Simpan
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="container-fluid p-3">
     <!-- Header -->
     <div class="card p-3 mb-3 shadow-sm">
@@ -69,7 +124,9 @@
                 <th class="sticky-col sticky-col-2">Chemical Type</th>
                 <th class="sticky-col sticky-col-3">No Item</th>
                 <th class="sticky-col sticky-col-4">Shift</th>
-                <th v-for="day in days" :key="day">{{ day }}</th>
+                <th v-for="day in days" :key="day" :class="getDayClass(day)">
+                  {{ day }}
+                </th>
                 <th>Total</th>
               </tr>
             </thead>
@@ -86,12 +143,26 @@
                     {{ chem.oil_nm }}
                   </td>
                   <td class="sticky-col sticky-col-3" :rowspan="3">
-                    {{ chem.material_no }}
+                    <div>{{ chem.material_no }}</div>
+                    <button
+                      class="btn btn-sm btn-outline-secondary mt-1"
+                      title="Tambah / Edit Note"
+                      data-bs-toggle="modal"
+                      data-bs-target="#noteModal"
+                      @click="openNoteModal(chem)"
+                    >
+                      Notes
+                    </button>
                   </td>
+
                   <td class="sticky-col sticky-col-4 fw-semibold text-danger">
                     R
                   </td>
-                  <td v-for="day in days" :key="'r' + day">
+                  <td
+                    v-for="day in days"
+                    :key="'r' + day"
+                    :class="getDayClass(day)"
+                  >
                     <input
                       type="number"
                       class="form-control form-control-sm text-center"
@@ -105,7 +176,11 @@
 
                 <tr>
                   <td class="fw-semibold sticky-col sticky-col-4">W</td>
-                  <td v-for="day in days" :key="'w' + day">
+                  <td
+                    v-for="day in days"
+                    :key="'w' + day"
+                    :class="getDayClass(day)"
+                  >
                     <input
                       type="number"
                       class="form-control form-control-sm text-center"
@@ -119,7 +194,11 @@
 
                 <tr class="table-secondary fw-semibold">
                   <td class="sticky-col sticky-col-4">Σ</td>
-                  <td v-for="day in days" :key="'c' + day">
+                  <td
+                    v-for="day in days"
+                    :key="'c' + day"
+                    :class="getDayClass(day)"
+                  >
                     {{ chem.cumulative[day] || 0 }}
                   </td>
                   <td>{{ totalCumulative(chem) }}</td>
@@ -128,6 +207,55 @@
             </tbody>
           </table>
         </div>
+      </div>
+    </div>
+    <div class="card p-3 mb-2 mt-3 shadow-sm">
+      <h4 class="fw-bold mb-3">Pareto Chemical Bulan Ini</h4>
+    </div>
+
+    <div class="card mb-3 shadow-sm p-3">
+      <!-- Grafik Pareto -->
+      <apexchart
+        type="bar"
+        height="350"
+        :options="paretoOptions"
+        :series="paretoSeries"
+      />
+    </div>
+
+    <!-- Table list data -->
+    <div class="card shadow-sm p-3">
+      <h6 class="fw-bold mb-2">Detail Data</h6>
+      <div class="table-responsive">
+        <table class="table table-bordered table-sm text-center align-middle">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Chemical</th>
+              <th>Shift</th>
+              <th>Tanggal</th>
+              <th>Volume</th>
+              <th>PIC</th>
+              <th>Note</th>
+            </tr>
+          </thead>
+          <tbody v-if="filteredData.length > 0">
+            <tr v-for="(item, index) in filteredData" :key="item.reservasi_id">
+              <td>{{ index + 1 }}</td>
+              <td>{{ item.oil_nm }}</td>
+              <td>{{ item.shift }}</td>
+              <td>{{ formatDate(item.created_dt) }}</td>
+              <td>{{ item.vol }}</td>
+              <td>{{ item.created_by ? item.created_by : item.updated_by }}</td>
+              <td>{{ item.note_nm }}</td>
+            </tr>
+          </tbody>
+          <tbody v-else>
+            <tr>
+              <td colspan="7" class="text-center">No data available</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -152,21 +280,32 @@
 </template>
 
 <script>
+import VueApexCharts from 'vue3-apexcharts'
 import {
   ACTION_GET_MASTER_OIL,
   GET_MASTER_OIL,
 } from '@/store/Chemical/MasterChemicals.module'
 import {
+  ACTION_GET_MASTER_NOTE,
+  GET_MASTER_NOTE,
+} from '@/store/Chemical/MasterNote.module'
+import {
   ACTION_ADD_RESERVASI,
   ACTION_GET_RESERVASI,
+  ACTION_UPDATE_NOTE_RESERVASI,
   GET_RESERVASI,
 } from '@/store/Chemical/ReservasiChemical.module'
 import { mapGetters } from 'vuex'
 
 export default {
   name: 'ReservasiChemical',
+  components: {
+    apexchart: VueApexCharts,
+  },
   data() {
     return {
+      paretoSeries: [],
+      paretoOptions: {},
       selectedMonth: new Date().toISOString().slice(0, 7),
       days: [],
       toastMessage: '',
@@ -174,10 +313,28 @@ export default {
       chemicals: [], // dari BE
       selectedChemical: null,
       selectedPIC: null,
+      noteForm: {
+        chem: null, // chemical yang sedang dipilih
+        date: '', // tanggal note
+        shift: 'R', // shift default R
+        selectedNote: null, // note yang dipilih user
+      },
     }
   },
   computed: {
-    ...mapGetters([GET_MASTER_OIL, 'getKaryawanList', GET_RESERVASI]),
+    ...mapGetters([
+      GET_MASTER_OIL,
+      'getKaryawanList',
+      GET_RESERVASI,
+      GET_MASTER_NOTE,
+    ]),
+    filteredData() {
+      // Data bulan ini
+      const month = new Date().toISOString().slice(0, 7)
+      return (this[GET_RESERVASI] || []).filter(
+        (r) => r.created_dt.slice(0, 7) === month,
+      )
+    },
     filteredChemicals() {
       if (!this.selectedChemical) return this.chemicals
       return this.chemicals.filter((c) => c.oil_id === this.selectedChemical)
@@ -201,11 +358,187 @@ export default {
     await this.$store.dispatch(ACTION_GET_MASTER_OIL)
     await this.$store.dispatch('fetchKaryawanList')
     await this.$store.dispatch(ACTION_GET_RESERVASI)
+    await this.$store.dispatch(ACTION_GET_MASTER_NOTE)
     this.initChemicals()
     this.generateDays()
     this.populateVolFromBackend()
+    this.preparePareto()
   },
   methods: {
+    preparePareto() {
+      const data = this.filteredData
+      if (!data.length) return
+
+      // Aggregate total per chemical
+      const totals = {}
+      data.forEach((r) => {
+        totals[r.oil_nm] = (totals[r.oil_nm] || 0) + Number(r.vol || 0)
+      })
+
+      // Sort descending
+      const sorted = Object.entries(totals).sort((a, b) => b[1] - a[1])
+
+      const categories = sorted.map((s) => s[0])
+      const values = sorted.map((s) => s[1])
+
+      // Hitung cumulative %
+      const totalSum = values.reduce((a, b) => a + b, 0)
+      const cumulative = []
+      let running = 0
+      values.forEach((v) => {
+        running += v
+        cumulative.push((running / totalSum) * 100)
+      })
+
+      // Set series & options
+      this.paretoSeries = [
+        {
+          name: 'Volume',
+          type: 'bar',
+          data: values,
+        },
+        {
+          name: 'Cumulative %',
+          type: 'line',
+          data: cumulative,
+        },
+      ]
+
+      this.paretoOptions = {
+        chart: {
+          height: 350,
+          type: 'line',
+          stacked: false,
+        },
+        stroke: {
+          width: [0, 3],
+        },
+        title: {
+          text: 'Pareto Chart Chemical',
+          align: 'left',
+        },
+        xaxis: {
+          categories,
+          title: { text: 'Chemical' },
+        },
+        yaxis: [
+          {
+            title: { text: 'Volume' },
+            labels: {
+              formatter: (val) => {
+                if (val == null || isNaN(val)) return val
+                return val % 1 === 0 ? val : Number(val.toFixed(2))
+              },
+            },
+          },
+          {
+            opposite: true,
+            max: 100,
+            title: { text: 'Cumulative %' },
+            labels: {
+              formatter: (val) => {
+                if (val == null || isNaN(val)) return val
+                return val % 1 === 0 ? val : Number(val.toFixed(2))
+              },
+            },
+          },
+        ],
+        tooltip: {
+          shared: true,
+          intersect: false,
+          y: {
+            formatter: (val) => {
+              if (val == null || isNaN(val)) return val
+              return val % 1 === 0 ? val : Number(val.toFixed(2))
+            },
+          },
+        },
+        dataLabels: {
+          enabled: true,
+          formatter: (val) => {
+            if (val == null || isNaN(val)) return val
+            return val % 1 === 0 ? val : Number(val.toFixed(2))
+          },
+        },
+      }
+    },
+
+    formatDate(dt) {
+      const d = new Date(dt)
+      return d.toISOString().slice(0, 10)
+    },
+    async saveNote() {
+      const { chem, date, shift, selectedNote } = this.noteForm
+
+      // 1. Cek input tanggal
+      if (!date) {
+        this.showToast('Data tidak ada')
+        return
+      }
+
+      // 2. Cari data reservasi sesuai tanggal + shift + chemical
+      const backendData = this.GET_RESERVASI || []
+      const record = backendData.find(
+        (r) =>
+          r.oil_id === chem.oil_id &&
+          r.shift === shift &&
+          this.getDisplayDate(r.created_dt) === date,
+      )
+
+      if (!record) {
+        this.showToast('Data tidak ada')
+        return
+      }
+
+      // 3. Siapkan payload untuk update note
+      const payload = {
+        reservasi_id: record.reservasi_id,
+        note_id: selectedNote?.note_id || null,
+        note_nm: selectedNote?.note_nm || null,
+      }
+
+      try {
+        const response = await this.$store.dispatch(
+          ACTION_UPDATE_NOTE_RESERVASI,
+          payload,
+        )
+        if (response.status === 200) {
+          await this.$store.dispatch(ACTION_GET_RESERVASI, this.selectedMonth)
+          this.populateVolFromBackend()
+          this.closeNoteModal()
+          this.showToast('Note tersimpan')
+        }
+      } catch (error) {
+        console.error('Error saving note:', error)
+        this.showToast('Gagal menyimpan note')
+      }
+    },
+    closeNoteModal() {
+      this.noteForm.chem = null
+      this.noteForm.date = ''
+      this.noteForm.shift = 'R'
+      this.noteForm.selectedNote = null
+    },
+    openNoteModal(chem) {
+      // Simpan chemical yang sedang dipilih
+      this.noteForm.chem = chem
+
+      // Reset form default
+      const today = new Date()
+      this.noteForm.date = today.toISOString().slice(0, 10)
+      this.noteForm.shift = 'R' // default R, user bisa ganti
+      this.noteForm.selectedNote = null
+    },
+    getDayClass(day) {
+      const dateStr = `${this.selectedMonth}-${String(day).padStart(2, '0')}`
+      const date = new Date(dateStr)
+      const dayOfWeek = date.getDay() // 0 = Minggu, 6 = Sabtu
+
+      if (dayOfWeek === 6) return 'saturday'
+      if (dayOfWeek === 0) return 'sunday'
+      return ''
+    },
+
     populateVolFromBackend() {
       const backendData = this.GET_RESERVASI || []
       this.chemicals.forEach((chem) => {
@@ -345,6 +678,7 @@ export default {
         if (response.status === 201) {
           await this.$store.dispatch(ACTION_GET_RESERVASI, this.selectedMonth)
           this.populateVolFromBackend()
+          this.preparePareto()
           this.showToast(
             `Data ${chem.oil_nm} (Shift ${shiftType} tgl ${day}) tersimpan`,
           )
@@ -454,5 +788,17 @@ export default {
 .table-secondary td {
   background-color: #f3f3f3 !important;
   font-weight: 600;
+}
+.saturday {
+  background-color: #ffeaea !important; /* light red */
+}
+.sunday {
+  background-color: #ffdcdc !important; /* slightly stronger light red */
+}
+.table-bordered th {
+  background-color: rgb(198, 240, 240);
+}
+.table-bordered {
+  border: 1px solid black;
 }
 </style>

@@ -7,6 +7,8 @@ export const ACTION_GET_RESERVASI = 'ACTION_GET_RESERVASI'
 export const SET_RESERVASI = 'SET_RESERVASI'
 export const GET_RESERVASI = 'GET_RESERVASI'
 
+export const ACTION_UPDATE_NOTE_RESERVASI = 'ACTION_UPDATE_NOTE_RESERVASI'
+
 const state = {
   RESERVASI_DATA: [],
 }
@@ -41,6 +43,17 @@ const actions = {
         params: { month: payload },
       })
       commit(SET_RESERVASI, response.data.data)
+      return response
+    } catch (error) {
+      console.log(error)
+    }
+  },
+  async ACTION_UPDATE_NOTE_RESERVASI({ commit }, payload) {
+    try {
+      const response = await axios.post(
+        `${API_URL}/reservasiChemical/add-note`,
+        payload,
+      )
       return response
     } catch (error) {
       console.log(error)
