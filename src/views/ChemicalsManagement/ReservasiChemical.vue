@@ -330,7 +330,7 @@ export default {
     ]),
     filteredData() {
       // Data bulan ini
-      const month = new Date().toISOString().slice(0, 7)
+      const month = this.selectedMonth
       return (this[GET_RESERVASI] || []).filter(
         (r) => r.created_dt.slice(0, 7) === month,
       )
@@ -351,6 +351,7 @@ export default {
         this.initChemicals()
         this.generateDays()
         this.populateVolFromBackend()
+        this.preparePareto()
       }
     },
   },
