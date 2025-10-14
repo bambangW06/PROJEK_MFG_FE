@@ -231,6 +231,12 @@ export default {
             },
             {
               component: 'cNavItem',
+              name: 'Reservasi Chemical',
+              to: '/chemical/reservasi',
+              icon: 'cilDrop',
+            },
+            {
+              component: 'cNavItem',
               name: 'Pemakaian Chemical',
               to: '/chemical/pemakaian',
               icon: 'cilBeaker',

@@ -184,9 +184,16 @@ const routes = [
           import('@/views/ChemicalsManagement/HistoryPemakaian.vue'),
       },
       {
+        path: '/chemical/reservasi',
+        name: 'ReservasiChemical',
+        component: () =>
+          import('@/views/ChemicalsManagement/ReservasiChemical.vue'),
+      },
+      {
         path: '/master/notes',
         name: 'MasterNotes',
         component: () => import('@/views/ChemicalsManagement/MasterNote.vue'),
+        meta: { requiresSpecialToken: true },
       },
       /*define other in here*/
     ],
