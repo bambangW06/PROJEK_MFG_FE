@@ -199,9 +199,11 @@
                     :key="'c' + day"
                     :class="getDayClass(day)"
                   >
-                    {{ chem.cumulative[day] || 0 }}
+                    <strong>{{ chem.cumulative[day] || 0 }}</strong>
                   </td>
-                  <td>{{ totalCumulative(chem) }}</td>
+                  <td>
+                    <strong>{{ totalCumulative(chem) }}</strong>
+                  </td>
                 </tr>
               </template>
             </tbody>
@@ -211,6 +213,18 @@
     </div>
     <div class="card p-3 mb-2 mt-3 shadow-sm">
       <h4 class="fw-bold mb-3">Pareto Chemical Bulan Ini</h4>
+      <div>
+        <v-select
+          :options="chemicalOptions"
+          v-model="selectedChemicalGraph"
+          label="oil_nm"
+          :reduce="(c) => c.oil_id"
+          :append-to-body="true"
+          placeholder="Pilih Chemical"
+          clearable
+          style="width: 220px"
+        />
+      </div>
     </div>
 
     <div class="card mb-3 shadow-sm p-3">
@@ -319,6 +333,7 @@ export default {
         shift: 'R', // shift default R
         selectedNote: null, // note yang dipilih user
       },
+      selectedChemicalGraph: null,
     }
   },
   computed: {
@@ -329,11 +344,19 @@ export default {
       GET_MASTER_NOTE,
     ]),
     filteredData() {
-      // Data bulan ini
       const month = this.selectedMonth
-      return (this[GET_RESERVASI] || []).filter(
+
+      let data = (this[GET_RESERVASI] || []).filter(
         (r) => r.created_dt.slice(0, 7) === month,
       )
+
+      if (this.selectedChemicalGraph) {
+        data = data.filter(
+          (r) => Number(r.oil_id) === Number(this.selectedChemicalGraph),
+        )
+      }
+
+      return data
     },
     filteredChemicals() {
       if (!this.selectedChemical) return this.chemicals
@@ -345,6 +368,12 @@ export default {
     },
   },
   watch: {
+    filteredData: {
+      handler(newVal) {
+        this.preparePareto()
+      },
+      immediate: true,
+    },
     async selectedMonth(newVal, oldVal) {
       if (newVal !== oldVal) {
         await this.$store.dispatch(ACTION_GET_RESERVASI, this.selectedMonth)
@@ -413,10 +442,11 @@ export default {
         },
         stroke: {
           width: [0, 3],
+          curve: 'straight', // biar garis cumulative lurus
         },
         title: {
           text: 'Pareto Chart Chemical',
-          align: 'left',
+          align: 'center',
         },
         xaxis: {
           categories,
@@ -437,10 +467,7 @@ export default {
             max: 100,
             title: { text: 'Cumulative %' },
             labels: {
-              formatter: (val) => {
-                if (val == null || isNaN(val)) return val
-                return val % 1 === 0 ? val : Number(val.toFixed(2))
-              },
+              formatter: (val) => val.toFixed(1) + '%', // selalu 1 desimal dan ada %
             },
           },
         ],
@@ -448,16 +475,16 @@ export default {
           shared: true,
           intersect: false,
           y: {
-            formatter: (val) => {
-              if (val == null || isNaN(val)) return val
+            formatter: (val, opts) => {
+              if (opts.seriesIndex === 1) return val.toFixed(1) + '%'
               return val % 1 === 0 ? val : Number(val.toFixed(2))
             },
           },
         },
         dataLabels: {
           enabled: true,
-          formatter: (val) => {
-            if (val == null || isNaN(val)) return val
+          formatter: (val, opts) => {
+            if (opts.seriesIndex === 1) return val.toFixed(1) + '%'
             return val % 1 === 0 ? val : Number(val.toFixed(2))
           },
         },

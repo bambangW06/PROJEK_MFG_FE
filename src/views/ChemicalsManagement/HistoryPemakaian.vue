@@ -472,6 +472,13 @@ export default {
           return
         }
 
+        // ✅ Log record dengan line_nm "MIXING REGULER"
+        val.forEach((d) => {
+          if (d.line_nm && d.line_nm.includes('MIXING REGULER')) {
+            console.log('Found MIXING REGULER record:', d)
+          }
+        })
+
         if (this.activeTab === 'usage') {
           let data = val || []
           if (data.length === 0) {
