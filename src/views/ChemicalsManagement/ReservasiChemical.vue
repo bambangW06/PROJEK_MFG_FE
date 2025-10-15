@@ -253,9 +253,9 @@
               <th>Note</th>
             </tr>
           </thead>
-          <tbody v-if="filteredData.length > 0">
-            <tr v-for="(item, index) in filteredData" :key="item.reservasi_id">
-              <td>{{ index + 1 }}</td>
+          <tbody v-if="paginatedData.length > 0">
+            <tr v-for="(item, index) in paginatedData" :key="item.reservasi_id">
+              <td>{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
               <td>{{ item.oil_nm }}</td>
               <td>{{ item.shift }}</td>
               <td>{{ formatDate(item.created_dt) }}</td>
@@ -270,6 +270,41 @@
             </tr>
           </tbody>
         </table>
+        <div class="d-flex justify-content-between align-items-center mt-2">
+          <!-- Tombol Prev / Next -->
+          <div>
+            <button
+              class="btn btn-sm btn-primary me-2"
+              :disabled="currentPage === 1"
+              @click="currentPage--"
+            >
+              Prev
+            </button>
+            <button
+              class="btn btn-sm btn-primary"
+              :disabled="currentPage === totalPages"
+              @click="currentPage++"
+            >
+              Next
+            </button>
+          </div>
+
+          <!-- Info halaman + row per page -->
+          <div class="d-flex align-items-center">
+            <span>Page {{ currentPage }} of {{ totalPages }}</span>
+
+            <!-- Dropdown row per page -->
+            <select
+              v-model.number="itemsPerPage"
+              class="form-select form-select-sm w-auto ms-2"
+            >
+              <option :value="5">5</option>
+              <option :value="10">10</option>
+              <option :value="25">25</option>
+              <option :value="50">50</option>
+            </select>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -318,6 +353,8 @@ export default {
   },
   data() {
     return {
+      currentPage: 1,
+      itemsPerPage: 10,
       paretoSeries: [],
       paretoOptions: {},
       selectedMonth: new Date().toISOString().slice(0, 7),
@@ -343,6 +380,7 @@ export default {
       GET_RESERVASI,
       GET_MASTER_NOTE,
     ]),
+
     filteredData() {
       const month = this.selectedMonth
 
@@ -357,6 +395,15 @@ export default {
       }
 
       return data
+    },
+    paginatedData() {
+      const start = (this.currentPage - 1) * this.itemsPerPage
+      const end = start + this.itemsPerPage
+      // slicing dari filteredData, bukan GET_RESERVASI
+      return this.filteredData.slice(start, end)
+    },
+    totalPages() {
+      return Math.ceil(this.filteredData.length / this.itemsPerPage)
     },
     filteredChemicals() {
       if (!this.selectedChemical) return this.chemicals
@@ -427,12 +474,12 @@ export default {
           type: 'bar',
           data: values,
         },
-        {
-          name: 'Cumulative %',
-          type: 'line',
-          data: cumulative,
-        },
       ]
+      //  {
+      //           name: 'Cumulative %',
+      //           type: 'line',
+      //           data: cumulative,
+      //         },
 
       this.paretoOptions = {
         chart: {
@@ -450,10 +497,39 @@ export default {
         },
         xaxis: {
           categories,
-          title: { text: 'Chemical' },
+          labels: {
+            rotate: 0,
+            formatter: function (val) {
+              if (val.length > 10) return val.slice(0, 10) + '...'
+              return val
+            },
+            style: { fontSize: '12px' },
+          },
+          axisBorder: {
+            show: true,
+            color: '#333', // warna garis sumbu
+            height: 2, // tebal garis
+          },
+          axisTicks: {
+            show: true,
+            color: '#333',
+            height: 6, // panjang tick marks
+            thickness: 2, // tebal tick marks
+          },
         },
         yaxis: [
           {
+            axisBorder: {
+              show: true,
+              color: '#333', // warna garis sumbu
+              height: 2, // tebal garis
+            },
+            axisTicks: {
+              show: true,
+              color: '#333',
+              height: 6, // panjang tick marks
+              thickness: 2, // tebal tick marks
+            },
             title: { text: 'Volume' },
             labels: {
               formatter: (val) => {
@@ -462,18 +538,24 @@ export default {
               },
             },
           },
-          {
-            opposite: true,
-            max: 100,
-            title: { text: 'Cumulative %' },
-            labels: {
-              formatter: (val) => val.toFixed(1) + '%', // selalu 1 desimal dan ada %
-            },
-          },
         ],
+        // {
+        //     opposite: true,
+        //     max: 100,
+        //     title: { text: 'Cumulative %' },
+        //     labels: {
+        //       formatter: (val) => (val?.toFixed(1) ?? '0.0') + '%',
+        //     },
+        //   },
         tooltip: {
           shared: true,
           intersect: false,
+          x: {
+            formatter: function (val, opts) {
+              // ambil nama full dari categories asli
+              return categories[opts.dataPointIndex] || val
+            },
+          },
           y: {
             formatter: (val, opts) => {
               if (opts.seriesIndex === 1) return val.toFixed(1) + '%'

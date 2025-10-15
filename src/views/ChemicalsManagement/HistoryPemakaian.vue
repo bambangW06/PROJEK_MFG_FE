@@ -384,6 +384,7 @@ export default {
 
       usageData: [],
       paramData: [],
+      isInitialLoad: true,
 
       // Chart Usage
       usageChartOptions: { chart: { id: 'usage' }, xaxis: { categories: [] } },
@@ -572,7 +573,6 @@ export default {
             this.usageChartSeries = series
           }
 
-          // =======================================================
           // 2️⃣ FILTER LINE → Pareto per Machine
           // =======================================================
           else if (this.selectedLineUsage && !this.selectedMachineUsage) {
@@ -609,10 +609,62 @@ export default {
               },
             }
             this.usageChartSeries = series
+          } // 3️⃣FILTER LINE + MACHINE + CHEMICAL → Pareto per Tanggal
+          // =======================================================
+          else if (
+            this.selectedLineUsage &&
+            this.selectedMachineUsage &&
+            this.selectedChemical
+          ) {
+            // Filter data sesuai line, machine, dan chemical
+            const filtered = data.filter(
+              (d) =>
+                d.machine_id === this.selectedMachineUsage.machine_id &&
+                d.line_id === this.selectedLineUsage.line_id &&
+                d.oil_nm === this.selectedChemical.oil_nm,
+            )
+
+            // Group per tanggal (created_dt)
+            const totalsByDate = {}
+            filtered.forEach((item) => {
+              const date = item.created_dt
+                ? item.created_dt.split('T')[0]
+                : 'Unknown Date'
+              const vol = parseFloat(item.oil_volume) || 0
+              totalsByDate[date] = (totalsByDate[date] || 0) + vol
+            })
+
+            // Sort tanggal ascending
+            const sortedDates = Object.keys(totalsByDate).sort()
+
+            // Generate series
+            const series = [
+              {
+                name: `${this.selectedChemical.oil_nm} Usage (L)`,
+                data: sortedDates.map((d) => totalsByDate[d]),
+              },
+            ]
+
+            this.usageChartOptions = {
+              ...this.usageChartOptions,
+              chart: { type: 'bar', stacked: false },
+              xaxis: { categories: sortedDates },
+              title: {
+                text: `Pareto ${this.selectedChemical.oil_nm} per Date (${this.selectedMachineUsage.machine_nm})`,
+                align: 'center',
+              },
+              yaxis: {
+                title: { text: 'Volume (Liter)' },
+                labels: {
+                  formatter: (val) => `${Math.round(val * 10) / 10} L`,
+                },
+              },
+            }
+
+            this.usageChartSeries = series
           }
 
-          // =======================================================
-          // 3️⃣ FILTER LINE + MACHINE → Pareto per Chemical
+          //4️⃣   FILTER LINE + MACHINE → Pareto per Chemical
           // =======================================================
           else if (this.selectedLineUsage && this.selectedMachineUsage) {
             const filtered = data.filter(
@@ -667,7 +719,7 @@ export default {
     },
 
     async selectedLineUsage(newVal) {
-      if (newVal) {
+      if (!this.isInitialLoad && newVal) {
         this.selectedMachineUsage = null
         await this.onLineChange(newVal, 'usage')
         await this.fetchHistoryData()
@@ -678,14 +730,14 @@ export default {
       }
     },
     async selectedChemical(newVal) {
-      if (newVal) {
+      if (!this.isInitialLoad && newVal) {
         await this.fetchHistoryData()
       } else {
         await this.fetchHistoryData()
       }
     },
     async selectedLineParam(newVal) {
-      if (newVal) {
+      if (!this.isInitialLoad && newVal) {
         this.selectedMachineParam = null
         await this.onLineChange(newVal, 'param')
         await this.fetchHistoryData()
@@ -693,28 +745,37 @@ export default {
     },
 
     activeTab(newVal, oldVal) {
-      if (newVal !== oldVal) {
+      if (!this.isInitialLoad && newVal !== oldVal) {
         if (newVal === 'usage') this.selectedMachineUsage = null
         this.currentPage = 1
         this.fetchHistoryData()
       }
     },
 
-    dateRange(oldVal, newVal) {
-      if (oldVal !== newVal) this.fetchHistoryData()
+    dateRange(newVal, oldVal) {
+      if (!this.isInitialLoad && newVal !== oldVal) {
+        this.fetchHistoryData()
+      }
     },
-    selectedMachineUsage(newVal) {
-      if (newVal) this.fetchHistoryData()
+    selectedMachineUsage(newVal, oldVal) {
+      if (!this.isInitialLoad && newVal !== oldVal) {
+        this.fetchHistoryData()
+      }
     },
-    selectedMachineParam(newVal) {
-      if (newVal) this.fetchHistoryData()
+
+    selectedMachineParam(newVal, oldVal) {
+      if (!this.isInitialLoad && newVal !== oldVal) {
+        this.fetchHistoryData()
+      }
     },
   },
 
   methods: {
     async fetchHistoryData() {
+      console.log('kepanggil')
+
       try {
-        if (!this.dateRange?.length) return
+        if (!this.dateRange || !this.dateRange.includes(' to ')) return
         let [start, end] = this.dateRange.split(' to ')
         let payload = {
           start,
@@ -739,8 +800,6 @@ export default {
         )
 
         if (response.status === 200) {
-          console.log('response', response)
-
           if (this.activeTab === 'param') {
             const { data, std_data } = response.data
             // console.log('response:', response.data) // ✅ untuk verifikasi
@@ -945,6 +1004,7 @@ export default {
 
     await this.fetchHistoryData()
     await this.$store.dispatch(ACTION_GET_MASTER_OIL)
+    this.isInitialLoad = false
   },
 }
 </script>
