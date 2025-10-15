@@ -558,8 +558,10 @@ export default {
                   color: '#333',
                   width: 2,
                 },
-                labels: {
-                  formatter: (val) => `${Math.round(val * 10) / 10} L`, // bulatkan 1 desimal
+                formatter: (val) => {
+                  const num = Number(val)
+                  if (isNaN(num)) return '0 L'
+                  return `${parseFloat(num.toFixed(1))} L` // fix 1 desimal, stabil
                 },
                 tickAmount: 4, // jumlah garis pada sumbu Y, misal 0, 0.5, 1.0, 1.5, 2.0
                 decimalsInFloat: 1, // biar 0.5 bukan 0.666666
@@ -655,6 +657,16 @@ export default {
               },
               yaxis: {
                 title: { text: 'Volume (Liter)' },
+                axisBorder: {
+                  show: true,
+                  color: '#333', // warna garis sumbu Y
+                  width: 2, // ketebalan garis Y
+                },
+                axisTicks: {
+                  show: true,
+                  color: '#333',
+                  width: 2,
+                },
                 labels: {
                   formatter: (val) => `${Math.round(val * 10) / 10} L`,
                 },
