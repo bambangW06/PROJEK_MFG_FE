@@ -880,7 +880,7 @@ export default {
 
     // New method for opening modal in edit mode
     editProblem(problem) {
-      console.log('edit problem', problem)
+      // console.log('edit problem', problem)
 
       this.setModalTitle('Edit Problem', this.modalType) // Update title
       this.isEditMode = true // Switch to edit mode
@@ -1041,7 +1041,7 @@ export default {
         if (this.isEditMode) {
           payload.problem_id = this.problem_id // Gantilah `selectedProblemId` dengan properti yang sesuai yang menyimpan ID masalah yang sedang diedit
         }
-        console.log('payload', payload)
+        // console.log('payload', payload)
 
         let response
         if (this.modalType === 'category') {

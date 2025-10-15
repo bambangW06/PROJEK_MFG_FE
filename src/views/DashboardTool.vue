@@ -466,7 +466,7 @@ export default {
           const shift = this.getCurrentShift
           const regDate = moment(newVal.reg_dt).format('YYYY-MM-DD')
 
-          console.log('regDate', regDate)
+          // console.log('regDate', regDate)
 
           if (regDate === today && shift === newVal.shift) {
             this.delivery1 = newVal.delivery1 || ''
@@ -573,7 +573,7 @@ export default {
           }
           endpoint = 'regrinding/add'
         }
-        console.log('payload vue', payload)
+        // console.log('payload vue', payload)
         // console.log('endpoint', endpoint)
         // Use axios or fetch to send data to backend
         await this.$store

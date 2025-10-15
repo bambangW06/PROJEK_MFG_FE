@@ -158,7 +158,7 @@ export default {
       this.fetchParetoData()
     },
     GET_PARETO_PROBLEM(newValue) {
-      console.log('Data Pareto:', newValue)
+      // console.log('Data Pareto:', newValue)
     },
   },
   methods: {

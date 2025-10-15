@@ -323,12 +323,12 @@ export default {
       'getWhiteShiftEmployees',
     ]),
     redShiftEmployees() {
-      console.log(' redShiftEmployees', this.getRedShiftEmployees)
+      // console.log(' redShiftEmployees', this.getRedShiftEmployees)
 
       return this.getRedShiftEmployees
     },
     whiteShiftEmployees() {
-      console.log('whiteShiftEmployees', this.getWhiteShiftEmployees)
+      // console.log('whiteShiftEmployees', this.getWhiteShiftEmployees)
 
       return this.getWhiteShiftEmployees
     },
@@ -336,7 +336,7 @@ export default {
       return this.$store.getters.getSelectedStatus
     },
     percentageHadir() {
-      console.log(this.getPercentageHadir)
+      // console.log(this.getPercentageHadir)
 
       return this.getPercentageHadir // Menggunakan getter dari Vuex
     },

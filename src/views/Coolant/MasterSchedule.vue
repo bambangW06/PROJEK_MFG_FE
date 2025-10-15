@@ -501,7 +501,7 @@ export default {
           periodVal: this.selectedPeriodic,
           periodNm: this.selectedTime,
         }
-        console.log('payload', payload)
+        // console.log('payload', payload)
         this.$store.dispatch('addSchedule', payload)
         this.selectedLine = null
         this.selectedMachines = []
@@ -517,7 +517,7 @@ export default {
     async updateSchedule() {
       try {
         if (this.selectedDataIndex === -1) {
-          console.log('Please select an item to edit.')
+          // console.log('Please select an item to edit.')
           return
         }
 
@@ -579,7 +579,7 @@ export default {
         period_nm: schedules.period_nm,
         shift: schedules.shift,
       }
-      console.log('editedSchedule', this.editedSchedule)
+      // console.log('editedSchedule', this.editedSchedule)
 
       this.$nextTick(() => {
         if (this.$refs.editDatePicker && this.$refs.editDatePicker._flatpickr) {

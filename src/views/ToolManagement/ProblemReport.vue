@@ -598,7 +598,7 @@ export default {
       if (selectedProblem.category_id) {
         this.editCategoryId = selectedProblem.category_id
       }
-      console.log('ini analisa id', selectedProblem)
+      // console.log('ini analisa id', selectedProblem)
     },
     async actionEditProblem() {
       try {
@@ -616,14 +616,14 @@ export default {
           payload.category_id = this.editCategoryId
         }
 
-        console.log('payload vue', payload)
+        // console.log('payload vue', payload)
 
         let response = await this.$store.dispatch(
           ACTION_EDIT_ANALISA_PROBLEM,
           payload,
         )
         if (response.status === 200) {
-          console.log('status', response.status)
+          // console.log('status', response.status)
           this.getAnlisaProblem()
           this.editProblem = ''
           this.editAnalisa = ''
@@ -657,12 +657,12 @@ export default {
       if (selectedProblem.category_id) {
         this.deletedCategoryId = selectedProblem.category_id
       }
-      console.log(
-        'Problem ID:',
-        this.selectedDeleteProblemId,
-        'Category ID:',
-        this.deletedCategoryId,
-      )
+      // console.log(
+      //   'Problem ID:',
+      //   this.selectedDeleteProblemId,
+      //   'Category ID:',
+      //   this.deletedCategoryId,
+      // )
     },
 
     async actionDeleteProblem() {
@@ -676,7 +676,7 @@ export default {
           payload.category_id = this.deletedCategoryId
         }
 
-        console.log('Payload to delete:', payload)
+        // console.log('Payload to delete:', payload)
         // Hapus `return` agar dapat melanjutkan proses
         let response = await this.$store.dispatch(
           ACTION_DELETE_ANALISA_PROBLEM,
@@ -773,11 +773,11 @@ export default {
           this.editFoto.push(file)
         }
 
-        console.log('File berhasil diunggah:', file)
-        console.log(
-          'Daftar file yang diunggah:',
-          mode === 'add' ? this.foto : this.editFoto,
-        )
+        // console.log('File berhasil diunggah:', file)
+        // console.log(
+        //   'Daftar file yang diunggah:',
+        //   mode === 'add' ? this.foto : this.editFoto,
+        // )
       })
     },
 
@@ -806,7 +806,7 @@ export default {
           payload.category_nm = this.category_nm
           payload.waktu = this.waktu // Waktu penyelesaian hanya untuk In Proses
         }
-        console.log('ini payload', payload)
+        // console.log('ini payload', payload)
 
         // Mengirimkan payload ke store
         const response = await this.$store.dispatch(
@@ -815,7 +815,7 @@ export default {
         )
 
         if (response.status === 201) {
-          console.log('Data Berhasil Ditambahkan')
+          // console.log('Data Berhasil Ditambahkan')
           this.getAnlisaProblem()
         }
 
@@ -838,7 +838,7 @@ export default {
         })
 
         if (response.status === 200 && this.GET_PROBLEM_ANALISA.length > 0) {
-          console.log('GET', this.GET_PROBLEM_ANALISA)
+          // console.log('GET', this.GET_PROBLEM_ANALISA)
 
           this.GET_PROBLEM_ANALISA = this.GET_PROBLEM_ANALISA.map((item) => {
             if (item.analisa) {
@@ -867,7 +867,7 @@ export default {
     },
     async getProblemTable() {
       try {
-        console.log(this.selectedDate)
+        // console.log(this.selectedDate)
 
         let response = await this.$store.dispatch(
           ACTION_GET_PROBLEM_TABLE,

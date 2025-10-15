@@ -338,7 +338,7 @@ export default {
     handleBarClick(seriesIndex, dataPointIndex, data) {
       const categories = Object.keys(this.countAbsensi(data))
       const employeeName = categories[dataPointIndex]
-      console.log('employeeName', employeeName)
+      // console.log('employeeName', employeeName)
 
       // Ambil data detail kehadiran berdasarkan nama karyawan
       const detailData = data.filter((item) => item.nama === employeeName)

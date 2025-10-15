@@ -1014,7 +1014,7 @@ export default {
         )
 
         if (response_range.status === 200) {
-          console.log('getrangeoption', this.GET_RANGE_OPTION)
+          // console.log('getrangeoption', this.GET_RANGE_OPTION)
 
           const { std_min_cons, std_max_cons, std_ph_min, std_ph_max } =
             this.GET_RANGE_OPTION

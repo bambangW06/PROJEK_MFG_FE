@@ -55,7 +55,7 @@ const actions = {
       const response = await axios.get(`${API_URL}/kanban/get`)
 
       commit('setKanbanTool', response.data.data)
-      console.log(response.data.data)
+      //  console.log (response.data.data)
     } catch (error) {
       console.error('Error fetching kanban tool data:', error)
     }
@@ -85,7 +85,7 @@ const actions = {
       } else {
         alert('Gagal Request Tool')
       }
-      console.log(response.data.data)
+      // console.log(response.data.data)
     } catch (error) {
       console.log(error)
     }

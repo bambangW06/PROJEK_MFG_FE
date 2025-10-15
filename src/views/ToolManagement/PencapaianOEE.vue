@@ -214,7 +214,7 @@ export default {
         )
         if (response.status === 200) {
           let data = this.GET_PROBLEM_IN_PROCESS
-          console.log('data', data)
+          // console.log('data', data)
 
           if (data) {
             // Filter sesuai shift
@@ -249,7 +249,7 @@ export default {
               100
 
             // Tambahkan log untuk hasil persentase Availability
-            console.log('Availability Percentage:', this.availabilityPercentage)
+            // console.log('Availability Percentage:', this.availabilityPercentage)
 
             // Dapatkan waktu dari kategori "Performance Efficiency"
             const rqProblem = data.find(
@@ -266,7 +266,7 @@ export default {
               100
 
             // Tambahkan log untuk hasil persentase PE
-            console.log('Performance Efficiency Percentage:', this.rqPercentage)
+            // console.log('Performance Efficiency Percentage:', this.rqPercentage)
 
             // Dapatkan waktu dari kategori "Performance Efficiency"
             const peProblem = data.find(
@@ -315,7 +315,7 @@ export default {
     },
 
     updateOeeSeries() {
-      console.log('kepanggil updateOEESeries')
+      // console.log('kepanggil updateOEESeries')
 
       try {
         // Ambil nilai indikator atau set ke 0 jika tidak ada data
@@ -337,10 +337,10 @@ export default {
                   10000,
               ) / 100
             : 0
-        console.log('rateQualityValue', rateQualityValue)
-        console.log('peValue', peValue)
-        console.log('availabilityValue', availabilityValue)
-        console.log('oeeValue', oeeValue)
+        // console.log('rateQualityValue', rateQualityValue)
+        // console.log('peValue', peValue)
+        // console.log('availabilityValue', availabilityValue)
+        // console.log('oeeValue', oeeValue)
 
         // Update grafik dengan satu series yang berisi semua data
         this.oeeSeries = [
@@ -440,7 +440,7 @@ export default {
         }
 
         // Cek apakah warna diterapkan
-        console.log('Opsi grafik', this.oeeOptions)
+        // console.log('Opsi grafik', this.oeeOptions)
       } catch (error) {
         console.log('error update grafik', error)
       }

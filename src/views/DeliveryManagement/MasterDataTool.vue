@@ -491,7 +491,7 @@ export default {
         tool_img: this.selectedImage,
       }
 
-      console.log('Payload sent to backend:', payload)
+      // console.log('Payload sent to backend:', payload)
       this.$store.dispatch('ActionSaveDataTool', payload).then(() => {
         this.$store.dispatch('ActionFetchDataTool')
       })
@@ -500,7 +500,7 @@ export default {
       this.editedTool = dataTool
     },
     saveEditDataTool() {
-      console.log('Payload sent to backend:', this.editedTool)
+      // console.log('Payload sent to backend:', this.editedTool)
       this.$store.dispatch('ActionEditDataTool', this.editedTool).then(() => {
         this.$store.dispatch('ActionFetchDataTool')
       })
@@ -519,11 +519,11 @@ export default {
     },
     showDeleteConfirmationDataTool(id) {
       this.deletedTool = id
-      console.log('id', this.deletedTool)
+      // console.log('id', this.deletedTool)
     },
     deleteDataTool() {
       const id = this.deletedTool
-      console.log('id', id)
+      // console.log('id', id)
       this.$store.dispatch('ActionDeleteDataTool', id).then(() => {
         this.$store.dispatch('ActionFetchDataTool')
       })

@@ -19,7 +19,7 @@ const mutations = {
 const actions = {
   async ActionAddLine({ commit }, payload) {
     try {
-      console.log(payload)
+      // console.log(payload)
       const response = await axios.post(`${API_URL}/delivery/addLine`, payload)
       if (response.status === 201) {
         alert('Berhasil Menambahkan Line')
@@ -41,7 +41,7 @@ const actions = {
   async ActionEditMasterLine({ commit }, payload) {
     try {
       const line_id = payload.line_id
-      console.log(payload)
+      // console.log(payload)
       const response = await axios.put(
         `${API_URL}/delivery/editLine/${line_id}`,
         payload,

@@ -111,7 +111,7 @@ export default {
   computed: {
     ...mapGetters([GET_SUPERVISOR, 'getHistoryAbsence']),
     supervisor() {
-      console.log('GET_SUPERVISOR', this.GET_SUPERVISOR)
+      // console.log('GET_SUPERVISOR', this.GET_SUPERVISOR)
 
       return Array.isArray(this.GET_SUPERVISOR) &&
         this.GET_SUPERVISOR.length > 0
@@ -150,7 +150,7 @@ export default {
   },
   methods: {
     async updateStatus() {
-      console.log('kepanggil')
+      // console.log('kepanggil')
 
       try {
         const payload = {
@@ -168,7 +168,7 @@ export default {
           this.$store.dispatch('fetchHistoryAbsence')
         }
       } catch (error) {
-        console.log(error)
+        // console.log(error)
         this.$swal({
           icon: 'error',
           title: 'Error',

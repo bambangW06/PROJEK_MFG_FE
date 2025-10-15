@@ -379,10 +379,10 @@ export default {
         )
 
         if (response.status === 200) {
-          console.log('response', response)
+          // console.log('response', response)
 
           this.idx_pos = this.GET_LAST_INDEX_POS[0].maxidx
-          console.log('idx_pos', this.idx_pos)
+          // console.log('idx_pos', this.idx_pos)
         }
       } catch (error) {
         console.log(error)

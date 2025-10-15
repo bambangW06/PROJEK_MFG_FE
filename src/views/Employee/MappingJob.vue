@@ -366,7 +366,7 @@ export default {
 
       // Ambil data supervisor dari store
       const supervisorData = this.GET_HISTORY_ABSEN_SPV[0]
-      console.log('supervisorData', supervisorData)
+      // console.log('supervisorData', supervisorData)
 
       const currentHour = moment().tz('Asia/Jakarta').hour()
 
@@ -398,7 +398,7 @@ export default {
       }
 
       // Log final state of selectedEmployees
-      console.log('Final selectedEmployees:', this.selectedEmployees)
+      // console.log('Final selectedEmployees:', this.selectedEmployees)
     },
 
     showPopover(positionKey) {

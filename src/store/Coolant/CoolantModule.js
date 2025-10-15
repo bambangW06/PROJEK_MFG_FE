@@ -97,7 +97,7 @@ const actions = {
   async actionEditSchedule({ commit, dispatch }, payload) {
     try {
       const scheduleId = payload.schedule_id
-      console.log('scheduleId', scheduleId)
+      // console.log('scheduleId', scheduleId)
       const response = await axios.put(
         `${API_URL}/schedules/edit/${scheduleId}`,
         payload,

@@ -462,9 +462,9 @@ export default {
     this.$store
       .dispatch('fetchKaryawanList')
       .then(() => {
-        console.log(
-          'Pencarian karyawan berhasil dilakukan saat komponen dibuat.',
-        )
+        // console.log(
+        //   'Pencarian karyawan berhasil dilakukan saat komponen dibuat.',
+        // )
       })
       .catch((error) => {
         console.error(
@@ -491,12 +491,12 @@ export default {
     checkPreviewUrl() {
       if (this.getKaryawanList.length > 0) {
         // Memeriksa nilai previewUrl dari karyawan pertama dalam daftar
-        console.log(
-          'Preview URL dari karyawan pertama:',
-          this.getKaryawanList[0].previewUrl,
-        )
+        // console.log(
+        //   'Preview URL dari karyawan pertama:',
+        //   this.getKaryawanList[0].previewUrl,
+        // )
       } else {
-        console.log('Data karyawan kosong atau belum dimuat.')
+        // console.log('Data karyawan kosong atau belum dimuat.')
       }
     },
     // Metode untuk mengambil file foto saat diubah
@@ -522,7 +522,7 @@ export default {
         this.editedUser.selectedFile = file
 
         // Tambahkan console.log di sini
-        console.log('Preview URL:', this.newUser.previewUrl)
+        // console.log('Preview URL:', this.newUser.previewUrl)
         // Tambahkan logging untuk memeriksa nilai previewUrl setelah diatur
         console.log('Preview URL setelah diatur:', this.newUser.previewUrl)
       }
@@ -535,10 +535,10 @@ export default {
         // Set properti profile dengan URL foto
         this.newUser.profile = this.newUser.previewUrl
 
-        console.log('Data karyawan yang akan ditambahkan:', this.newUser)
+        // console.log('Data karyawan yang akan ditambahkan:', this.newUser)
         // Logging untuk memeriksa apakah properti profile berisi URL atau tidak
-        console.log('Profile value:', this.newUser.profile)
-        console.log(this.newUser)
+        // console.log('Profile value:', this.newUser.profile)
+        // console.log(this.newUser)
         // Panggil aksi ActionTambahKaryawan dengan data karyawan yang baru
         await this.$store.dispatch('ActionTambahKaryawan', this.newUser)
 
@@ -564,7 +564,7 @@ export default {
 
         await this.$store.dispatch('fetchKaryawanList')
 
-        console.log('Data karyawan setelah ditambahkan:', this.getKaryawanList)
+        // console.log('Data karyawan setelah ditambahkan:', this.getKaryawanList)
       } catch (error) {
         console.error('Terjadi kesalahan saat menambah karyawan:', error)
       }
@@ -578,14 +578,14 @@ export default {
 
       // Cek apakah properti employee_id ada dalam objek karyawan
       if ('employee_id' in karyawan) {
-        console.log('employee_id ditemukan:', karyawan)
+        // console.log('employee_id ditemukan:', karyawan)
         // Salin data karyawan yang akan diedit ke editedUser
         this.editedUser = { ...karyawan, employee_id: karyawan.employee_id }
       } else {
-        console.log(
-          'employee_id tidak ditemukan dalam objek karyawan:',
-          karyawan,
-        )
+        // console.log(
+        //   'employee_id tidak ditemukan dalam objek karyawan:',
+        //   karyawan,
+        // )
         // Jika employee_id tidak ditemukan, salin data karyawan tanpa employee_id
         this.editedUser = { ...karyawan }
       }
@@ -599,11 +599,11 @@ export default {
     },
     editKaryawan() {
       try {
-        console.log('Metode editKaryawan dijalankan.')
+        // console.log('Metode editKaryawan dijalankan.')
 
         // Pastikan ada karyawan yang dipilih
         if (this.selectedEmployeeIndex === -1) {
-          console.log('Tidak ada karyawan yang dipilih untuk diedit.')
+          // console.log('Tidak ada karyawan yang dipilih untuk diedit.')
           return // Keluar dari fungsi jika tidak ada karyawan yang dipilih
         }
 
@@ -612,15 +612,15 @@ export default {
 
         // Pastikan ada properti employee_id dalam objek karyawan yang dipilih
         if (!('employee_id' in selectedEmployee)) {
-          console.log(
-            'employee_id tidak ditemukan dalam objek karyawan:',
-            selectedEmployee,
-          )
+          // console.log(
+          //   'employee_id tidak ditemukan dalam objek karyawan:',
+          //   selectedEmployee,
+          // )
           return // Keluar dari fungsi jika tidak ada employee_id
         }
 
         // Tampilkan payload sebelum mengirimnya ke backend
-        console.log('Payload yang akan dikirim ke backend:', this.editedUser)
+        // console.log('Payload yang akan dikirim ke backend:', this.editedUser)
 
         // Panggil aksi ActionEditKaryawan dengan data yang diperlukan
         this.$store

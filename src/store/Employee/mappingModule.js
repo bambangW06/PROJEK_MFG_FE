@@ -69,7 +69,7 @@ const actions = {
       // console.log('ini payload di module', payload)
       const response = await axios.post(API_URL + '/position/add', employeData)
       if (response.status === 201) {
-        console.log('Posisi karyawan berhasil dikirim')
+        // console.log('Posisi karyawan berhasil dikirim')
       }
     } catch (error) {
       console.error(
@@ -116,8 +116,8 @@ const actions = {
           redShiftEmployees = [...redShiftEmployees, ...nonShiftEmployees]
           whiteShiftEmployees = [...whiteShiftEmployees, ...nonShiftEmployees]
         }
-        console.log('redShiftEmployees', redShiftEmployees)
-        console.log('whiteShiftEmployees', whiteShiftEmployees)
+        // console.log('redShiftEmployees', redShiftEmployees)
+        // console.log('whiteShiftEmployees', whiteShiftEmployees)
 
         // 🔹 Commit hasilnya ke Vuex
         commit('setPositionRedShift', redShiftEmployees)

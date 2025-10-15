@@ -111,7 +111,7 @@ export default {
           return
         }
         const machine_id = this.selectedMachine.machine_id
-        console.log('machine_id', machine_id)
+        // console.log('machine_id', machine_id)
         let response = await this.$store.dispatch(
           ACTION_GET_HISTORY_KURAS,
           machine_id,

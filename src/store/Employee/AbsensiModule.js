@@ -151,11 +151,11 @@ const actions = {
 
         // 🔹 Ambil shift saat ini
         const currentShift = state.currentShift // "Red" atau "White"
-        console.log('✅ Current Shift:', currentShift)
+        // console.log('✅ Current Shift:', currentShift)
 
         // 🔹 Cek waktu sekarang (WIB)
         const currentHour = moment().tz('Asia/Jakarta').hour()
-        console.log('🕒 Current Hour:', currentHour)
+        // console.log('🕒 Current Hour:', currentHour)
 
         // 🔹 Filter karyawan sesuai shift
         let redShiftEmployees = employeesWithPhotoUrl.filter(
@@ -174,7 +174,7 @@ const actions = {
 
         // 🔹 Masukkan ke shift jika jam antara 07:00 - 20:00
         if (currentHour >= 7 && currentHour <= 20) {
-          console.log('✅ Non Shift Team Members masuk shift saat ini!')
+          // console.log('✅ Non Shift Team Members masuk shift saat ini!')
           if (currentShift === 'Red') {
             redShiftEmployees = [...redShiftEmployees, ...nonShiftTeamMembers]
           } else if (currentShift === 'White') {
@@ -247,7 +247,7 @@ const actions = {
           currentShift: state.currentShift,
         })
 
-        console.log('response', response.status)
+        // console.log('response', response.status)
         return response.status
       }
     } catch (error) {

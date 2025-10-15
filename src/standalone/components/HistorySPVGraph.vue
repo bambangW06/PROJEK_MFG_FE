@@ -106,11 +106,11 @@ export default {
     },
   },
   mounted() {
-    this.$store
-      .dispatch(ACTION_GET_HISTORY_ABSEN_SPV_FOR_GRAPH, this.selectedMonth)
-      .then(() => {
-        console.log('data', this.GET_ABSENSI_SPV_FOR_GRAPH)
-      })
+    this.$store.dispatch(
+      ACTION_GET_HISTORY_ABSEN_SPV_FOR_GRAPH,
+      this.selectedMonth,
+    )
+
     document.addEventListener('click', this.handleClickOutside)
   },
   beforeDestroy() {
@@ -192,7 +192,7 @@ export default {
     handleBarClick(seriesIndex, dataPointIndex, data) {
       const categories = Object.keys(this.countAbsensi(data))
       const employeeName = categories[dataPointIndex]
-      console.log('employeeName', employeeName)
+      // console.log('employeeName', employeeName)
 
       // Ambil data detail kehadiran berdasarkan nama karyawan
       const detailData = data.filter((item) => item.nama === employeeName)

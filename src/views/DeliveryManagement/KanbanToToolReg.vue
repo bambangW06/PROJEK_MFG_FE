@@ -246,7 +246,7 @@ export default {
           notes: item.notes || '', // Pastikan catatan ditambahkan ke Vuex store Anda
         }))
 
-        console.log('data', data)
+        // console.log('data', data)
         this.$store.dispatch('ActionSaveRequestTool', data)
         // Clear the cart and reset tool quantities
         this.clearCart()

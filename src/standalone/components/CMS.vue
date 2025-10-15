@@ -300,7 +300,7 @@ export default {
         const machineIds = this.selectedMachines.map(
           (machine) => machine.machine_id,
         )
-        console.log('machineIds', machineIds)
+        // console.log('machineIds', machineIds)
 
         if (machineIds.length === 0) {
           alert('No machines selected')

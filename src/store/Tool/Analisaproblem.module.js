@@ -65,7 +65,7 @@ const actions = {
         })
       }
 
-      console.log([...formData]) // Log isi FormData
+      // console.log([...formData]) // Log isi FormData
 
       const response = await axios.post(API_URL + '/analisa/add', formData, {
         headers: {
@@ -94,7 +94,7 @@ const actions = {
         })
       }
 
-      console.log([...formData]) // Log isi FormData
+      // console.log([...formData]) // Log isi FormData
 
       const response = await axios.put(
         `${API_URL}/analisa/edit/${problem_id}`,

@@ -103,22 +103,25 @@
     <!--modal dialog-->
   </div>
   <div class="card">
-  <div class="d-flex justify-content-between align-items-center">
-    <h3>Schedule Kuras Bulan : {{ currenthMonth }}</h3>
-    <div class="form-group d-flex justify-content-end align-items-center">
-      <span class="year-label" style="font-size: 1.5rem; line-height: 2.5rem;">Tahun: </span>
-      <input 
-        type="number" 
-        v-model="selectedYear" 
-        class="form-control" 
-        min="1900" 
-        max="2100" 
-        step="1" 
-        @change="getScheduleForSelectedYear"
-        style="font-size: 1.5rem; height: 2.5rem; width: 150px;">
+    <div class="d-flex justify-content-between align-items-center">
+      <h3>Schedule Kuras Bulan : {{ currenthMonth }}</h3>
+      <div class="form-group d-flex justify-content-end align-items-center">
+        <span class="year-label" style="font-size: 1.5rem; line-height: 2.5rem"
+          >Tahun:
+        </span>
+        <input
+          type="number"
+          v-model="selectedYear"
+          class="form-control"
+          min="1900"
+          max="2100"
+          step="1"
+          @change="getScheduleForSelectedYear"
+          style="font-size: 1.5rem; height: 2.5rem; width: 150px"
+        />
+      </div>
     </div>
   </div>
-</div>
 
   <div class="card mt-2">
     <div class="card-body">
@@ -350,22 +353,22 @@ export default {
       return 12
     },
     paginatedData() {
-  const data = this.mergedPlanKuras;
-  
-  // Get the current year
-  const currentYear = new Date().getFullYear();
+      const data = this.mergedPlanKuras
 
-  // Use selectedYear if available, otherwise fall back to currentYear
-  const yearToUse = this.selectedYear || currentYear;
+      // Get the current year
+      const currentYear = new Date().getFullYear()
 
-  return data.filter((kuras) => {
-    // Parse the date in DD-MM-YYYY format to extract the month and year
-    const [day, month, year] = kuras.plan_dt.split('-').map(Number);
+      // Use selectedYear if available, otherwise fall back to currentYear
+      const yearToUse = this.selectedYear || currentYear
 
-    // Check if the month and year match the selected month and selected year (or current year if no selectedYear)
-    return month === this.selectedMonth && year === yearToUse;
-  });
-},
+      return data.filter((kuras) => {
+        // Parse the date in DD-MM-YYYY format to extract the month and year
+        const [day, month, year] = kuras.plan_dt.split('-').map(Number)
+
+        // Check if the month and year match the selected month and selected year (or current year if no selectedYear)
+        return month === this.selectedMonth && year === yearToUse
+      })
+    },
 
     filteredData() {
       if (!this.searchQuery) {
@@ -441,7 +444,7 @@ export default {
     // Fetch all required data
     Promise.all([
       this.$store.dispatch('ActionGetHistorySchedules'),
-      this.$store.dispatch('fetchPlanKuras',this.selectedyear),
+      this.$store.dispatch('fetchPlanKuras', this.selectedyear),
       this.$store.dispatch('fetchLines'),
       this.$store.dispatch('fetchGeneratePlanKuras'),
     ]).then(() => {
@@ -452,16 +455,12 @@ export default {
   methods: {
     async getScheduleForSelectedYear() {
       try {
-      
-      const  year = this.selectedYear
-       
-        console.log('payload', year);
-        let response = await this.$store.dispatch(
-          'fetchPlanKuras', year
-        )
+        const year = this.selectedYear
+
+        // console.log('payload', year);
+        let response = await this.$store.dispatch('fetchPlanKuras', year)
       } catch (error) {
-        console.error('Error fetching schedules:', error);
-        
+        console.error('Error fetching schedules:', error)
       }
     },
     updateCurrentMonthWithYear() {
@@ -526,44 +525,52 @@ export default {
     async saveSchedule(index) {
       try {
         if (
-        !this.actualDates[index] &&
-        !this.statusKuras[index] &&
-        !this.paginatedData[index].reason_plan
-      ) {
-        return alert('Data Belum Lengkap')
-      }
-      const payload = {
-        scheduleId: this.paginatedData[index].schedule_id, // ID dari item yang disimpan
-        lineId: this.paginatedData[index].line_id, // ID mesin
-        lineName: this.paginatedData[index].line_nm, // Nama mesin
-        machineId: this.paginatedData[index].machine_id, // ID mesin
-        machineName: this.paginatedData[index].machine_nm, // Nama mesin
-        lastKrs: this.paginatedData[index].last_krs, // Kuras terakhir
-        planDate: this.paginatedData[index].plan_dt, // Tanggal plan
-        planShift: this.paginatedData[index].shift, // Shift plan
-        actualDate: this.actualDates[index], // Data aktual yang akan disimpan
-        planReason: this.paginatedData[index].reason_plan, // Alasan plan
-        status: this.statusKuras[index],
-      }
-      // console.log('payload:', payload)
-     let response = await this.$store.dispatch('ActionSaveSchedules', payload)
+          !this.actualDates[index] &&
+          !this.statusKuras[index] &&
+          !this.paginatedData[index].reason_plan
+        ) {
+          return alert('Data Belum Lengkap')
+        }
+        const payload = {
+          scheduleId: this.paginatedData[index].schedule_id, // ID dari item yang disimpan
+          lineId: this.paginatedData[index].line_id, // ID mesin
+          lineName: this.paginatedData[index].line_nm, // Nama mesin
+          machineId: this.paginatedData[index].machine_id, // ID mesin
+          machineName: this.paginatedData[index].machine_nm, // Nama mesin
+          lastKrs: this.paginatedData[index].last_krs, // Kuras terakhir
+          planDate: this.paginatedData[index].plan_dt, // Tanggal plan
+          planShift: this.paginatedData[index].shift, // Shift plan
+          actualDate: this.actualDates[index], // Data aktual yang akan disimpan
+          planReason: this.paginatedData[index].reason_plan, // Alasan plan
+          status: this.statusKuras[index],
+        }
+        // console.log('payload:', payload)
+        let response = await this.$store.dispatch(
+          'ActionSaveSchedules',
+          payload,
+        )
 
-     if (response.status === 201 && response.data.message === 'Success to Add History Schedule and Create New Master Schedule') {
-      this.$store.dispatch('ActionGetHistorySchedules')
-         
-            this.initializeData()
-            this.isSaved.splice(index, 1, true) // Mark the row as saved
-          
-            this.$store.dispatch('fetchGeneratePlanKuras')
-            this.$swal.fire('Success', 'Data berhasil disimpan', 'success')
-     }
+        if (
+          response.status === 201 &&
+          response.data.message ===
+            'Success to Add History Schedule and Create New Master Schedule'
+        ) {
+          this.$store.dispatch('ActionGetHistorySchedules')
+
+          this.initializeData()
+          this.isSaved.splice(index, 1, true) // Mark the row as saved
+
+          this.$store.dispatch('fetchGeneratePlanKuras')
+          this.$swal.fire('Success', 'Data berhasil disimpan', 'success')
+        }
       } catch (error) {
         console.log(error)
-        this.$swal.fire('Error', 'Terjadi kesalahan saat menyimpan data', 'error')
-        
+        this.$swal.fire(
+          'Error',
+          'Terjadi kesalahan saat menyimpan data',
+          'error',
+        )
       }
-      
-       
     },
     goToPage(month) {
       if (month < 1) {
@@ -627,7 +634,7 @@ export default {
     changeStatus(index, plan_dt) {
       // Parsing actualDate dengan format yang sama dengan yang digunakan dalam plan_dt
       const actualDate = moment(this.actualDates[index], 'DD-MM-YYYY')
-      console.log('Parsed Actual Date:', actualDate.format('YYYY-MM-DD'))
+      // console.log('Parsed Actual Date:', actualDate.format('YYYY-MM-DD'))
 
       // Parsing planningDate dengan format yang benar
       const planningDate = moment(plan_dt, 'DD-MM-YYYY')
@@ -800,7 +807,7 @@ export default {
   background-color: red;
 }
 .year-label {
- font-size: 20px;
+  font-size: 20px;
 }
 /* Pastikan penyesuaian CSS diterapkan dengan benar */
 </style>

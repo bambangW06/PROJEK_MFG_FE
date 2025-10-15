@@ -37,7 +37,7 @@ const actions = {
     try {
       const response = await axios.get(`${API_URL}/kanbanFromGel/get`)
       commit('SET_KANBAN_FROM_GEL', response.data.data)
-      console.log('response', response.data.data)
+      // console.log('response', response.data.data)
     } catch (error) {
       console.error('Error fetching kanban from gel:', error)
     }

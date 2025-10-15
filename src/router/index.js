@@ -1,4 +1,4 @@
-console.log('router/index.js')
+// console.log('router/index.js')
 import { createRouter, createWebHashHistory, Route } from 'vue-router'
 
 import DefaultLayout from '@/layouts/DefaultLayout'
@@ -9,7 +9,7 @@ import { createApp, h } from 'vue'
 let tokenModalInstance = null
 /*define const other in here*/
 
-console.log(process.env.VUE_APP_STANDALONE_SINGLE_SPA)
+// console.log(process.env.VUE_APP_STANDALONE_SINGLE_SPA)
 const routes = [
   {
     path: '/',

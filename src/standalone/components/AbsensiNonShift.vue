@@ -107,7 +107,7 @@ export default {
   computed: {
     ...mapGetters(['getHistoryAbsence', GET_NONSHIFT]),
     employee() {
-      console.log('GET_NONSHIFT', this.GET_NONSHIFT)
+      // console.log('GET_NONSHIFT', this.GET_NONSHIFT)
 
       return Array.isArray(this.GET_NONSHIFT) && this.GET_NONSHIFT.length > 0
         ? this.GET_NONSHIFT[0]
@@ -140,14 +140,14 @@ export default {
 
   mounted() {
     this.$store.dispatch(ACTION_GET_NONSHIFT).then(() => {
-      console.log('data', this.GET_NONSHIFT)
+      // console.log('data', this.GET_NONSHIFT)
 
       this.$store.dispatch('fetchHistoryAbsence')
     })
   },
   methods: {
     async updateStatus() {
-      console.log('kepanggil')
+      // console.log('kepanggil')
 
       try {
         const payload = {

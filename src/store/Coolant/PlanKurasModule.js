@@ -99,7 +99,6 @@ const actions = {
     }
   },
   async fetchPlanKuras({ commit }, payload) {
-    
     try {
       const response = await axios.get(`${API_URL}/planMonth/get/${payload}`)
       commit('setPlanKuras', response.data.data)
@@ -151,16 +150,14 @@ const actions = {
       const response = await axios.post(
         `${API_URL}/historySchedule/add`,
         payload,
-      );
-      console.log('response', response);
-  return response
-     
+      )
+      // console.log('response', response);
+      return response
     } catch (error) {
-      console.error('Error adding schedule:', error);
-    
+      console.error('Error adding schedule:', error)
     }
   },
-  
+
   async ActionGetHistorySchedules({ commit }, payload) {
     try {
       const response = await axios.get(`${API_URL}/historySchedule/get`, {

@@ -1001,7 +1001,7 @@ export default {
         let response = await this.$store.dispatch(ACTION_GET_ABSENSI, payload)
         if (response.status === 200) {
           if (this.GET_ABSENSI?.length > 0) {
-            console.log('mangtabsss')
+            // console.log('mangtabsss')
           }
         }
       } catch (error) {
@@ -1097,7 +1097,7 @@ export default {
         let response = await this.$store.dispatch(ACTION_ADD_OEE, payload)
 
         if (response.status === 201) {
-          console.log('OEE added successfully')
+          // console.log('OEE added successfully')
           this.fetchOEE() // Ambil ulang data OEE setelah berhasil
         }
       } catch (error) {
@@ -1243,7 +1243,7 @@ export default {
           tool_delay: row.tool_delay,
           time_delay: row.waktu_delay,
         }
-        console.log('payload pcs', payload)
+        // console.log('payload pcs', payload)
 
         let response = await this.$store.dispatch(
           ACTION_ADD_REPORT_REG_SET,

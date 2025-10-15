@@ -243,7 +243,7 @@ export default {
           register_dt: today,
           created_by: this.created_by,
         }
-        console.log(payload)
+        // console.log(payload)
         this.$store.dispatch('ActionAddLine', payload).then(() => {
           this.$store.dispatch('fetchMasterLine')
         })
@@ -258,24 +258,24 @@ export default {
     },
     showEditMasterLine(dataLines) {
       this.editedLine = dataLines
-      console.log(this.editedLine)
+      // console.log(this.editedLine)
     },
     saveEditMasterLine() {
-      console.log('kepanggil saveMasterLine')
+      // console.log('kepanggil saveMasterLine')
       try {
         this.$store
           .dispatch('ActionEditMasterLine', this.editedLine)
           .then(() => {
             this.$store.dispatch('fetchMasterLine')
           })
-        console.log(this.editedLine)
+        // console.log(this.editedLine)
       } catch (error) {
         console.log(error)
       }
     },
     showDeleteMasterLine(id) {
       this.deletedLine = id
-      console.log('id', this.deletedLine)
+      // console.log('id', this.deletedLine)
     },
     deleteMasterLine() {
       try {

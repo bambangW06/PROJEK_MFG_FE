@@ -79,7 +79,7 @@ export default {
       const selectedEmployee = this.employees.find(
         (employee) => employee.employee_id == selectedId,
       )
-      console.log('Selected Employee:', selectedEmployee)
+      // console.log('Selected Employee:', selectedEmployee)
       this.$emit('update:selected-employee', selectedEmployee)
     },
     showPopover(positionKey) {

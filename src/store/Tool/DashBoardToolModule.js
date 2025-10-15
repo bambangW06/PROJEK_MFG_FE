@@ -80,7 +80,7 @@ const actions = {
     }
   },
   async ActionGetRegrinding({ commit }, payload) {
-    console.log('payload', payload)
+    // console.log('payload', payload)
     try {
       const response = await axios.get(`${API_URL}/regrinding/get`, {
         params: {

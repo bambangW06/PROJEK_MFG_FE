@@ -229,7 +229,7 @@ export default {
           shift: this.shift,
           time_range: this.time_range,
         }
-        console.log('payload', payload)
+        // console.log('payload', payload)
         let response = await this.$store.dispatch(
           ACTION_ADD_MASTER_TIME_RANGE,
           payload,
@@ -300,7 +300,7 @@ export default {
     async deleteMasterTime() {
       try {
         const time_id = this.deleteID
-        console.log('Delete item', time_id)
+        // console.log('Delete item', time_id)
         let response = await this.$store.dispatch(
           ACTION_DELETE_MASTER_TIME_RANGE,
           time_id,

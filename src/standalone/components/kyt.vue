@@ -90,7 +90,7 @@ export default {
         const response = await axios.get(API_URL + '/histories/get')
         const responseData = response.data
         this.allAttendanceData = responseData.data
-        console.log('All attendance data:', this.allAttendanceData)
+        // console.log('All attendance data:', this.allAttendanceData)
 
         const groupedData = this.groupByShift(this.allAttendanceData)
         this.chartOptions.xaxis.categories = Object.keys(groupedData)

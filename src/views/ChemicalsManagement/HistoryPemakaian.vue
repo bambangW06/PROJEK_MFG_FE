@@ -772,7 +772,7 @@ export default {
 
   methods: {
     async fetchHistoryData() {
-      console.log('kepanggil')
+      // console.log('kepanggil')
 
       try {
         if (!this.dateRange || !this.dateRange.includes(' to ')) return
@@ -862,12 +862,12 @@ export default {
         std.std_ph_min ?? sorted[0]?.std_ph_min ?? 7,
       )
 
-      console.log('STD dari backend:', {
-        std_max_cons,
-        std_min_cons,
-        std_ph_max,
-        std_ph_min,
-      })
+      // console.log('STD dari backend:', {
+      //   std_max_cons,
+      //   std_min_cons,
+      //   std_ph_max,
+      //   std_ph_min,
+      // })
 
       // Hitung yaxis min/max
       const yMin = Math.min(

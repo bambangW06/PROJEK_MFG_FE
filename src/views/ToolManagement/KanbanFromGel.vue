@@ -76,7 +76,7 @@ export default {
     async prepared(index) {
       try {
         const id = this.GET_KANBAN_FROM_GEL[index].detail_id
-        console.log('id', id)
+        // console.log('id', id)
         await this.$store.dispatch(ACTION_PREPARED, id)
       } catch (error) {
         console.log(error)
