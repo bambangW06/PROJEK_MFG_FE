@@ -48,6 +48,7 @@
               v-model="selectedMachine"
               :options="GET_MASTER_MACHINES"
               label="machine_nm"
+              :disabled="true"
             ></v-select>
 
             <div>
@@ -263,6 +264,118 @@
   </div>
 
   <div class="container-fluid">
+    <!-- DC-->
+    <div
+      class="card p-2"
+      v-if="groupedMachines.normal && groupedMachines.normal['DC']"
+    >
+      <div class="card p-2">
+        <div class="card card-title text-center">DC</div>
+
+        <div
+          class="card mb-2 mt-2 cell-section"
+          style="border: 1px solid black !important"
+          v-for="(machines, cellName) in sortedMachines.normal['DC']"
+          :key="cellName"
+        >
+          <h4 class="cell-title">{{ cellName }}</h4>
+          <div class="machine-container-khusus">
+            <div
+              v-for="machine in machines"
+              :key="machine.machine_id"
+              class="machine-box-wrapper"
+            >
+              <button
+                @mouseover="showPopover($event, machine)"
+                @mouseleave="hidePopover"
+                data-bs-toggle="modal"
+                data-bs-target="#modalPemakaianOli"
+                @click="openAddModal(machine)"
+                class="machine-box"
+              >
+                <div
+                  :class="getJudgeClass(machine)"
+                  class="machine-icon-wrapper"
+                >
+                  <img
+                    src="../../assets/images/MC. NC.png"
+                    alt="Machine Icon"
+                    class="machine-img"
+                  />
+                  <i
+                    v-if="hasOilData(machine)"
+                    class="fas fa-fill-drip badge-icon"
+                  ></i>
+                  <i
+                    v-if="!isCheckScheduled(machine)"
+                    class="fas fa-calendar-check schedule-icon"
+                    title="Sudah di cek"
+                  ></i>
+                </div>
+              </button>
+              <p class="machine-label">{{ machine.machine_nm }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LP-->
+    <div
+      class="card p-2"
+      v-if="groupedMachines.normal && groupedMachines.normal['LP']"
+    >
+      <div class="card p-2">
+        <div class="card card-title text-center">LP</div>
+
+        <div
+          class="card mb-2 mt-2 cell-section"
+          style="border: 1px solid black !important"
+          v-for="(machines, cellName) in sortedMachines.normal['LP']"
+          :key="cellName"
+        >
+          <h4 class="cell-title">{{ cellName }}</h4>
+          <div class="machine-container-khusus">
+            <div
+              v-for="machine in machines"
+              :key="machine.machine_id"
+              class="machine-box-wrapper"
+            >
+              <button
+                @mouseover="showPopover($event, machine)"
+                @mouseleave="hidePopover"
+                data-bs-toggle="modal"
+                data-bs-target="#modalPemakaianOli"
+                @click="openAddModal(machine)"
+                class="machine-box"
+              >
+                <div
+                  :class="getJudgeClass(machine)"
+                  class="machine-icon-wrapper"
+                >
+                  <img
+                    src="../../assets/images/MC. NC.png"
+                    alt="Machine Icon"
+                    class="machine-img"
+                  />
+                  <i
+                    v-if="hasOilData(machine)"
+                    class="fas fa-fill-drip badge-icon"
+                  ></i>
+                  <i
+                    v-if="!isCheckScheduled(machine)"
+                    class="fas fa-calendar-check schedule-icon"
+                    title="Sudah di cek"
+                  ></i>
+                </div>
+              </button>
+              <p class="machine-label">{{ machine.machine_nm }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Crank Shaft -->
     <div
       class="card p-2"
@@ -771,6 +884,8 @@ export default {
       const orderCrank = ['Line B', 'Line A']
       const orderBlockHead = ['Rough D', 'Rough C', 'Rough B', 'Rough A']
       const orderCam = ['Line EX', 'Line IN']
+      const orderDC = ['DC 1', 'DC 2']
+      const orderLp = ['LP']
 
       const sortCells = (machines, order) => {
         return Object.keys(machines)
@@ -791,6 +906,8 @@ export default {
             this.groupedMachines.normal['Cam Shaft'] || {},
             orderCam,
           ),
+          DC: sortCells(this.groupedMachines.normal['DC'] || {}, orderDC),
+          LP: sortCells(this.groupedMachines.normal['LP'] || {}, orderLp),
         },
         special: {
           'Cylinder Block': {
@@ -833,6 +950,8 @@ export default {
 
       // Urutan prioritas khusus
       const lineOrder = [
+        'DC',
+        'LP',
         'Crank Shaft',
         'Cylinder Block',
         'Cylinder Head',
@@ -870,7 +989,9 @@ export default {
             })
           } else if (
             orderedLineNm === 'Crank Shaft' ||
-            orderedLineNm === 'Cam Shaft'
+            orderedLineNm === 'Cam Shaft' ||
+            orderedLineNm === 'DC' ||
+            orderedLineNm === 'LP'
           ) {
             // Masukkan Crank Shaft & Cam Shaft ke grouped.normal
             if (!grouped.normal[orderedLineNm]) {
@@ -934,7 +1055,9 @@ export default {
     },
   },
   async mounted() {
-    await this.$store.dispatch(ACTION_GET_LINES)
+    await this.$store.dispatch(ACTION_GET_LINES).then(() => {
+      console.log('get line', this.GET_LINES)
+    })
     await this.$store.dispatch(ACTION_GET_MACHINES)
     await this.fetchDataOli()
     await this.$store.dispatch('fetchKaryawanList')
