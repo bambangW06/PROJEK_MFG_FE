@@ -93,36 +93,6 @@
               :options="usageChartOptions"
               :series="usageChartSeries"
             />
-            <!-- <div
-              v-if="selectedMachineUsage === null"
-              class="text-center fw-semibold mt-3"
-            >
-              <div class="table-responsive">
-                <table
-                  class="table table-bordered align-middle text-center mx-auto"
-                  style="width: auto"
-                >
-                  <thead>
-                    <tr>
-                      <th colspan="2">Total by Type</th>
-                    </tr>
-                    <tr>
-                      <th>Type</th>
-                      <th>Total (L)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr
-                      v-for="(d, i) in usageChartSeries[0]?.data || []"
-                      :key="i"
-                    >
-                      <td>{{ usageChartOptions.xaxis.categories[i] }}</td>
-                      <td>{{ d }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div> -->
           </div>
 
           <!-- Table -->
@@ -356,12 +326,6 @@ import {
   ACTION_GET_MASTER_OIL,
   GET_MASTER_OIL,
 } from '@/store/Chemical/MasterChemicals.module'
-function formatDecimal(num) {
-  const n = Number(num)
-  if (isNaN(n)) return 0
-  // Bulatkan ke 2 desimal tapi tanpa trailing nol berlebihan
-  return parseFloat(n.toFixed(2))
-}
 
 export default {
   name: 'HistoryChemical',
