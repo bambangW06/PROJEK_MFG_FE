@@ -1351,17 +1351,17 @@ export default {
     resetModal() {
       this.selectedLine = null
       this.selectedMachine = null
-      this.oil_nm = null
+      // this.oil_nm = null
       this.selectedMachine = null
       this.oil_volume = null
 
-      this.type_nm = null
+      // this.type_nm = null
       this.selectedAroma = null
       this.selectedSludge = null
       this.selectedVisual = null
       this.concentration = null
       this.ph = null
-      this.note_nm = null
+      // this.note_nm = null
     },
   },
 }
