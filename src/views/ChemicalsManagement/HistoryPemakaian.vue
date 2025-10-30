@@ -800,11 +800,21 @@ export default {
 
   methods: {
     async fetchHistoryData() {
-      // console.log('kepanggil')
-
       try {
-        if (!this.dateRange || !this.dateRange.includes(' to ')) return
-        let [start, end] = this.dateRange.split(' to ')
+        if (!this.dateRange) return
+
+        let start, end
+        if (this.dateRange.includes(' to ')) {
+          // === User pilih range ===
+          ;[start, end] = this.dateRange.split(' to ')
+        } else {
+          // === User pilih satu hari saja ===
+          start = this.dateRange
+          const nextDay = new Date(start)
+          nextDay.setDate(nextDay.getDate() + 1)
+          end = nextDay.toISOString().slice(0, 10)
+        }
+
         let payload = {
           start,
           end,
@@ -829,19 +839,9 @@ export default {
           payload,
         )
 
-        if (response.status === 200) {
-          if (this.activeTab === 'param') {
-            const { data, std_data } = response.data
-            // console.log('response:', response.data) // ✅ untuk verifikasi
-
-            // Simpan data utama seperti biasa (ke Vuex)
-            // this.GET_HISTORY_CHEMICAL sudah di-handle oleh Vuex mutation
-
-            // Kalau tab sekarang PARAMETER, set grafik dengan standar
-            if (this.activeTab === 'param') {
-              this.setParameterChart(data, std_data)
-            }
-          }
+        if (response.status === 200 && this.activeTab === 'param') {
+          const { data, std_data } = response.data
+          this.setParameterChart(data, std_data)
         }
       } catch (error) {
         console.error(error)
