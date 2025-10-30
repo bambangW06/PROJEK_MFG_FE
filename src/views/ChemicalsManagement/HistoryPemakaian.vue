@@ -44,6 +44,17 @@
                 :append-to-body="true"
               />
             </div>
+            <div class="col filter-group flex-grow-1">
+              <label class="form-label fw-semibold mb-1">Note</label>
+              <v-select
+                :options="GET_MASTER_NOTE"
+                label="note_nm"
+                v-model="note_nm"
+                placeholder="Pilih Note"
+                class="w-100"
+                :append-to-body="true"
+              />
+            </div>
 
             <!-- Line -->
             <div class="col filter-group flex-grow-1">
@@ -326,12 +337,17 @@ import {
   ACTION_GET_MASTER_OIL,
   GET_MASTER_OIL,
 } from '@/store/Chemical/MasterChemicals.module'
+import {
+  ACTION_GET_MASTER_NOTE,
+  GET_MASTER_NOTE,
+} from '@/store/Chemical/MasterNote.module'
 
 export default {
   name: 'HistoryChemical',
   components: { apexchart: VueApexCharts, Datepicker, FlatPickr },
   data() {
     return {
+      note_nm: null,
       selectedChemical: null,
       currentPage: 1,
       itemsPerPage: 10,
@@ -408,6 +424,7 @@ export default {
       'getMachinesNames',
       GET_HISTORY_CHEMICAL,
       GET_MASTER_OIL,
+      GET_MASTER_NOTE,
     ]),
     paginatedUsage() {
       const start = (this.currentPage - 1) * this.itemsPerPage
@@ -735,6 +752,11 @@ export default {
         await this.fetchHistoryData()
       }
     },
+    async note_nm(newVal) {
+      if (!this.isInitialLoad && newVal) {
+        await this.fetchHistoryData()
+      }
+    },
     async selectedChemical(newVal) {
       if (!this.isInitialLoad && newVal) {
         await this.fetchHistoryData()
@@ -797,6 +819,8 @@ export default {
           payload.machine_id = this.selectedMachineUsage.machine_id
         if (this.activeTab === 'usage' && this.selectedChemical?.oil_id)
           payload.oil_id = this.selectedChemical.oil_id
+        if (this.activeTab === 'usage' && this.note_nm)
+          payload.note_nm = this.note_nm.note_nm
         if (this.activeTab === 'param' && this.selectedMachineParam?.machine_id)
           payload.machine_id = this.selectedMachineParam.machine_id
 
@@ -999,6 +1023,7 @@ export default {
 
     this.dateRange = [formatDate(firstDay), formatDate(lastDay)]
     await this.$store.dispatch('fetchLines')
+    await this.$store.dispatch(ACTION_GET_MASTER_NOTE)
 
     if (this.selectedLineUsage)
       await this.onLineChange(this.selectedLineUsage, 'usage')
