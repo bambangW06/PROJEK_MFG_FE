@@ -1314,6 +1314,7 @@ export default {
           created_dt: formattedDate,
           note_id: this.note_nm ? this.note_nm.note_id : null,
           note_nm: this.note_nm ? this.note_nm.note_nm : null,
+          shift: this.pic.shift,
         }
 
         // --- Kondisi khusus untuk MIXING REGULER
