@@ -27,7 +27,7 @@
     "@popperjs/core": "^2.11.8",
     "@vuepic/vue-datepicker": "^5.4.0",
     "@zanmato/vue3-treeselect": "^0.2.0",
-    "apexcharts": "^3.49.0",
+    "apexcharts": "^4.7.0",
     "axios": "^1.4.0",
     "bootstrap": "^4.6.2",
     "bootstrap-vue": "^2.23.1",
