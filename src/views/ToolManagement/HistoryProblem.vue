@@ -361,22 +361,16 @@ export default {
           // Check if selectedLine is not null or undefined
           if (this.selectedLine && this.selectedLine.line_id) {
             payload.selectedLine = this.selectedLine.line_id
-          } else {
-            console.error('selectedLine is null or undefined')
           }
 
           // Check if selectedMachine is not null or undefined
           if (this.selectedMachine) {
             payload.selectedMachine = this.selectedMachine
-          } else {
-            console.error('selectedMachine is null or undefined')
           }
 
           // Check if selectedTool is not null or undefined
-          if (this.selectedTool) {
+          else if (this.selectedTool) {
             payload.selectedTool = this.selectedTool
-          } else {
-            console.error('selectedTool is null or undefined')
           }
         }
         // Tambahkan kondisi jika selectedProblem adalah 'inprocess' untuk menambahkan selectedCategory
@@ -392,7 +386,7 @@ export default {
         //   console.log('GET_HISTORY_PROBLEM', this.GET_HISTORY_PROBLEM)
         // }
       } catch (error) {
-        console.log('Error in getProblem:', error)
+        // console.log('Error in getProblem:', error)
         this.$swal({
           icon: 'error',
           title: 'Oops...',
