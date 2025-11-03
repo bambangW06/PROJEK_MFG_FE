@@ -1055,9 +1055,7 @@ export default {
     },
   },
   async mounted() {
-    await this.$store.dispatch(ACTION_GET_LINES).then(() => {
-      console.log('get line', this.GET_LINES)
-    })
+    await this.$store.dispatch(ACTION_GET_LINES)
     await this.$store.dispatch(ACTION_GET_MACHINES)
     await this.fetchDataOli()
     await this.$store.dispatch('fetchKaryawanList')

@@ -524,7 +524,7 @@ export default {
         // Tambahkan console.log di sini
         // console.log('Preview URL:', this.newUser.previewUrl)
         // Tambahkan logging untuk memeriksa nilai previewUrl setelah diatur
-        console.log('Preview URL setelah diatur:', this.newUser.previewUrl)
+        // console.log('Preview URL setelah diatur:', this.newUser.previewUrl)
       }
 
       reader.readAsDataURL(file)

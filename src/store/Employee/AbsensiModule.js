@@ -121,7 +121,7 @@ const actions = {
 
       dispatch('fetchEmployeeData')
     } catch (error) {
-      console.log('eror bro :', error)
+      console.log(error)
     }
   },
 
@@ -280,7 +280,7 @@ const actions = {
 
       if (data.message === 'Success to Get Absence') {
         const historyAbsence = data.data
-        console.log('historyAbsence', historyAbsence)
+        // console.log('historyAbsence', historyAbsence)
         commit('setHistoryAbsence', historyAbsence)
         // console.log('historyAbsence', historyAbsence)
 

@@ -476,9 +476,9 @@ export default {
 
         // 🟢 LOG untuk data Unknown Line
         const unknownLines = val.filter((d) => !d.line_nm)
-        if (unknownLines.length) {
-          console.log('⚠️ Found Unknown Line data:', unknownLines)
-        }
+        // if (unknownLines.length) {
+        //   console.log('⚠️ Found Unknown Line data:', unknownLines)
+        // }
 
         if (this.activeTab === 'usage') {
           let data = val || []
