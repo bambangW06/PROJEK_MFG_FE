@@ -1,17 +1,32 @@
 <template>
   <CDropdown variant="nav-item">
-    <CDropdownToggle placement="bottom-end" class="py-0" href="javascript:void(0);">
-      {{userName}}&ensp;
-      <img  v-if="photo" :src="photo" class="rounded-circle" style="width: 36px; height: 36px;">
-      <CAvatar v-else="" color="danger " text-color="white">{{initial}}</CAvatar>
+    <CDropdownToggle
+      placement="bottom-end"
+      class="py-0"
+      href="javascript:void(0);"
+    >
+      {{ userName }}&ensp;
+      <img
+        v-if="photo"
+        :src="photo"
+        class="rounded-circle"
+        style="width: 36px; height: 36px"
+      />
+      <CAvatar v-else color="danger" text-color="white">{{ initial }}</CAvatar>
     </CDropdownToggle>
+
     <CDropdownMenu class="pt-0">
       <CDropdownHeader component="h6" class="fw-semibold py-2">
         Account
       </CDropdownHeader>
-      <CDropdownItem href="/#/sc/profile"> <CIcon icon="cil-user" /> Profile </CDropdownItem>
+
+      <CDropdownItem href="/#/sc/profile">
+        <CIcon icon="cil-user" /> Profile
+      </CDropdownItem>
+
       <CDropdownDivider />
-      <CDropdownItem href="#" @click="logout()">
+
+      <CDropdownItem href="#" @click="logout">
         <CIcon icon="cilAccountLogout" /> Logout
       </CDropdownItem>
     </CDropdownMenu>
@@ -19,37 +34,61 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex'
+import { GET_USER, ACTION_LOGOUT } from '@/store/Login.module'
 import avatar from '@/standalone/assets/images/avatars/8.jpg'
-import api from "@/apis/CommonAPI"
+
+function generateInitialFromUsername(username) {
+  if (!username) return 'AA'
+  const parts = username.split('_')
+  if (parts.length >= 2) {
+    return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase()
+  } else {
+    return (username.charAt(0) + (username.charAt(1) || '')).toUpperCase()
+  }
+}
+
 export default {
   name: 'AppHeaderDropdownAccnt',
-  data(){
+
+  data() {
     return {
       photo: null,
-      initial:'AA',
-      userName: 'User Name 1'
     }
   },
-  async created(){
-    // let dataUser = await api.scQueryApi('/api/common/user-info','POST' );
-    // this.photo = dataUser.data.photo
-    // this.initial = dataUser.data.firstName.toUpperCase().charAt(0);
-    // this.initial += dataUser.data.lastName?dataUser.data.lastName.toUpperCase().charAt(0):'';
-    // this.userName = dataUser.data.firstName+' '+dataUser.data.lastName;
-    // // localstorage set
-    // localStorage.setItem('userName', this.userName);
+
+  computed: {
+    ...mapGetters([GET_USER]),
+
+    userName() {
+      return this[GET_USER]?.username || ''
+    },
+
+    initial() {
+      return generateInitialFromUsername(this[GET_USER]?.username)
+    },
   },
+
   setup() {
-    return {
-      avatar: avatar,
-      itemsCount: 42,
-    }
+    return { avatar }
   },
-  methods:{
-    logout(){      
-      localStorage.id_token = '';
-      window.location.href=process.env.VUE_APP_CONTAINER_URL+'/';
-    }
-  }
+
+  methods: {
+    ...mapActions([ACTION_LOGOUT]),
+
+    async logout() {
+      try {
+        await this[ACTION_LOGOUT]() // dispatch logout ke Vuex
+        sessionStorage.removeItem('IS_LOGGED_IN')
+        this.$store.commit('SET_USER', null)
+        this.$router.push('/login')
+      } catch (err) {
+        console.error('Logout gagal:', err)
+        this.$store.commit('SET_USER', null)
+        sessionStorage.removeItem('IS_LOGGED_IN')
+        this.$router.push('/login')
+      }
+    },
+  },
 }
 </script>
