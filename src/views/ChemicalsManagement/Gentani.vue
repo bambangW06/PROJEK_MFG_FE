@@ -171,6 +171,28 @@ export default {
       this.days = Array.from({ length: lastDay }, (_, i) => i + 1)
     },
 
+    // dailyUsage(oil_id, day) {
+    //   if (!this.selectedMonth) return 0
+
+    //   const [year, month] = this.selectedMonth.split('-')
+    //   const startOfDay = new Date(year, month - 1, day, 7, 0, 0) // jam 07:00
+    //   const endOfDay = new Date(startOfDay)
+    //   endOfDay.setDate(endOfDay.getDate() + 1) // sampai jam 07:00 besok
+
+    //   const rows = this.GET_GENTANI.filter((r) => {
+    //     if (r.oil_id !== oil_id) return false
+    //     const dt = new Date(r.usage_date)
+    //     return dt >= startOfDay && dt < endOfDay
+    //   })
+
+    //   return rows.reduce((sum, r) => sum + Number(r.actual_usage), 0)
+    // },
+
+    // cumulativeUsage(oil_id, day) {
+    //   const days = this.days.filter((d) => d <= day)
+    //   return days.reduce((sum, d) => sum + this.dailyUsage(oil_id, d), 0)
+    // },
+
     dailyUsage(oil_id, day) {
       if (!this.selectedMonth) return 0
 
@@ -185,21 +207,30 @@ export default {
         return dt >= startOfDay && dt < endOfDay
       })
 
-      return rows.reduce((sum, r) => sum + Number(r.actual_usage), 0)
+      const sum = rows.reduce((sum, r) => sum + Number(r.actual_usage), 0)
+      return Number(sum.toFixed(2)) // batasi 2 digit di belakang koma
     },
 
     cumulativeUsage(oil_id, day) {
       const days = this.days.filter((d) => d <= day)
-      return days.reduce((sum, d) => sum + this.dailyUsage(oil_id, d), 0)
+      const sum = days.reduce(
+        (total, d) => total + this.dailyUsage(oil_id, d),
+        0,
+      )
+      return Number(sum.toFixed(2)) // batasi 2 digit di belakang koma
     },
 
     totalDaily(oil_id) {
-      return this.days.reduce((sum, d) => sum + this.dailyUsage(oil_id, d), 0)
+      const sum = this.days.reduce(
+        (sum, d) => sum + this.dailyUsage(oil_id, d),
+        0,
+      )
+      return Number(sum.toFixed(2))
     },
 
     totalCumulative(oil_id) {
       const lastDay = this.days[this.days.length - 1]
-      return this.cumulativeUsage(oil_id, lastDay)
+      return Number(this.cumulativeUsage(oil_id, lastDay).toFixed(2))
     },
 
     getDayClass(day) {
@@ -228,6 +259,7 @@ export default {
     getChartSeries(oil_id) {
       const daily = this.days.map((d) => this.dailyUsage(oil_id, d))
       const cumulative = this.days.map((d) => this.cumulativeUsage(oil_id, d))
+
       const oilData = this.GET_GENTANI.find((d) => d.oil_id === oil_id)
       const standard = oilData
         ? Number(oilData.gentani_val) * Number(oilData.plan_prod)
