@@ -86,6 +86,11 @@ const routes = [
         meta: { requiresSpecialToken: true, requiresAuth: true },
       },
       {
+        path: '/chemical/gentani',
+        name: 'Gentani',
+        component: () => import('@/views/ChemicalsManagement/Gentani.vue'),
+      },
+      {
         path: '/tool/masterLines',
         name: 'MasterLines',
         component: () =>

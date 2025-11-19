@@ -247,6 +247,12 @@ export default {
               to: '/chemical/historyPemakaian',
               icon: 'cilHistory',
             },
+            {
+              component: 'cNavItem',
+              name: 'Gentani Chemical',
+              to: '/chemical/gentani',
+              icon: 'cilDrop',
+            },
           ],
         },
         {

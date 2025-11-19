@@ -27,6 +27,7 @@ import HistoryPemakaianModule from './Chemical/HistoryPemakaian.module'
 import MasterNote from './Chemical/MasterNote.module'
 import ReservasiChemicalModule from './Chemical/ReservasiChemical.module'
 import LoginModule from './Login.module'
+import GentaniModule from './Chemical/Gentani.module'
 
 export default createStore({
   state: {
@@ -74,5 +75,6 @@ export default createStore({
     MasterNote,
     ReservasiChemicalModule,
     LoginModule,
+    GentaniModule,
   },
 })

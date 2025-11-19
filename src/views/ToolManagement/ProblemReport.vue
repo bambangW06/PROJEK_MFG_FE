@@ -616,7 +616,7 @@ export default {
           payload.category_id = this.editCategoryId
         }
 
-        // console.log('payload vue', payload)
+        // console.log('payload', payload)
 
         let response = await this.$store.dispatch(
           ACTION_EDIT_ANALISA_PROBLEM,
