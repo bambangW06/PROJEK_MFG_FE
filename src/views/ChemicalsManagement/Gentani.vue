@@ -31,70 +31,79 @@
       </div>
     </div>
 
-    <!-- Loop Chart & Table per Oil -->
-    <div v-for="oil in oilList" :key="oil.oil_id" class="mb-5">
-      <!-- Chart -->
-      <div class="card p-3 mb-3 shadow-sm">
-        <h5>{{ oil.oil_nm }}</h5>
-        <apexchart
-          type="line"
-          height="350"
-          :options="getChartOptions(oil.oil_id)"
-          :series="getChartSeries(oil.oil_id)"
-        />
+    <div v-if="loading" class="text-center my-5">
+      <span>Loading data, please wait...</span>
+      <!-- atau spinner -->
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
       </div>
+    </div>
+    <!-- Loop Chart & Table per Oil -->
+    <div v-else>
+      <div v-for="oil in oilList" :key="oil.oil_id" class="mb-5">
+        <!-- Chart -->
+        <div class="card p-3 mb-3 shadow-sm">
+          <h5>{{ oil.oil_nm }}</h5>
+          <apexchart
+            type="line"
+            height="350"
+            :options="getChartOptions(oil.oil_id)"
+            :series="getChartSeries(oil.oil_id)"
+          />
+        </div>
 
-      <!-- Table -->
-      <div class="card p-3 mb-3 shadow-sm">
-        <h6>Detail {{ oil.oil_nm }}</h6>
-        <div class="table-wrapper">
-          <table
-            class="table table-bordered table-sm text-center align-middle sticky-table"
-          >
-            <thead>
-              <tr>
-                <th class="sticky-col sticky-col-1">No</th>
-                <th class="sticky-col sticky-col-2">Chemical Type</th>
-                <th class="sticky-col sticky-col-3">Tanggal</th>
-                <th v-for="day in days" :key="day" :class="getDayClass(day)">
-                  {{ day }}
-                </th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="sticky-col sticky-col-1" rowspan="2">1</td>
-                <td class="sticky-col sticky-col-2" rowspan="2">
-                  {{ oil.oil_nm }}
-                </td>
+        <!-- Table -->
+        <div class="card p-3 mb-3 shadow-sm">
+          <h6>Detail {{ oil.oil_nm }}</h6>
+          <div class="table-wrapper">
+            <table
+              class="table table-bordered table-sm text-center align-middle sticky-table"
+            >
+              <thead>
+                <tr>
+                  <th class="sticky-col sticky-col-1">No</th>
+                  <th class="sticky-col sticky-col-2">Chemical Type</th>
+                  <th class="sticky-col sticky-col-3">Tanggal</th>
+                  <th v-for="day in days" :key="day" :class="getDayClass(day)">
+                    {{ day }}
+                  </th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="sticky-col sticky-col-1" rowspan="2">1</td>
+                  <td class="sticky-col sticky-col-2" rowspan="2">
+                    {{ oil.oil_nm }}
+                  </td>
 
-                <td class="sticky-col sticky-col-3 fw-semibold">
-                  Actual Usage
-                </td>
-                <td
-                  v-for="day in days"
-                  :key="'daily-' + day"
-                  :class="getDayClass(day)"
-                >
-                  {{ dailyUsage(oil.oil_id, day) }}
-                </td>
-                <td class="fw-semibold">{{ totalDaily(oil.oil_id) }}</td>
-              </tr>
+                  <td class="sticky-col sticky-col-3 fw-semibold">
+                    Actual Usage
+                  </td>
+                  <td
+                    v-for="day in days"
+                    :key="'daily-' + day"
+                    :class="getDayClass(day)"
+                  >
+                    {{ dailyUsage(oil.oil_id, day) }}
+                  </td>
+                  <td class="fw-semibold">{{ totalDaily(oil.oil_id) }}</td>
+                </tr>
 
-              <tr class="table-secondary fw-semibold">
-                <td class="sticky-col sticky-col-3">Cumulative</td>
-                <td
-                  v-for="day in days"
-                  :key="'cumu-' + day"
-                  :class="getDayClass(day)"
-                >
-                  {{ cumulativeUsage(oil.oil_id, day) }}
-                </td>
-                <td>{{ totalCumulative(oil.oil_id) }}</td>
-              </tr>
-            </tbody>
-          </table>
+                <tr class="table-secondary fw-semibold">
+                  <td class="sticky-col sticky-col-3">Cumulative</td>
+                  <td
+                    v-for="day in days"
+                    :key="'cumu-' + day"
+                    :class="getDayClass(day)"
+                  >
+                    {{ cumulativeUsage(oil.oil_id, day) }}
+                  </td>
+                  <td>{{ totalCumulative(oil.oil_id) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -118,6 +127,7 @@ export default {
       selectedLine: null,
       days: [],
       precomputed: {},
+      loading: false, // <-- FLAG LOADING
     }
   },
   computed: {
@@ -138,7 +148,7 @@ export default {
     selectedLine() {
       this.fetchData()
     },
-    selectedMonth(val) {
+    selectedMonth() {
       this.generateDays()
       this.fetchData()
     },
@@ -160,43 +170,37 @@ export default {
   },
   methods: {
     async fetchData() {
-      if (!this.selectedMonth || !this.selectedLine) return
-      const payload = {
-        month: this.selectedMonth,
-        line_id: this.selectedLine.line_id,
+      try {
+        if (!this.selectedMonth || !this.selectedLine) return
+        this.loading = true
+        const payload = {
+          month: this.selectedMonth,
+          line_id: this.selectedLine.line_id,
+        }
+        await this.$store.dispatch(ACTION_GET_GENTANI, payload)
+        this.precomputeAll()
+        this.loading = false
+      } catch (error) {
+        console.log(error)
       }
-      await this.$store.dispatch(ACTION_GET_GENTANI, payload)
-      this.precomputeAll()
     },
+
     precomputeOil(oil_id) {
       const cache = {}
       const [year, month] = this.selectedMonth.split('-')
-
       this.days.forEach((day) => {
-        const startOfDay = new Date(year, month - 1, day, 7, 0, 0)
-        const endOfDay = new Date(startOfDay)
-        endOfDay.setDate(endOfDay.getDate() + 1)
-
-        const rows = this.GET_GENTANI.filter((r) => {
-          if (r.oil_id !== oil_id) return false
-          const dt = new Date(r.usage_date)
-          return dt >= startOfDay && dt < endOfDay
-        })
-
+        const dayStr = String(day).padStart(2, '0')
+        const rows = this.GET_GENTANI.filter(
+          (r) => r.oil_id === oil_id && r.usage_date.slice(8, 10) === dayStr,
+        )
         const sum = rows.reduce((t, r) => t + Number(r.actual_usage), 0)
-        cache[day] = {
-          daily: Number(sum.toFixed(2)),
-          cumulative: 0,
-        }
+        cache[day] = { daily: Number(sum.toFixed(2)), cumulative: 0 }
       })
-
-      // hitung cumulative
       let running = 0
       this.days.forEach((day) => {
         running += cache[day].daily
         cache[day].cumulative = Number(running.toFixed(2))
       })
-
       this.precomputed[oil_id] = cache
     },
 
@@ -212,73 +216,22 @@ export default {
       this.days = Array.from({ length: lastDay }, (_, i) => i + 1)
     },
 
-    // dailyUsage(oil_id, day) {
-    //   if (!this.selectedMonth) return 0
-
-    //   const [year, month] = this.selectedMonth.split('-')
-    //   const startOfDay = new Date(year, month - 1, day, 7, 0, 0) // jam 07:00
-    //   const endOfDay = new Date(startOfDay)
-    //   endOfDay.setDate(endOfDay.getDate() + 1) // sampai jam 07:00 besok
-
-    //   const rows = this.GET_GENTANI.filter((r) => {
-    //     if (r.oil_id !== oil_id) return false
-    //     const dt = new Date(r.usage_date)
-    //     return dt >= startOfDay && dt < endOfDay
-    //   })
-
-    //   return rows.reduce((sum, r) => sum + Number(r.actual_usage), 0)
-    // },
-
-    // cumulativeUsage(oil_id, day) {
-    //   const days = this.days.filter((d) => d <= day)
-    //   return days.reduce((sum, d) => sum + this.dailyUsage(oil_id, d), 0)
-    // },
-
-    // dailyUsage(oil_id, day) {
-    //   if (!this.selectedMonth) return 0
-
-    //   const [year, month] = this.selectedMonth.split('-')
-    //   const startOfDay = new Date(year, month - 1, day, 7, 0, 0) // jam 07:00
-    //   const endOfDay = new Date(startOfDay)
-    //   endOfDay.setDate(endOfDay.getDate() + 1) // sampai jam 07:00 besok
-
-    //   const rows = this.GET_GENTANI.filter((r) => {
-    //     if (r.oil_id !== oil_id) return false
-    //     const dt = new Date(r.usage_date)
-    //     return dt >= startOfDay && dt < endOfDay
-    //   })
-
-    //   const sum = rows.reduce((sum, r) => sum + Number(r.actual_usage), 0)
-    //   return Number(sum.toFixed(2)) // batasi 2 digit di belakang koma
-    // },
-
-    // cumulativeUsage(oil_id, day) {
-    //   const days = this.days.filter((d) => d <= day)
-    //   const sum = days.reduce(
-    //     (total, d) => total + this.dailyUsage(oil_id, d),
-    //     0,
-    //   )
-    //   return Number(sum.toFixed(2)) // batasi 2 digit di belakang koma
-    // },
     dailyUsage(oil_id, day) {
       return this.precomputed[oil_id]?.[day]?.daily ?? 0
     },
-
     cumulativeUsage(oil_id, day) {
       return this.precomputed[oil_id]?.[day]?.cumulative ?? 0
     },
-
     totalDaily(oil_id) {
-      const sum = this.days.reduce(
-        (sum, d) => sum + this.dailyUsage(oil_id, d),
-        0,
+      return Number(
+        this.days
+          .reduce((sum, d) => sum + this.dailyUsage(oil_id, d), 0)
+          .toFixed(2),
       )
-      return Number(sum.toFixed(2))
     },
-
     totalCumulative(oil_id) {
-      const lastDay = this.days[this.days.length - 1]
-      return Number(this.cumulativeUsage(oil_id, lastDay).toFixed(2))
+      const last = this.days[this.days.length - 1]
+      return Number(this.cumulativeUsage(oil_id, last).toFixed(2))
     },
 
     getDayClass(day) {
@@ -289,31 +242,14 @@ export default {
       return ''
     },
 
-    // getChartSeries(oil_id) {
-    //   const daily = this.days.map((d) => this.dailyUsage(oil_id, d))
-    //   const cumulative = this.days.map((d) => this.cumulativeUsage(oil_id, d))
-    //   const oilData = this.GET_GENTANI.find((d) => d.oil_id === oil_id)
-    //   const standard = oilData
-    //     ? Number(oilData.gentani_val) * Number(oilData.plan_prod)
-    //     : 0
-    //   const standardLine = this.days.map(() => standard)
-    //   return [
-    //     { name: 'Actual Usage', type: 'bar', data: daily },
-    //     { name: 'Cumulative', type: 'line', data: cumulative },
-    //     { name: 'Standard Monthly', type: 'line', data: standardLine },
-    //   ]
-    // },
-
     getChartSeries(oil_id) {
       const daily = this.days.map((d) => this.dailyUsage(oil_id, d))
       const cumulative = this.days.map((d) => this.cumulativeUsage(oil_id, d))
-
       const oilData = this.GET_GENTANI.find((d) => d.oil_id === oil_id)
       const standard = oilData
         ? Number(oilData.gentani_val) * Number(oilData.plan_prod)
         : 0
-      const standardLine = this.days.map(() => standard) // garis penuh
-
+      const standardLine = this.days.map(() => standard)
       return [
         { name: 'Actual Usage', type: 'bar', data: daily },
         { name: 'Cumulative', type: 'line', data: cumulative },
@@ -323,8 +259,8 @@ export default {
           data: standardLine,
           color: '#ff0000',
           strokeWidth: 3,
-          marker: { size: 0 }, // titik tidak muncul
-          dataLabels: { enabled: false }, // matikan label per titik
+          marker: { size: 0 },
+          dataLabels: { enabled: false },
         },
       ]
     },
@@ -335,24 +271,17 @@ export default {
       const standard = (
         Number(oilData?.gentani_val ?? 0) * Number(oilData?.plan_prod ?? 0)
       ).toFixed(2)
-
       return {
-        chart: { stacked: false },
+        chart: { stacked: false, animations: { enabled: false } },
         stroke: { width: [0, 3, 3] },
         xaxis: { categories: days.map((d) => String(d).padStart(2, '0')) },
         yaxis: {
           title: { text: 'Volume' },
           axisBorder: { show: true, color: '#000' },
-          thickMarks: { enabled: true, color: '#000' },
-          labels: {
-            formatter: (val) => parseInt(val),
-          },
+          labels: { formatter: (val) => parseInt(val) },
         },
         tooltip: { shared: true, intersect: false },
-        dataLabels: {
-          enabled: true, // global aktif
-          enabledOnSeries: [0, 1], // hanya untuk Actual Usage & Cumulative
-        },
+        dataLabels: { enabled: true, enabledOnSeries: [0, 1] },
         annotations: {
           yaxis: [
             {
@@ -369,17 +298,6 @@ export default {
         },
       }
     },
-
-    // getChartOptions(oil_id) {
-    //   return {
-    //     chart: { stacked: false },
-    //     stroke: { width: [0, 3, 3] },
-    //     xaxis: { categories: this.days.map((d) => String(d).padStart(2, '0')) },
-    //     yaxis: { title: { text: 'Volume' } },
-    //     tooltip: { shared: true, intersect: false },
-    //     dataLabels: { enabled: true },
-    //   }
-    // },
   },
 }
 </script>
