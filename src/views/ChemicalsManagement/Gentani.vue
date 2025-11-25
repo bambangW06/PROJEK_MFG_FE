@@ -1,10 +1,27 @@
 <template>
+  <!-- Header -->
   <div class="container-fluid">
-    <!-- Header -->
-    <div class="card p-3 mb-3 shadow-sm">
-      <h4 class="m-0 fw-bold">Dummy test</h4>
+    <div class="card p-2 mb-2">
+      <div class="d-flex justify-content-between align-items-center">
+        <h4 class="text-center m-0">Gentani Chemical</h4>
+        <div>
+          <button
+            ref="toggleBtn"
+            class="btn btn-primary"
+            @click.stop="toggleMasterGentani"
+          >
+            Master Gentani
+          </button>
+        </div>
+      </div>
     </div>
-
+  </div>
+  <MasterGentani
+    ref="masterGentani"
+    class="mb-2"
+    :showMasterGentani="showMasterGentani"
+  />
+  <div class="container-fluid">
     <!-- Filter -->
     <div class="card p-3 mb-3 shadow-sm">
       <div class="row d-flex flex-wrap gap-3 mb-3 align-items-end">
@@ -114,28 +131,30 @@
 import VueApexCharts from 'vue3-apexcharts'
 import { mapGetters } from 'vuex'
 import {
-  ACTION_GET_GENTANI,
-  GET_GENTANI,
+  ACTION_GET_SUMMARY_GENTANI,
+  GET_SUMMARY_GENTANI,
 } from '@/store/Chemical/Gentani.module'
+import MasterGentani from '@/components/table/MasterGentani.vue'
 
 export default {
   name: 'Gentani',
-  components: { apexchart: VueApexCharts },
+  components: { apexchart: VueApexCharts, MasterGentani },
   data() {
     return {
       selectedMonth: null,
       selectedLine: null,
       days: [],
       precomputed: {},
-      loading: false, // <-- FLAG LOADING
+      loading: false,
+      showMasterGentani: false,
     }
   },
   computed: {
-    ...mapGetters(['getLineNames', GET_GENTANI]),
+    ...mapGetters(['getLineNames', GET_SUMMARY_GENTANI]),
     oilList() {
       const unique = []
       const map = new Map()
-      this.GET_GENTANI.forEach((item) => {
+      this.GET_SUMMARY_GENTANI.forEach((item) => {
         if (!map.has(item.oil_id)) {
           map.set(item.oil_id, true)
           unique.push({ oil_id: item.oil_id, oil_nm: item.oil_nm })
@@ -167,8 +186,48 @@ export default {
 
     this.generateDays()
     await this.fetchData()
+    document.addEventListener('click', this.handleClickOutside)
+  },
+  beforeUnmount() {
+    document.removeEventListener('click', this.handleClickOutside)
   },
   methods: {
+    toggleMasterGentani() {
+      this.showMasterGentani = true
+    },
+    handleClickOutside(event) {
+      // Cek modal Bootstrap
+      const modalEl = document.getElementById('modalMasterGentani')
+      const isModalShown = modalEl?.classList.contains('show')
+      if (isModalShown) return
+
+      // ❗ Cegah hide kalau klik Swal (SweetAlert)
+      const swalContainer = document.querySelector('.swal2-container')
+      if (swalContainer && swalContainer.contains(event.target)) return
+
+      const masterEl = this.$refs.masterGentani?.$refs.wrapper
+      const buttonEl = this.$refs.toggleBtn
+
+      const backdropEl = document.querySelector('.modal-backdrop')
+
+      if (
+        modalEl?.contains(event.target) ||
+        backdropEl?.contains(event.target)
+      ) {
+        return
+      }
+
+      if (
+        this.showMasterGentani &&
+        masterEl &&
+        !masterEl.contains(event.target) &&
+        buttonEl &&
+        !buttonEl.contains(event.target)
+      ) {
+        this.showMasterGentani = false
+      }
+    },
+
     async fetchData() {
       try {
         if (!this.selectedMonth || !this.selectedLine) return
@@ -177,7 +236,7 @@ export default {
           month: this.selectedMonth,
           line_id: this.selectedLine.line_id,
         }
-        await this.$store.dispatch(ACTION_GET_GENTANI, payload)
+        await this.$store.dispatch(ACTION_GET_SUMMARY_GENTANI, payload)
         this.precomputeAll()
         this.loading = false
       } catch (error) {
@@ -190,7 +249,7 @@ export default {
       const [year, month] = this.selectedMonth.split('-')
       this.days.forEach((day) => {
         const dayStr = String(day).padStart(2, '0')
-        const rows = this.GET_GENTANI.filter(
+        const rows = this.GET_SUMMARY_GENTANI.filter(
           (r) => r.oil_id === oil_id && r.usage_date.slice(8, 10) === dayStr,
         )
         const sum = rows.reduce((t, r) => t + Number(r.actual_usage), 0)
@@ -206,7 +265,7 @@ export default {
 
     precomputeAll() {
       this.precomputed = {}
-      const oils = [...new Set(this.GET_GENTANI.map((r) => r.oil_id))]
+      const oils = [...new Set(this.GET_SUMMARY_GENTANI.map((r) => r.oil_id))]
       oils.forEach((id) => this.precomputeOil(id))
     },
 
@@ -245,7 +304,7 @@ export default {
     getChartSeries(oil_id) {
       const daily = this.days.map((d) => this.dailyUsage(oil_id, d))
       const cumulative = this.days.map((d) => this.cumulativeUsage(oil_id, d))
-      const oilData = this.GET_GENTANI.find((d) => d.oil_id === oil_id)
+      const oilData = this.GET_SUMMARY_GENTANI.find((d) => d.oil_id === oil_id)
       const standard = oilData
         ? Number(oilData.gentani_val) * Number(oilData.plan_prod)
         : 0
@@ -267,7 +326,7 @@ export default {
 
     getChartOptions(oil_id) {
       const days = this.days
-      const oilData = this.GET_GENTANI.find((d) => d.oil_id === oil_id)
+      const oilData = this.GET_SUMMARY_GENTANI.find((d) => d.oil_id === oil_id)
       const standard = (
         Number(oilData?.gentani_val ?? 0) * Number(oilData?.plan_prod ?? 0)
       ).toFixed(2)
