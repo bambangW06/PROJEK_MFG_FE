@@ -206,12 +206,7 @@
                   </td>
 
                   <td>
-                    {{
-                      Object.values(planProdCumulative).reduce(
-                        (a, b) => a + (Number(b) || 0),
-                        0,
-                      )
-                    }}
+                    {{ planProdCumulative[days[days.length - 1]] || 0 }}
                   </td>
                 </tr>
               </tbody>
@@ -275,11 +270,7 @@
                 class="form-select form-select-sm"
                 style="width: 80px"
               >
-                <option
-                  v-for="n in [5, 10, 15, 20, 25, 30]"
-                  :key="n"
-                  :value="n"
-                >
+                <option v-for="n in [10, 15, 20, 25, 30]" :key="n" :value="n">
                   {{ n }}
                 </option>
               </select>
@@ -367,7 +358,7 @@ export default {
       form: {}, // data form untuk modal
       modalTitle: '',
       modalMode: 'add', // add / edit / delete
-      perPage: 5, // default 5 per halaman
+      perPage: 10, // default 5 per halaman
       currentPage: 1,
       planProdDaily: {},
       planProdCumulative: {},
@@ -421,12 +412,20 @@ export default {
         this.form.plan_prod = null
       }
     },
-    selectedLineGentani() {
+    async selectedLineGentani() {
       this.loadPlanProduction()
+      await this.$store.dispatch(ACTION_GET_STD_GENTANI, {
+        line_id: this.selectedLineGentani?.line_id,
+        month: this.selectedMonth,
+      })
     },
-    selectedMonth() {
+    async selectedMonth() {
       this.generateDays()
       this.loadPlanProduction()
+      await this.$store.dispatch(ACTION_GET_STD_GENTANI, {
+        line_id: this.selectedLineGentani?.line_id,
+        month: this.selectedMonth,
+      })
     },
   },
   async mounted() {
@@ -440,7 +439,10 @@ export default {
     )
     if (defaultLine) this.selectedLineGentani = defaultLine
     this.generateDays()
-    await this.$store.dispatch(ACTION_GET_STD_GENTANI)
+    await this.$store.dispatch(ACTION_GET_STD_GENTANI, {
+      line_id: this.selectedLineGentani.line_id,
+      month: this.selectedMonth,
+    })
     await this.$store.dispatch(ACTION_GET_MASTER_OIL)
     this.loadPlanProduction()
   },
@@ -562,6 +564,7 @@ export default {
           // Cari object oil berdasarkan oil_id
           oil_obj: this.GET_MASTER_OIL.find((x) => x.oil_id === item.oil_id),
         }
+        console.log('form edit', this.form)
       } else if (mode === 'delete') {
         this.modalTitle = 'Delete Gentani'
         this.form = { ...item }
@@ -578,46 +581,66 @@ export default {
       }
     },
     async addGentani() {
-      const payload = {
-        line_id: this.form.line_obj?.line_id,
-        oil_id: this.form.oil_obj?.oil_id,
-        gentani_val: this.form.gentani_val,
-        plan_prod: this.form.plan_prod,
-        created_by: this.form.created_by,
-      }
-      let response = await this.$store.dispatch(ACTION_ADD_STD_GENTANI, payload)
-      if (response.status == 201) {
-        this.$swal({
-          icon: 'success',
-          title: 'Success',
-          text: 'Gentani added successfully',
-        })
-        this.$store.dispatch(ACTION_GET_STD_GENTANI)
-        this.resetModal()
+      try {
+        const payload = {
+          line_id: this.form.line_obj?.line_id,
+          oil_id: this.form.oil_obj?.oil_id,
+          gentani_val: this.form.gentani_val,
+          plan_prod: this.form.plan_prod,
+          created_by: this.form.created_by,
+        }
+        let response = await this.$store.dispatch(
+          ACTION_ADD_STD_GENTANI,
+          payload,
+        )
+        if (response.status == 201) {
+          this.$swal({
+            icon: 'success',
+            title: 'Success',
+            text: 'Gentani added successfully',
+          })
+          this.$store.dispatch(ACTION_GET_STD_GENTANI, {
+            line_id: this.selectedLineGentani.line_id,
+            month: this.selectedMonth,
+          })
+          this.resetModal()
+        }
+      } catch (error) {
+        console.log(error)
       }
     },
 
     async updateGentani() {
-      const payload = {
-        target_id: this.form.target_id,
-        line_id: this.form.line_obj?.line_id,
-        oil_id: this.form.oil_obj?.oil_id,
-        gentani_val: this.form.gentani_val,
-        plan_prod: this.form.plan_prod,
-        created_by: this.form.created_by,
-      }
-      let response = await this.$store.dispatch(
-        ACTION_EDIT_STD_GENTANI,
-        payload,
-      )
-      if (response.status == 200) {
-        this.$swal({
-          icon: 'success',
-          title: 'Success',
-          text: 'Gentani updated successfully',
+      console.log('kepanggil')
+
+      try {
+        const payload = {
+          target_id: this.form.target_id,
+          line_id: this.form.line_obj?.line_id,
+          oil_id: this.form.oil_obj?.oil_id,
+          gentani_val: this.form.gentani_val,
+          plan_prod: this.form.plan_prod,
+          created_by: this.form.created_by,
+        }
+        let response = await this.$store.dispatch(
+          ACTION_EDIT_STD_GENTANI,
+          payload,
+        )
+        if (response.status == 200) {
+          this.$swal({
+            icon: 'success',
+            title: 'Success',
+            text: 'Gentani updated successfully',
+          })
+
+          this.resetModal()
+        }
+        this.$store.dispatch(ACTION_GET_STD_GENTANI, {
+          line_id: this.selectedLineGentani.line_id,
+          month: this.selectedMonth,
         })
-        this.$store.dispatch(ACTION_GET_STD_GENTANI)
-        this.resetModal()
+      } catch (error) {
+        console.log(error)
       }
     },
 
@@ -634,7 +657,10 @@ export default {
             title: 'Success',
             text: 'Gentani deleted successfully',
           })
-          this.$store.dispatch(ACTION_GET_STD_GENTANI)
+          this.$store.dispatch(ACTION_GET_STD_GENTANI, {
+            line_id: this.selectedLineGentani.line_id,
+            month: this.selectedMonth,
+          })
           this.resetModal()
         }
       } catch (error) {

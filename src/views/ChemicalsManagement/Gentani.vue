@@ -59,14 +59,31 @@
     <div v-else>
       <div v-for="oil in oilList" :key="oil.oil_id" class="mb-5">
         <!-- Chart -->
-        <div class="card p-3 mb-3 shadow-sm">
-          <h5>{{ oil.oil_nm }}</h5>
-          <apexchart
-            type="line"
-            height="350"
-            :options="getChartOptions(oil.oil_id)"
-            :series="getChartSeries(oil.oil_id)"
-          />
+        <div class="card p-3 mb-3 shadow-sm text-center">
+          <div class="card mb-2">
+            <h5>{{ oil.oil_nm }}</h5>
+          </div>
+
+          <!-- === GENTANI RATIO CHART === -->
+          <div class="card mb-2">
+            <h5>Gentani</h5>
+            <apexchart
+              width="100%"
+              height="300"
+              type="line"
+              :options="getRatioOptions(oil.oil_id)"
+              :series="getRatioSeries(oil.oil_id)"
+            />
+          </div>
+          <div class="card">
+            <h5>Pemakaian</h5>
+            <apexchart
+              type="line"
+              height="350"
+              :options="getChartOptions(oil.oil_id)"
+              :series="getChartSeries(oil.oil_id)"
+            />
+          </div>
         </div>
 
         <!-- Table -->
@@ -158,12 +175,7 @@
                   </td>
 
                   <td>
-                    {{
-                      Object.values(planProdCumulative).reduce(
-                        (a, b) => a + (Number(b) || 0),
-                        0,
-                      )
-                    }}
+                    {{ planProdCumulative[days[days.length - 1]] || 0 }}
                   </td>
                 </tr>
               </tbody>
@@ -248,6 +260,75 @@ export default {
     document.removeEventListener('click', this.handleClickOutside)
   },
   methods: {
+    getRatioSeries(oil_id) {
+      const oilData = this.GET_SUMMARY_GENTANI.find((d) => d.oil_id === oil_id)
+      const std = Number(oilData?.gentani_val ?? 0)
+
+      const ratio = this.days.map((day) => {
+        const cumUsage = this.cumulativeUsage(oil_id, day)
+        const cumProd = this.cumulativePlan(day)
+        if (!cumProd) return 0
+        return Number((cumUsage / cumProd).toFixed(4))
+      })
+
+      const stdLine = this.days.map(() => std)
+
+      return [
+        {
+          name: 'Gentani Ratio',
+          type: 'line',
+          data: ratio,
+          color: '#1E90FF',
+          strokeWidth: 3,
+        },
+        {
+          name: 'STD Gentani',
+          type: 'line',
+          data: stdLine,
+          color: '#ff0000',
+          strokeWidth: 3,
+          marker: { size: 0 },
+          dataLabels: { enabled: false },
+        },
+      ]
+    },
+
+    getRatioOptions(oil_id) {
+      const oilData = this.GET_SUMMARY_GENTANI.find((d) => d.oil_id === oil_id)
+      const std = Number(oilData?.gentani_val ?? 0)
+
+      return {
+        chart: { stacked: false, animations: { enabled: false } },
+        stroke: { width: [3, 3] },
+        xaxis: {
+          categories: this.days.map((d) => String(d).padStart(2, '0')),
+        },
+        yaxis: {
+          title: { text: 'Gentani Ratio' },
+          axisBorder: { show: true, color: '#000' },
+          labels: { formatter: (val) => Number(val).toFixed(3) },
+        },
+        tooltip: { shared: true, intersect: false },
+        dataLabels: { enabled: true, enabledOnSeries: [0] },
+
+        // === COPY PERSIS STYLE Standard Monthly ===
+        annotations: {
+          yaxis: [
+            {
+              y: std,
+              borderColor: '#ff0000',
+              label: {
+                text: `STD Gentani: ${std}`,
+                style: { color: '#fff', background: '#ff0000' },
+                offsetX: 0,
+                offsetY: 10,
+              },
+            },
+          ],
+        },
+      }
+    },
+
     async loadPlanProduction() {
       try {
         if (!this.selectedLine || !this.selectedMonth) return

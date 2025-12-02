@@ -53,7 +53,7 @@ const actions = {
   async ACTION_GET_STD_GENTANI({ commit }, payload) {
     try {
       const response = await axios.get(`${API_URL}/gentani/std`, {
-        params: payload,
+        params: { month: payload.month, line_id: payload.line_id },
       })
       commit(SET_STD_GENTANI, response.data.data)
       return response
