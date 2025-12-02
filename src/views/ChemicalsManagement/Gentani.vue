@@ -118,6 +118,54 @@
                   </td>
                   <td>{{ totalCumulative(oil.oil_id) }}</td>
                 </tr>
+                <!-- PLAN PROD -->
+                <tr class="table-info">
+                  <td class="sticky-col sticky-col-1" rowspan="2"></td>
+                  <td class="sticky-col sticky-col-2" rowspan="2">
+                    Plan Production
+                  </td>
+
+                  <td class="sticky-col sticky-col-3 fw-semibold">Plan</td>
+
+                  <td
+                    v-for="day in days"
+                    :key="'plan-' + day"
+                    :class="getDayClass(day)"
+                  >
+                    {{ planProdDaily[day] || 0 }}
+                  </td>
+
+                  <td class="fw-semibold">
+                    {{
+                      Object.values(planProdDaily).reduce(
+                        (a, b) => a + (Number(b) || 0),
+                        0,
+                      )
+                    }}
+                  </td>
+                </tr>
+
+                <!-- CUMULATIVE PLAN -->
+                <tr class="table-primary fw-semibold">
+                  <td class="sticky-col sticky-col-3">Cumulative Plan</td>
+
+                  <td
+                    v-for="day in days"
+                    :key="'cumu-plan-' + day"
+                    :class="getDayClass(day)"
+                  >
+                    {{ cumulativePlan(day) }}
+                  </td>
+
+                  <td>
+                    {{
+                      Object.values(planProdCumulative).reduce(
+                        (a, b) => a + (Number(b) || 0),
+                        0,
+                      )
+                    }}
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -135,6 +183,10 @@ import {
   GET_SUMMARY_GENTANI,
 } from '@/store/Chemical/Gentani.module'
 import MasterGentani from '@/components/table/MasterGentani.vue'
+import {
+  ACTION_GET_PLAN_PROD,
+  GET_PLAN_PROD,
+} from '@/store/Chemical/PlanProd.module'
 
 export default {
   name: 'Gentani',
@@ -147,10 +199,12 @@ export default {
       precomputed: {},
       loading: false,
       showMasterGentani: false,
+      planProdDaily: {},
+      planProdCumulative: {},
     }
   },
   computed: {
-    ...mapGetters(['getLineNames', GET_SUMMARY_GENTANI]),
+    ...mapGetters(['getLineNames', GET_SUMMARY_GENTANI, GET_PLAN_PROD]),
     oilList() {
       const unique = []
       const map = new Map()
@@ -166,10 +220,12 @@ export default {
   watch: {
     selectedLine() {
       this.fetchData()
+      this.loadPlanProduction()
     },
     selectedMonth() {
       this.generateDays()
       this.fetchData()
+      this.loadPlanProduction()
     },
   },
   async mounted() {
@@ -192,6 +248,57 @@ export default {
     document.removeEventListener('click', this.handleClickOutside)
   },
   methods: {
+    async loadPlanProduction() {
+      try {
+        if (!this.selectedLine || !this.selectedMonth) return
+
+        const payload = {
+          line_id: this.selectedLine.line_id,
+          month: this.selectedMonth,
+        }
+
+        const res = await this.$store.dispatch(ACTION_GET_PLAN_PROD, payload)
+
+        if (res.status === 200) {
+          const rows = this.GET_PLAN_PROD // ambil data backend langsung
+
+          console.log('data', rows)
+
+          const daily = {}
+
+          this.days.forEach((day) => {
+            const found = rows.find((r) => {
+              return new Date(r.plan_dt).getDate() === day
+            })
+
+            daily[day] = found ? Number(found.plan_prod) : 0
+          })
+
+          this.planProdDaily = daily
+          this.recalcCumulativePlan()
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    },
+
+    cumulativePlan(day) {
+      return this.planProdCumulative?.[day] || 0
+    },
+
+    // Hitung cumulative setiap kali plan daily berubah
+    recalcCumulativePlan() {
+      const cumulative = {}
+      let total = 0
+
+      this.days.forEach((day) => {
+        total += Number(this.planProdDaily[day] || 0)
+        cumulative[day] = total
+      })
+
+      this.planProdCumulative = cumulative
+    },
+
     toggleMasterGentani() {
       this.showMasterGentani = true
     },

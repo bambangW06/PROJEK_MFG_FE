@@ -114,9 +114,112 @@
             </button>
           </div>
         </div>
+        <!-- Filter -->
+        <div class="card p-3 mb-3 shadow-sm">
+          <div class="row d-flex flex-wrap gap-3 mb-3 align-items-end mb-2">
+            <div class="col filter-group flex-grow-1">
+              <label class="form-label fw-semibold mb-1">Line</label>
+              <v-select
+                :options="getLineNames"
+                v-model="selectedLineGentani"
+                label="line_nm"
+                placeholder="Pilih Line"
+                class="w-100"
+                :append-to-body="true"
+              />
+            </div>
+            <div class="col filter-group flex-grow-1 mb-3">
+              <label class="form-label fw-semibold mb-1">Bulan</label>
+              <input
+                type="month"
+                v-model="selectedMonth"
+                class="form-control w-100"
+              />
+            </div>
+          </div>
 
+          <!-- Table  -->
+          <div class="table-responsive table-wrapper">
+            <table
+              class="table table-bordered table-sm text-center align-middle sticky-table"
+            >
+              <thead>
+                <tr>
+                  <th class="sticky-col sticky-col-1">No</th>
+                  <th class="sticky-col sticky-col-2">Line</th>
+                  <th class="sticky-col sticky-col-3">Tanggal</th>
+
+                  <th v-for="day in days" :key="day" :class="getDayClass(day)">
+                    {{ day }}
+                  </th>
+
+                  <th>Total</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <!-- PLAN PROD -->
+                <tr class="table-info">
+                  <td class="sticky-col sticky-col-1" rowspan="2">1</td>
+                  <td class="sticky-col sticky-col-2" rowspan="2">
+                    {{ selectedLineGentani?.line_nm || '-' }}
+                  </td>
+
+                  <!-- Row 1: PLAN -->
+                  <td class="sticky-col sticky-col-3 fw-semibold">Plan</td>
+
+                  <td
+                    v-for="day in days"
+                    :key="'plan-' + day"
+                    :class="getDayClass(day)"
+                  >
+                    <input
+                      type="number"
+                      class="form-control text-center plan-input"
+                      style="width: 60px"
+                      v-model.number="planProdDaily[day]"
+                      @input="recalcCumulativePlan"
+                      @change="savePlan(day)"
+                    />
+                  </td>
+
+                  <td class="fw-semibold">
+                    {{
+                      Object.values(planProdDaily).reduce(
+                        (a, b) => a + (Number(b) || 0),
+                        0,
+                      )
+                    }}
+                  </td>
+                </tr>
+
+                <!-- CUMULATIVE PLAN -->
+                <tr class="table-primary fw-semibold">
+                  <td class="sticky-col sticky-col-3">Cumulative</td>
+
+                  <td
+                    v-for="day in days"
+                    :key="'cumu-plan-' + day"
+                    :class="getDayClass(day)"
+                  >
+                    {{ cumulativePlan(day) }}
+                  </td>
+
+                  <td>
+                    {{
+                      Object.values(planProdCumulative).reduce(
+                        (a, b) => a + (Number(b) || 0),
+                        0,
+                      )
+                    }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
         <!-- Table -->
-        <div class="table-responsiv">
+        <div class="table-responsive">
           <table class="table table-striped table-bordered text-center">
             <thead>
               <tr>
@@ -239,6 +342,11 @@ import {
   ACTION_GET_MASTER_OIL,
   GET_MASTER_OIL,
 } from '@/store/Chemical/MasterChemicals.module'
+import {
+  ACTION_ADD_PLAN_PROD,
+  ACTION_GET_PLAN_PROD,
+  GET_PLAN_PROD,
+} from '@/store/Chemical/PlanProd.module'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -251,6 +359,8 @@ export default {
   },
   data() {
     return {
+      selectedMonth: null,
+      selectedLineGentani: null,
       gentaniList: [], // data dari API
       lineOptions: [], // data line master
       oilOptions: [], // data oil master
@@ -259,10 +369,19 @@ export default {
       modalMode: 'add', // add / edit / delete
       perPage: 5, // default 5 per halaman
       currentPage: 1,
+      planProdDaily: {},
+      planProdCumulative: {},
+      days: [],
     }
   },
   computed: {
-    ...mapGetters(['getLineNames', GET_STD_GENTANI, GET_MASTER_OIL]),
+    ...mapGetters([
+      'getLineNames',
+      GET_STD_GENTANI,
+      GET_MASTER_OIL,
+      'getLineNames',
+      GET_PLAN_PROD,
+    ]),
     // total page
     totalPages() {
       return Math.ceil(this.GET_STD_GENTANI.length / this.perPage)
@@ -302,13 +421,111 @@ export default {
         this.form.plan_prod = null
       }
     },
+    selectedLineGentani() {
+      this.loadPlanProduction()
+    },
+    selectedMonth() {
+      this.generateDays()
+      this.loadPlanProduction()
+    },
   },
   async mounted() {
-    await this.$store.dispatch(ACTION_GET_STD_GENTANI)
+    const today = new Date()
+    const month = String(today.getMonth() + 1).padStart(2, '0')
+    const year = today.getFullYear()
+    this.selectedMonth = `${year}-${month}`
     await this.$store.dispatch('fetchLines')
+    const defaultLine = this.getLineNames.find(
+      (line) => line.line_nm === 'Cylinder Block',
+    )
+    if (defaultLine) this.selectedLineGentani = defaultLine
+    this.generateDays()
+    await this.$store.dispatch(ACTION_GET_STD_GENTANI)
     await this.$store.dispatch(ACTION_GET_MASTER_OIL)
+    this.loadPlanProduction()
   },
   methods: {
+    generateDays() {
+      const [year, month] = this.selectedMonth.split('-')
+      const lastDay = new Date(year, month, 0).getDate()
+      this.days = Array.from({ length: lastDay }, (_, i) => i + 1)
+    },
+    async savePlan(day) {
+      try {
+        if (!this.selectedLineGentani) return
+
+        const payload = {
+          line_id: this.selectedLineGentani.line_id,
+          plan_dt: `${this.selectedMonth}-${String(day).padStart(2, '0')}`,
+          plan_prod: Number(this.planProdDaily[day] || 0),
+        }
+
+        let response = await this.$store.dispatch(ACTION_ADD_PLAN_PROD, payload)
+        if (response.status === 201) {
+          console.log('payload', payload)
+        }
+        // reload setelah save
+        this.loadPlanProduction()
+      } catch (err) {
+        console.error('Save plan error:', err)
+      }
+    },
+
+    async loadPlanProduction() {
+      try {
+        if (!this.selectedLineGentani || !this.selectedMonth) return
+        const payload = {
+          line_id: this.selectedLineGentani.line_id,
+          month: this.selectedMonth,
+        }
+        let res = await this.$store.dispatch(ACTION_GET_PLAN_PROD, payload)
+        if (res.status === 200) {
+          const daily = {}
+          this.days.forEach((day) => {
+            const found = this.GET_PLAN_PROD.find((r) => {
+              const d = new Date(r.plan_dt).getDate() // ⛔ convert plan_dt → day number
+              return d === day
+            })
+
+            daily[day] = found ? Number(found.plan_prod) : 0
+          })
+
+          this.planProdDaily = daily
+          this.recalcCumulativePlan()
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    },
+
+    planProd(day) {
+      return this.planProdDaily[day] ?? 0
+    },
+
+    cumulativePlan(day) {
+      if (!this.planProdCumulative[day]) return 0
+      return this.planProdCumulative[day]
+    },
+
+    // Hitung cumulative setiap kali plan daily berubah
+    recalcCumulativePlan() {
+      let total = 0
+      this.planProdCumulative = {}
+
+      this.days.forEach((day) => {
+        const val = Number(this.planProdDaily[day] || 0)
+        total += val
+        this.planProdCumulative[day] = total
+      })
+    },
+
+    getDayClass(day) {
+      const [year, month] = this.selectedMonth.split('-')
+      const date = new Date(year, parseInt(month) - 1, day)
+      if (date.getDay() === 6) return 'saturday'
+      if (date.getDay() === 0) return 'sunday'
+      return ''
+    },
     normalizeDecimal(event) {
       let val = event.target.value
       val = val.replace(',', '.') // ganti koma jadi titik
@@ -441,6 +658,138 @@ export default {
 </script>
 
 <style scoped>
+.table-bordered {
+  border: 1px solid black;
+}
+.table-bordered th {
+  background-color: rgb(198, 240, 240);
+}
+.table-wrapper {
+  overflow: auto;
+  max-height: 400px;
+  border: 1px solid #ccc;
+}
+/* ===============================
+   BASE TABLE STYLE
+   =============================== */
+.sticky-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: max-content;
+  min-width: 100%;
+}
+
+.sticky-table th,
+.sticky-table td {
+  border: 1px solid #000;
+  padding: 4px 6px;
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
+  background-clip: padding-box;
+}
+
+/* ===============================
+   STICKY HEADER
+   =============================== */
+.sticky-table thead th {
+  position: sticky;
+  top: 0;
+  background-color: rgb(198, 240, 240);
+  z-index: 200; /* header tanggal */
+}
+
+/* Header sticky col harus di atas semuanya */
+.sticky-table thead .sticky-col {
+  z-index: 300 !important;
+  background-color: rgb(198, 240, 240) !important;
+}
+
+/* ===============================
+   STICKY COLUMN FIX
+   =============================== */
+.sticky-col {
+  position: sticky;
+  background-color: #fff !important;
+  background-clip: padding-box;
+  z-index: 150;
+
+  /* Biar garis horizontal utama tidak terputus */
+  border-left: 1px solid #000 !important;
+  border-right: 1px solid #000 !important;
+}
+
+/* Tambahkan border atas hanya di THEAD sticky */
+.sticky-table thead .sticky-col {
+  border-top: 1px solid #000 !important;
+}
+
+/* Tambahkan border bawah hanya di row terakhir */
+.sticky-table tbody tr:last-child .sticky-col {
+  border-bottom: 1px solid #000 !important;
+}
+
+/* ===============================
+   STICKY COLUMN POSITIONS
+   =============================== */
+.sticky-col-1 {
+  left: 0;
+  min-width: 50px;
+  max-width: 50px;
+}
+.sticky-col-2 {
+  left: 50px;
+  min-width: 150px;
+  max-width: 150px;
+}
+.sticky-col-3 {
+  left: 200px;
+  min-width: 120px;
+  max-width: 120px;
+}
+
+/* ===============================
+   CELL WRAPPING (khusus Chemical Type)
+   =============================== */
+.sticky-table th.sticky-col-2,
+.sticky-table td.sticky-col-2 {
+  white-space: normal !important;
+  word-wrap: break-word;
+  line-height: 1.2;
+}
+
+/* ===============================
+   CUMULATIVE ROW
+   =============================== */
+.table-secondary td {
+  background-color: #f3f3f3 !important;
+  font-weight: 600;
+}
+
+/* ===============================
+   WEEKEND COLORING
+   =============================== */
+.saturday {
+  background-color: #ffeaea !important;
+}
+.sunday {
+  background-color: #ffdcdc !important;
+}
+/* Input */
+.sticky-table input[type='number'] {
+  width: 45px;
+  text-align: center;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+.sticky-table input[type='number']::-webkit-inner-spin-button,
+.sticky-table input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* ===============================
+   TABLE BORDER WRAPPER
+   =============================== */
 .table-bordered {
   border: 1px solid black;
 }

@@ -332,6 +332,7 @@ import 'flatpickr/dist/flatpickr.css'
 import {
   ACTION_GET_HISTORY_CHEMICAL,
   GET_HISTORY_CHEMICAL,
+  GET_STD_USAGE,
 } from '@/store/Chemical/HistoryPemakaian.module'
 import {
   ACTION_GET_MASTER_OIL,
@@ -425,6 +426,7 @@ export default {
       GET_HISTORY_CHEMICAL,
       GET_MASTER_OIL,
       GET_MASTER_NOTE,
+      GET_STD_USAGE,
     ]),
     paginatedUsage() {
       const start = (this.currentPage - 1) * this.itemsPerPage
@@ -727,6 +729,231 @@ export default {
         }
       },
     },
+    // GET_HISTORY_CHEMICAL: {
+    //   immediate: true,
+    //   handler(val) {
+    //     const formatDecimal = (num) => {
+    //       const n = Number(num)
+    //       if (isNaN(n)) return 0
+    //       return parseFloat(n.toFixed(2))
+    //     }
+
+    //     if (!val || val.length === 0) {
+    //       this.usageChartOptions = {
+    //         ...this.usageChartOptions,
+    //         xaxis: { categories: [] },
+    //       }
+    //       this.usageChartSeries = []
+    //       this.paramChartSeries = []
+    //       return
+    //     }
+
+    //     let data = val.map((d) => ({
+    //       ...d,
+    //       oil_volume: parseFloat(d.oil_volume) || 0,
+    //     }))
+
+    //     if (this.selectedLineUsage && data.length && !data[0].line_id) {
+    //       data = data.map((d) => ({
+    //         ...d,
+    //         line_id: this.selectedLineUsage.line_id,
+    //         line_nm: this.selectedLineUsage.line_nm,
+    //       }))
+    //     }
+
+    //     // 1️⃣ TANPA FILTER → Pareto per Line (tidak ada STD)
+    //     if (!this.selectedLineUsage && !this.selectedMachineUsage) {
+    //       const grouped = {}
+    //       data.forEach((item) => {
+    //         const line = item.line_nm || 'Unknown Line'
+    //         const oil = item.oil_nm || 'Unknown Oil'
+    //         grouped[line] = grouped[line] || {}
+    //         grouped[line][oil] = (grouped[line][oil] || 0) + item.oil_volume
+    //       })
+
+    //       const totals = Object.entries(grouped).map(([line, oils]) => ({
+    //         line,
+    //         total: Object.values(oils).reduce((a, b) => a + b, 0),
+    //       }))
+    //       const sortedLines = totals
+    //         .sort((a, b) => b.total - a.total)
+    //         .map((d) => d.line)
+    //       const allOils = [...new Set(data.map((d) => d.oil_nm))]
+
+    //       const series = allOils.map((oil) => ({
+    //         name: oil,
+    //         type: 'bar',
+    //         data: sortedLines.map((line) =>
+    //           formatDecimal(grouped[line]?.[oil] || 0),
+    //         ),
+    //       }))
+
+    //       // ✅ STD per line sebagai line chart, hanya jika ada selectedChemical
+    //       if (this.selectedChemical) {
+    //         const foundStdLine = this.GET_STD_USAGE?.std_per_line?.find(
+    //           (s) => s.oil_id === this.selectedChemical.oil_id,
+    //         )
+    //         const stdLineValue = foundStdLine?.std_value || 0
+
+    //         series.push({
+    //           name: `${this.selectedChemical.oil_nm} STD`,
+    //           type: 'line', // ✨ line chart
+    //           data: sortedLines.map(() => formatDecimal(stdLineValue)),
+    //         })
+    //       }
+
+    //       this.usageChartOptions = {
+    //         ...this.usageChartOptions,
+    //         chart: { type: 'bar', stacked: true },
+    //         xaxis: { categories: sortedLines },
+    //         title: { text: 'Pareto Total Chemical per Line', align: 'center' },
+    //         yaxis: {
+    //           title: { text: 'Volume (Liter)' },
+    //           labels: { formatter: (val) => `${formatDecimal(val)} L` },
+    //         },
+    //         grid: { show: true, borderColor: '#ddd', strokeDashArray: 4 },
+    //       }
+    //       this.usageChartSeries = series
+    //     }
+
+    //     // 2️⃣ FILTER LINE → Pareto per Machine + STD per machine
+    //     else if (this.selectedLineUsage && !this.selectedMachineUsage) {
+    //       const grouped = {}
+    //       data.forEach((item) => {
+    //         const machine = item.machine_nm || 'All Machine'
+    //         const oil = item.oil_nm || 'Unknown Oil'
+    //         grouped[machine] = grouped[machine] || {}
+    //         grouped[machine][oil] =
+    //           (grouped[machine][oil] || 0) + item.oil_volume
+    //       })
+
+    //       const totals = Object.entries(grouped).map(([machine, oils]) => ({
+    //         machine,
+    //         total: Object.values(oils).reduce((a, b) => a + b, 0),
+    //       }))
+    //       const sortedMachines = totals
+    //         .sort((a, b) => b.total - a.total)
+    //         .map((d) => d.machine)
+    //       const allOils = [...new Set(data.map((d) => d.oil_nm))]
+
+    //       const series = allOils.map((oil) => ({
+    //         name: oil,
+    //         type: 'bar',
+    //         data: sortedMachines.map((m) =>
+    //           formatDecimal(grouped[m]?.[oil] || 0),
+    //         ),
+    //       }))
+
+    //       // ✅ STD per machine sebagai bar, hanya jika ada selectedChemical
+    //       if (this.selectedChemical) {
+    //         const foundStdMachine = this.GET_STD_USAGE?.std_per_machine?.find(
+    //           (s) =>
+    //             s.oil_id === this.selectedChemical.oil_id &&
+    //             s.line_id === this.selectedLineUsage.line_id,
+    //         )
+    //         const stdValue = foundStdMachine?.std_value || 0
+
+    //         series.push({
+    //           name: `${this.selectedChemical.oil_nm} STD`,
+    //           type: 'bar', // ✨ bar chart
+    //           data: sortedMachines.map(() => formatDecimal(stdValue)),
+    //         })
+    //       }
+
+    //       this.usageChartOptions = {
+    //         ...this.usageChartOptions,
+    //         chart: { type: 'bar', stacked: false },
+    //         xaxis: { categories: sortedMachines },
+    //         title: {
+    //           text: `Pareto Total Chemical per Machine (${this.selectedLineUsage.line_nm})`,
+    //           align: 'center',
+    //         },
+    //         yaxis: {
+    //           labels: { formatter: (val) => `${formatDecimal(val)} L` },
+    //         },
+    //       }
+    //       this.usageChartSeries = series
+    //     }
+
+    //     // 3️⃣ FILTER LINE + CHEMICAL + MACHINE → Pareto per Date + STD per machine
+    //     else if (
+    //       this.selectedLineUsage &&
+    //       this.selectedMachineUsage &&
+    //       this.selectedChemical
+    //     ) {
+    //       const filtered = data.filter(
+    //         (d) =>
+    //           Number(d.machine_id) ===
+    //             Number(this.selectedMachineUsage.machine_id) &&
+    //           Number(d.line_id) === Number(this.selectedLineUsage.line_id) &&
+    //           Number(d.oil_id) === Number(this.selectedChemical.oil_id),
+    //       )
+
+    //       if (!filtered.length) {
+    //         this.usageChartSeries = []
+    //         this.usageChartOptions = {
+    //           ...this.usageChartOptions,
+    //           xaxis: { categories: [] },
+    //           title: {
+    //             text: `No Data for ${this.selectedChemical.oil_nm} (${this.selectedMachineUsage.machine_nm})`,
+    //             align: 'center',
+    //           },
+    //         }
+    //         return
+    //       }
+
+    //       const totalsByDate = {}
+    //       filtered.forEach((item) => {
+    //         const date = item.created_dt
+    //           ? item.created_dt.split('T')[0]
+    //           : 'Unknown Date'
+    //         totalsByDate[date] = (totalsByDate[date] || 0) + item.oil_volume
+    //       })
+    //       const sortedDates = Object.keys(totalsByDate).sort()
+
+    //       const series = [
+    //         {
+    //           name: `${this.selectedChemical.oil_nm} Usage (L)`,
+    //           type: 'bar',
+    //           data: sortedDates.map((d) => formatDecimal(totalsByDate[d])),
+    //         },
+    //       ]
+
+    //       const foundStdMachine = this.GET_STD_USAGE?.std_per_machine?.find(
+    //         (s) =>
+    //           s.oil_id === this.selectedChemical.oil_id &&
+    //           s.machine_id === this.selectedMachineUsage.machine_id,
+    //       )
+    //       const stdPerMachineValue = foundStdMachine?.std_value || 0
+
+    //       series.push({
+    //         name: `${this.selectedChemical.oil_nm} STD`,
+    //         type: 'bar', // ✨ bar chart
+    //         data: sortedDates.map(() => formatDecimal(stdPerMachineValue)),
+    //       })
+
+    //       this.usageChartOptions = {
+    //         ...this.usageChartOptions,
+    //         chart: { id: `chart-${Date.now()}`, type: 'bar', stacked: false },
+    //         xaxis: { categories: sortedDates },
+    //         title: {
+    //           text: `Pareto ${this.selectedChemical.oil_nm} per Date (${this.selectedMachineUsage.machine_nm})`,
+    //           align: 'center',
+    //         },
+    //         yaxis: {
+    //           title: { text: 'Volume (Liter)' },
+    //           labels: { formatter: (val) => `${formatDecimal(val)} L` },
+    //         },
+    //       }
+    //       this.usageChartSeries = series
+    //     }
+
+    //     // 4️⃣ TAB PARAM
+    //     if (this.activeTab === 'param') {
+    //       this.setParameterChart(val)
+    //     }
+    //   },
+    // },
 
     getLineNames: {
       immediate: true,
