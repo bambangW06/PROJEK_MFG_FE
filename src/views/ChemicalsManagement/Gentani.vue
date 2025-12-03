@@ -302,10 +302,13 @@ export default {
         stroke: { width: [3, 3] },
         xaxis: {
           categories: this.days.map((d) => String(d).padStart(2, '0')),
+          axisBorder: { show: true, color: '#000', height: 1 },
+          axisTicks: { show: true, color: '#000', height: 1 },
         },
         yaxis: {
           title: { text: 'Gentani Ratio' },
-          axisBorder: { show: true, color: '#000' },
+          axisBorder: { show: true, color: '#000', width: 1 },
+          axisTicks: { show: true, color: '#000', width: 1 },
           labels: { formatter: (val) => Number(val).toFixed(3) },
         },
         tooltip: { shared: true, intersect: false },
@@ -521,11 +524,16 @@ export default {
       return {
         chart: { stacked: false, animations: { enabled: false } },
         stroke: { width: [0, 3, 3] },
-        xaxis: { categories: days.map((d) => String(d).padStart(2, '0')) },
+        xaxis: {
+          categories: days.map((d) => String(d).padStart(2, '0')),
+          axisBorder: { show: true, color: '#000' },
+          axisTicks: { show: true, color: '#000' },
+        },
         yaxis: {
           title: { text: 'Volume' },
           axisBorder: { show: true, color: '#000' },
           labels: { formatter: (val) => parseInt(val) },
+          axisTicks: { show: true, color: '#000' },
         },
         tooltip: { shared: true, intersect: false },
         dataLabels: { enabled: true, enabledOnSeries: [0, 1] },
