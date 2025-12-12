@@ -11,7 +11,7 @@ export const ACTION_CHECK_SESSION = 'ACTION_CHECK_SESSION'
 export const ACTION_REGISTER = 'ACTION_REGISTER'
 
 export const state = {
-  user: null,
+  user: JSON.parse(sessionStorage.getItem('USER_INFO')) || null,
 }
 
 const getters = {
@@ -29,7 +29,16 @@ const actions = {
   async ACTION_LOGIN({ commit }, payload) {
     try {
       const response = await axios.post(`${API_URL}/auth/login`, payload)
-      commit(SET_USER, response.data.user)
+
+      const user = response.data.user
+
+      // SIMPAN KE VUEX
+      commit(SET_USER, user)
+
+      // SIMPAN KE SESSION
+      sessionStorage.setItem('USER_INFO', JSON.stringify(user))
+      sessionStorage.setItem('IS_LOGGED_IN', 'true')
+
       return response
     } catch (error) {
       console.error(error)
@@ -40,10 +49,13 @@ const actions = {
   async ACTION_LOGOUT({ commit }) {
     try {
       await axios.post(`${API_URL}/auth/logout`)
-      commit(SET_USER, null)
     } catch (error) {
       console.error(error)
     }
+
+    commit(SET_USER, null)
+    sessionStorage.removeItem('USER_INFO')
+    sessionStorage.removeItem('IS_LOGGED_IN')
   },
 
   async ACTION_CHECK_SESSION({ commit }) {
