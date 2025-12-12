@@ -231,15 +231,67 @@ const router = createRouter({
   },
 })
 
+// router.beforeEach((to, from, next) => {
+//   const validToken = 'Master#Token'
+
+//   // Menghapus modal token jika pindah dari route yang membutuhkan
+//   if (from.meta.requiresSpecialToken && !to.meta.requiresSpecialToken) {
+//     localStorage.removeItem('special_token')
+//   }
+
+//   // Login gate: pakai sessionStorage + Vuex state
+//   const isLoggedIn =
+//     store.getters['auth/IS_LOGGED_IN'] ||
+//     sessionStorage.getItem('IS_LOGGED_IN') === 'true'
+
+//   if (to.meta.requiresAuth && !isLoggedIn && to.name !== 'Login') {
+//     return next('/login')
+//   }
+
+//   // Modal token gate untuk route khusus
+//   if (to.meta.requiresSpecialToken) {
+//     const specialToken = localStorage.getItem('special_token')
+//     if (!specialToken) {
+//       if (!tokenModalInstance) {
+//         const container = document.createElement('div')
+//         document.body.appendChild(container)
+
+//         const modalPromise = new Promise((resolve, reject) => {
+//           const modalApp = createApp({
+//             render: () =>
+//               h(modalToken, {
+//                 onTokenValidated: (isValid) => {
+//                   if (isValid) {
+//                     localStorage.setItem('special_token', validToken)
+//                     resolve()
+//                   } else {
+//                     reject()
+//                   }
+//                   tokenModalInstance.unmount()
+//                   document.body.removeChild(container)
+//                   tokenModalInstance = null
+//                 },
+//               }),
+//           })
+//           tokenModalInstance = modalApp
+//           modalApp.mount(container)
+//         })
+
+//         modalPromise.then(() => next()).catch(() => next(false))
+//         return
+//       }
+//     }
+//   }
+
+//   next()
+// })
+
 router.beforeEach((to, from, next) => {
   const validToken = 'Master#Token'
 
-  // Menghapus modal token jika pindah dari route yang membutuhkan
-  if (from.meta.requiresSpecialToken && !to.meta.requiresSpecialToken) {
-    localStorage.removeItem('special_token')
-  }
-
-  // Login gate: pakai sessionStorage + Vuex state
+  // ==========================
+  // 1. LOGIN GATE (session + vuex)
+  // ==========================
   const isLoggedIn =
     store.getters['auth/IS_LOGGED_IN'] ||
     sessionStorage.getItem('IS_LOGGED_IN') === 'true'
@@ -248,10 +300,22 @@ router.beforeEach((to, from, next) => {
     return next('/login')
   }
 
-  // Modal token gate untuk route khusus
+  // ==========================
+  // 2. CLEAR SPECIAL TOKEN jika keluar dari route spesial
+  // ==========================
+  if (from.meta.requiresSpecialToken && !to.meta.requiresSpecialToken) {
+    localStorage.removeItem('special_token')
+  }
+
+  // ==========================
+  // 3. SPECIAL TOKEN GATE
+  // ==========================
   if (to.meta.requiresSpecialToken) {
     const specialToken = localStorage.getItem('special_token')
+
+    // Kalau token BELUM ada → wajib buka modal token
     if (!specialToken) {
+      // Pastikan modal tidak double
       if (!tokenModalInstance) {
         const container = document.createElement('div')
         document.body.appendChild(container)
@@ -267,22 +331,29 @@ router.beforeEach((to, from, next) => {
                   } else {
                     reject()
                   }
+
+                  // Bersihkan modal
                   tokenModalInstance.unmount()
                   document.body.removeChild(container)
                   tokenModalInstance = null
                 },
               }),
           })
+
           tokenModalInstance = modalApp
           modalApp.mount(container)
         })
 
         modalPromise.then(() => next()).catch(() => next(false))
-        return
+
+        return // STOP agar next() tidak lanjut
       }
     }
   }
 
+  // ==========================
+  // 4. LANJUTKAN ROUTE
+  // ==========================
   next()
 })
 
