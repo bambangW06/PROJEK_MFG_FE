@@ -330,8 +330,7 @@ export default {
         const oeeValue =
           this.GET_OEE.length > 0
             ? Math.round(
-                (this.oee / 100) *
-                  (peValue / 100) *
+                (peValue / 100) *
                   (availabilityValue / 100) *
                   (rateQualityValue / 100) *
                   10000,
@@ -445,103 +444,6 @@ export default {
         console.log('error update grafik', error)
       }
     },
-    // updateOeeSeries() {
-    //   try {
-    //     const oeeValue = this.GET_OEE.length > 0 ? this.oee || 0 : 0
-    //     const peValue = this.GET_OEE.length > 0 ? this.pePercentage || 0 : 0
-    //     const availabilityValue =
-    //       this.GET_OEE.length > 0 ? this.availabilityPercentage || 0 : 0
-    //     const rateQualityValue =
-    //       this.GET_OEE.length > 0 ? this.rqPercentage || 0 : 0
-
-    //     console.log('OEE Value:', oeeValue)
-    //     console.log('Availability Value:', availabilityValue)
-    //     console.log('Performance Efficiency Value:', peValue)
-    //     console.log('Rate Quality Value:', rateQualityValue)
-
-    //     this.oeeSeries = [
-    //       {
-    //         name: 'Persentase',
-    //         data: [oeeValue, availabilityValue, peValue, rateQualityValue],
-    //         // Tambahkan warna di sini untuk setiap kategori
-    //         color: function ({ value, seriesIndex }) {
-    //           const colors = ['#FF5733', '#33FF57', '#3357FF', '#FFC300']
-    //           return colors[seriesIndex] // Menggunakan index untuk mengatur warna
-    //         },
-    //       },
-    //     ]
-
-    //     // Tetapkan warna untuk masing-masing kategori
-    //     this.oeeOptions = {
-    //       ...this.oeeOptions,
-    //       chart: {
-    //         type: 'bar',
-    //         toolbar: {
-    //           show: false,
-    //         },
-    //       },
-    //       plotOptions: {
-    //         bar: {
-    //           horizontal: false,
-    //           columnWidth: '40%',
-    //           endingShape: 'rounded',
-    //           dataLabels: {
-    //             position: 'top',
-    //           },
-    //           barPadding: 5,
-    //           groupPadding: 0,
-    //         },
-    //       },
-    //       dataLabels: {
-    //         enabled: true,
-    //         formatter: function (val) {
-    //           return typeof val === 'number' && !isNaN(val)
-    //             ? `${val.toFixed(2)}%`
-    //             : 'N/A'
-    //         },
-    //         style: {
-    //           colors: ['#000'],
-    //         },
-    //       },
-    //       xaxis: {
-    //         categories: [
-    //           'OEE',
-    //           'Availability',
-    //           'Performance Efficiency',
-    //           'Rate Quality',
-    //         ],
-    //       },
-    //       yaxis: {
-    //         title: {
-    //           text: 'Persentase (%)',
-    //         },
-    //         labels: {
-    //           formatter: function (val) {
-    //             return typeof val === 'number' && !isNaN(val)
-    //               ? val.toFixed(2) + '%'
-    //               : 'N/A'
-    //           },
-    //         },
-    //       },
-    //       tooltip: {
-    //         y: {
-    //           formatter: function (val) {
-    //             return typeof val === 'number' && !isNaN(val)
-    //               ? val.toFixed(2) + '%'
-    //               : 'N/A'
-    //           },
-    //         },
-    //       },
-    //       colors: ['#FF5733', '#33FF57', '#3357FF', '#FFC300'], // Warna berbeda untuk masing-masing kategori
-    //     }
-
-    //     // Pastikan Anda memperbarui grafik setelah mengatur opsi dan seri
-    //     this.$refs.chart.updateOptions(this.oeeOptions, true) // Memperbarui opsi grafik
-    //     this.$refs.chart.updateSeries(this.oeeSeries, true) // Memperbarui seri data grafik
-    //   } catch (error) {
-    //     console.log('error update grafik', error)
-    //   }
-    // },
   },
 }
 </script>
