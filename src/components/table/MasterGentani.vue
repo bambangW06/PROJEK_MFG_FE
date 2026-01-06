@@ -611,8 +611,6 @@ export default {
     },
 
     async updateGentani() {
-      console.log('kepanggil')
-
       try {
         const payload = {
           target_id: this.form.target_id,
@@ -622,6 +620,8 @@ export default {
           plan_prod: this.form.plan_prod,
           created_by: this.form.created_by,
         }
+        console.log('payload', payload)
+
         let response = await this.$store.dispatch(
           ACTION_EDIT_STD_GENTANI,
           payload,
