@@ -353,6 +353,7 @@ export default {
   },
   data() {
     return {
+      notesUsed: 'line',
       currentPage: 1,
       itemsPerPage: 10,
       paretoSeries: [],
@@ -435,7 +436,9 @@ export default {
     await this.$store.dispatch(ACTION_GET_MASTER_OIL)
     await this.$store.dispatch('fetchKaryawanList')
     await this.$store.dispatch(ACTION_GET_RESERVASI)
-    await this.$store.dispatch(ACTION_GET_MASTER_NOTE)
+    await this.$store.dispatch(ACTION_GET_MASTER_NOTE, {
+      notesuses: this.notesUsed,
+    })
     this.initChemicals()
     this.generateDays()
     this.populateVolFromBackend()

@@ -28,9 +28,13 @@ const mutations = {
 }
 
 const actions = {
-  async ACTION_GET_MASTER_NOTE({ commit }) {
+  async ACTION_GET_MASTER_NOTE({ commit }, payload) {
     try {
-      const response = await axios.get(`${API_URL}/masterNote/get`)
+      const response = await axios.get(`${API_URL}/masterNote/get`, {
+        params: {
+          notesUsed: payload ? payload : null,
+        },
+      })
       commit(SET_MASTER_NOTE, response.data.data)
       return response
     } catch (error) {

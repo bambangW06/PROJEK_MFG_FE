@@ -835,6 +835,7 @@ export default {
   name: 'PemakaianOli',
   data() {
     return {
+      notesUsed: 'line',
       mode: 'Pemakaian Chemical', // atau 'Cek Parameter'
       isCheckParameter: false,
       selectedLine: '',
@@ -1061,7 +1062,9 @@ export default {
     await this.$store.dispatch('fetchKaryawanList')
     await this.$store.dispatch(ACTION_GET_OILS_USAGE)
     await this.$store.dispatch(ACTION_GET_RESULT_CHECK)
-    await this.$store.dispatch(ACTION_GET_MASTER_NOTE)
+    await this.$store.dispatch(ACTION_GET_MASTER_NOTE, {
+      notesUsed: this.notesUsed,
+    })
   },
   methods: {
     getJudgeClass(machine) {
