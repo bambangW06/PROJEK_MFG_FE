@@ -1010,7 +1010,14 @@ export default {
     async addProblem() {
       try {
         let payload
-
+        if (!this.selectedTimeRange) {
+          this.$swal({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Please select a time range.',
+          })
+          return
+        }
         // Tentukan apakah mode adalah 'edit' atau 'add'
         const mode = this.isEditMode ? 'edit' : 'add' // Misalnya `this.isEditMode` adalah flag yang menentukan apakah ini mode edit atau tambah
         if (this.modalType === 'category') {
